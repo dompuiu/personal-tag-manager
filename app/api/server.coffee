@@ -2,7 +2,7 @@
 
 restify = require('restify')
 ASQ = require('asynquence')
-mongoose = require('mongoose')
+Database = require('../database/connection')
 
 Server = {
   server: null
@@ -39,18 +39,8 @@ Server = {
     return server
 }
 
-Database = {
-  openConnection: (done) ->
-    @connect()
-
-    db = mongoose.connection
-    db.once('open', ->
-      console.log('Connected to Mongo.')
-      done()
-    )
-
-  connect: ->
-    mongoose.connect('mongodb://localhost/test')
-}
-
-ASQ(Database.openConnection.bind(Database)).then(Server.start.bind(Server))
+ASQ(Database.openConnection.bind(Database))
+  .then(Server.start.bind(Server))
+  .or((err) ->
+    console.log(err)
+  )
