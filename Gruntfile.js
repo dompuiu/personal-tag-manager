@@ -40,7 +40,7 @@ module.exports = function (grunt) {
             });
           },
           env: {
-            PORT: '8181'
+            PORT: '8000'
           },
           cwd: '<%= yeoman.api_dist %>',
           ignore: ['node_modules/**'],
@@ -248,7 +248,7 @@ module.exports = function (grunt) {
             'level': 'error'
           },
           'no_implicit_parens': {
-            'level': 'error'
+            'level': 'warn'
           },
           'no_interpolation_in_single_quotes': {
             'level': 'error'
