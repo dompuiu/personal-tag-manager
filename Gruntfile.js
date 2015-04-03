@@ -28,7 +28,7 @@ module.exports = function (grunt) {
 
     nodemon: {
       api: {
-        script: 'app.js',
+        script: 'server.js',
         options: {
           args: ['dev'],
           nodeArgs: ['--debug'],
@@ -50,11 +50,11 @@ module.exports = function (grunt) {
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       app: {
-        files: ['<%= yeoman.app %>/{,*/}*.{coffee,litcoffee,coffee.md}'],
+        files: ['<%= yeoman.app %>/**/*.{coffee,litcoffee,coffee.md}'],
         tasks: ['coffeelint:app', 'newer:coffee:app']
       },
       test: {
-        files: ['<%= yeoman.test %>/spec/{,*/}*.{coffee,litcoffee,coffee.md}'],
+        files: ['<%= yeoman.test %>/**/*.{coffee,litcoffee,coffee.md}'],
         tasks: ['mochaTest:app']
       }
     },
@@ -67,7 +67,7 @@ module.exports = function (grunt) {
     coffeelint: {
       app: {
         files: {
-          src: ['<%= yeoman.app %>/*.coffee']
+          src: ['<%= yeoman.app %>/**/*.coffee']
         },
         options: {
           'arrow_spacing': {
@@ -126,8 +126,8 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>',
-          src: '{,*/}*.coffee',
-          dest: '<%= yeoman.dist %>/api',
+          src: '**/*.coffee',
+          dest: '<%= yeoman.dist %>',
           ext: '.js'
         }]
       }
@@ -164,6 +164,15 @@ module.exports = function (grunt) {
         src: ['<%= yeoman.test %>/**/*.coffee']
       }
     }
+  });
+
+  grunt.registerTask('default', 'Compile then start a connect web server', function (target) {
+    grunt.task.run([
+      'clean:dist',
+      'coffeelint:app',
+      'coffee:app',
+      'watch:app'
+    ]);
   });
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
