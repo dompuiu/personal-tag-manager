@@ -4,3 +4,9 @@
 [submodule "api-config-editor"]
 	path = tools/api-config-editor
 	url = https://github.com/swagger-api/swagger-editor
+[submodule "tools/api-explorer"]
+	path = tools/api-explorer
+	url = https://github.com/swagger-api/swagger-ui
+[submodule "tools/api-config-editor"]
+	path = tools/api-config-editor
+	url = https://github.com/swagger-api/swagger-editor
