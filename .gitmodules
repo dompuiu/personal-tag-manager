@@ -1,6 +1,6 @@
 [submodule "api-explorer"]
-	path = api-explorer
+	path = tools/api-explorer
 	url = https://github.com/swagger-api/swagger-ui
 [submodule "api-config-editor"]
-	path = api-config-editor
+	path = tools/api-config-editor
 	url = https://github.com/swagger-api/swagger-editor
