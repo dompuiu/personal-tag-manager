@@ -2,10 +2,12 @@
   "name": "PersonalTagManager",
   "version": "0.0.1",
   "dependencies": {
-    "restify": "^3.0.1"
+    "restify": "^3.0.1",
+    "mongoose": "^4.0.1"
   },
   "repository": {},
   "devDependencies": {
+    "asynquence": "^0.5.5-b",
     "blanket": "^1.1.6",
     "chai": "^2.2.0",
     "coffee-coverage": "^0.4.5",
