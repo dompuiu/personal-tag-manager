@@ -54,5 +54,3 @@ Database = {
 }
 
 ASQ(Database.openConnection.bind(Database)).then(Server.start.bind(Server))
-
-
