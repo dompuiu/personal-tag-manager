@@ -39,7 +39,7 @@ Server = {
       port: port
     })
 
-    require('./modules/auth')(server)
+    require('./modules/auth').register(server)
     require('./modules/swagger')(server)
 
     return server

@@ -2,30 +2,26 @@ Bcrypt = require('bcrypt')
 Basic = require('hapi-auth-basic')
 User = require('../../models/user')
 
-users = {
-  john: {
-    username: 'john'
-    password:
-      '$2a$10$iqJSHD.BGr0E2IxQwYgJmeP3NvhPrXAeLSaGCj6IR/XU5QtjVu5Tm'
-    name: 'John Doe'
-    id: '2133d32a'
-  }
-}
+authenticated_user = null
 
 validate = (username, password, callback) ->
-  user = users[username]
   query = User.findOne({'email': username}).exec((err, user) ->
     return callback(null, false) if err
 
     Bcrypt.compare(password, user.password, (err, isValid) ->
-      console.log(password, user.password)
+      authenticated_user = user if isValid
       callback(err, isValid, {id: user.id, name: user.name})
     )
   )
 
-module.exports = (server) ->
-  server.register(Basic, (err) ->
-    server.auth.strategy('simple', 'basic', {validateFunc: validate})
+module.exports = {
+  register: (server) ->
+    server.register(Basic, (err) ->
+      server.auth.strategy('simple', 'basic', {validateFunc: validate})
     )
+
+  auth_id: ->
+    if authenticated_user then authenticated_user.id else null
+}
 
 

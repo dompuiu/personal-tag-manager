@@ -17,7 +17,6 @@ module.exports = (server) ->
       }
     }
     handler: (request, reply) ->
-      console.log(request.headers)
       reply('hello world')
   })
 
