@@ -1,7 +1,9 @@
 mongoose = require('mongoose')
 
+db_sufix = process.env.DB_SUFFIX || '_test'
+
 Database = {
-  connection_string: 'mongodb://localhost/personal_tag_manager',
+  connection_string: "mongodb://localhost/personal_tag_manager#{db_sufix}",
   connection: null,
 
   openConnection: (done) ->

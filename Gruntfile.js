@@ -30,7 +30,6 @@ module.exports = function (grunt) {
       api: {
         script: 'server.js',
         options: {
-          args: ['dev'],
           nodeArgs: ['--debug'],
           callback: function (nodemon) {
             nodemon.on('log', function (event) {
@@ -38,6 +37,7 @@ module.exports = function (grunt) {
             });
           },
           env: {
+            DB_SUFFIX: '',
             PORT: '8000'
           },
           cwd: '<%= yeoman.dist %>/api',
@@ -55,7 +55,7 @@ module.exports = function (grunt) {
       },
       test: {
         files: ['<%= yeoman.test %>/**/*.{coffee,litcoffee,coffee.md}'],
-        tasks: ['mochaTest:app']
+        tasks: ['coffeelint:app', 'mochaTest:app']
       }
     },
 
@@ -90,6 +90,52 @@ module.exports = function (grunt) {
           },
           'no_implicit_parens': {
             'level': 'warn'
+          },
+          'no_interpolation_in_single_quotes': {
+            'level': 'error'
+          },
+          'no_plusplus': {
+            'level': 'error'
+          },
+          'no_stand_alone_at': {
+            'level': 'error'
+          },
+          'no_unnecessary_double_quotes': {
+            'level': 'error'
+          },
+          'space_operators': {
+            'level': 'error'
+          },
+          'spacing_after_comma': {
+            'level': 'error'
+          },
+          'cyclomatic_complexity': {
+            'level': 'error'
+          }
+        }
+      },
+      test: {
+        files: {
+          src: ['<%= yeoman.test %>/**/*.coffee']
+        },
+        options: {
+          'arrow_spacing': {
+            'level': 'error'
+          },
+          'braces_spacing': {
+            'level': 'error'
+          },
+          'newlines_after_classes': {
+            'level': 'error'
+          },
+          'no_empty_param_list': {
+            'level': 'error'
+          },
+          'no_empty_functions': {
+            'level': 'error'
+          },
+          'no_implicit_braces': {
+            'level': 'error'
           },
           'no_interpolation_in_single_quotes': {
             'level': 'error'
@@ -159,6 +205,7 @@ module.exports = function (grunt) {
           reporter: 'html-cov',
           captureFile: 'coverage.html',
           quiet: true,
+          clearRequireCache: true,
           require: 'coffee-coverage/register'
         },
         src: ['<%= yeoman.test %>/**/*.coffee']
@@ -170,6 +217,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:dist',
       'coffeelint:app',
+      'coffeelint:test',
       'coffee:app',
       'watch:app'
     ]);
@@ -179,6 +227,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:dist',
       'coffeelint:app',
+      'coffeelint:test',
       'coffee:app',
       'mochaTest:app',
       'concurrent:app'
