@@ -24,4 +24,9 @@ Database = {
     mongoose.connect(@connection_string)
 }
 
+process.on('SIGINT', ->
+  Database.closeConnection()
+  process.exit(0)
+)
+
 module.exports = Database
