@@ -10,8 +10,8 @@ userSchema = new mongoose.Schema({
 })
 
 userSchema.statics.makePassword = (password) ->
-  crypto = require('crypto')
-  return crypto.createHash('md5').update(password).digest('hex')
+  bcrypt = require('bcrypt')
+  return bcrypt.hashSync(password, bcrypt.genSaltSync())
 
 User = mongoose.model('User', userSchema)
 
