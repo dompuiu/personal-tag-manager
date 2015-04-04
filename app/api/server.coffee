@@ -5,17 +5,20 @@ fs = require('fs')
 ASQ = require('asynquence')
 Database = require('../database/connection')
 
-Bcrypt = require('bcrypt')
-Basic = require('hapi-auth-basic')
-
 Server = {
   server: null
+
+  standardHTTPErrors: [
+    {code: 400, message: 'Bad Request'},
+    {code: 500, message: 'Internal Server Error'}
+  ]
 
   start: (done) ->
     server = @get()
     @bindRoutes(server)
 
-    server.start()
+    if !module.parent
+      server.start()
 
   get: ->
     server = @server or @create()
@@ -23,10 +26,11 @@ Server = {
 
   bindRoutes: (server) ->
     fs.readdirSync(__dirname + '/routes').forEach((file) ->
-      return if /\.js$/.test(file)
+      if !/(\.js|\.coffee)$/.test(file)
+        return
 
       name = file.substr(0, file.indexOf('.'))
-      require('./routes/' + name)(server)
+      server.route(require(__dirname + '/routes/' + name))
     )
 
   create: ->
@@ -50,3 +54,5 @@ ASQ(Database.openConnection.bind(Database))
   .or((err) ->
     console.log(err)
   )
+
+module.exports = Server
