@@ -49,18 +49,15 @@ class UserSeeder
 users = [{
   name: 'Serban Stancu',
   email: 'serban.stancu@yahoo.com',
-  password: User.makePassword('qwe123'),
-  created_at: new Date('2014-01-01')
+  password: User.makePassword('qwe123')
 }, {
   name: 'First User',
   email: 'first.user@email.com',
-  password: User.makePassword('qwe123'),
-  created_at: new Date('2015-01-01')
+  password: User.makePassword('qwe123')
 }, {
   name: 'Second User',
   email: 'second.user@email.com',
-  password: User.makePassword('qwe123'),
-  created_at: new Date('2015-01-01')
+  password: User.makePassword('qwe123')
 }]
 
 new UserSeeder(users).import()
