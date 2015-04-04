@@ -1,8 +1,12 @@
 'use strict'
 
-restify = require('restify')
+Hapi = require('hapi')
+fs = require('fs')
 ASQ = require('asynquence')
 Database = require('../database/connection')
+
+Bcrypt = require('bcrypt')
+Basic = require('hapi-auth-basic')
 
 Server = {
   server: null
@@ -11,30 +15,31 @@ Server = {
     server = @get()
     @bindRoutes(server)
 
-    server.listen(process.env.PORT || 8080, ->
-      done()
-      console.log('%s listening at %s', server.name, server.url)
-    )
+    server.start()
 
   get: ->
     server = @server or @create()
     return server
 
   bindRoutes: (server) ->
-    server.get('/echo/:name', (req, res, next) ->
-      res.send(req.params)
-      next()
+    fs.readdirSync(__dirname + '/routes').forEach((file) ->
+      return if /\.js$/.test(file)
+
+      name = file.substr(0, file.indexOf('.'))
+      require('./routes/' + name)(server)
     )
 
   create: ->
-    server = restify.createServer({
-      name: 'PersonalTagManagerApp'
-      version: '1.0.0'
+    host = process.env.HOST || 'localhost'
+    port = process.env.PORT || 8000
+
+    server = new Hapi.Server()
+    server.connection({
+      host: host
+      port: port
     })
 
-    server.use(restify.acceptParser(server.acceptable))
-    server.use(restify.queryParser())
-    server.use(restify.bodyParser())
+    require('./modules/swagger')(server)
 
     return server
 }

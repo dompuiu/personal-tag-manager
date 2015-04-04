@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "restify": "^3.0.1",
+    "hapi": "^8.4.0",
+    "hapi-auth-basic": "^2.0.0",
+    "hapi-swagger": "^0.7.1",
+    "joi": "^6.1.0",
     "mongoose": "^4.0.1"
   },
   "repository": {},
