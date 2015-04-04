@@ -2,7 +2,7 @@
   "name": "PersonalTagManager",
   "version": "0.0.1",
   "dependencies": {
-    "restify": "^3.0.1",
+    "bcrypt": "^0.8.2",
     "hapi": "^8.4.0",
     "hapi-auth-basic": "^2.0.0",
     "hapi-swagger": "^0.7.1",
