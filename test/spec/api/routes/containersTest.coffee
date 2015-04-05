@@ -35,5 +35,10 @@ describe 'containersTest', ->
 
       done()
     )
+  before(->
+    d = require('../../../../app/database/connection')
+    d.dropCollection('containers')
+  )
+
 
 

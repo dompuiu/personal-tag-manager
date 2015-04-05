@@ -1,4 +1,5 @@
 mongoose = require('mongoose')
+ASQ = require('asynquence')
 
 db_sufix = process.env.DB_SUFFIX || '_test'
 
@@ -21,6 +22,14 @@ Database = {
   closeConnection: ->
     console.log('Disconnected from Mongo.')
     @connection.close()
+
+  dropCollection: (collection, done) ->
+    ASQ(@openConnection.bind(this)).then((done, connection) ->
+      connection.once('open', ->
+        connection.db.dropCollection(collection, done)
+      )
+    )
+
 
   connect: ->
     mongoose.connect(@connection_string)
