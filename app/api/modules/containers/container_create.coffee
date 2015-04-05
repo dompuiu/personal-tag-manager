@@ -43,17 +43,6 @@ class ContainerCreate
     data.user_id = request.auth.credentials.id
 
     c = new CreateContainerCommand(data)
-    result = c.run()
-
-    console.log(result)
-
-    reply({
-      id: '34jkljrklwjr'
-      name: 'container name'
-      storage_namespace: 'storagefolder'
-      user_id: 'sddsfsldk',
-      created_at: '2014-01-10'
-      updated_at: '2014-01-10'
-    })
+    c.run(reply)
 
 module.exports = ContainerCreate

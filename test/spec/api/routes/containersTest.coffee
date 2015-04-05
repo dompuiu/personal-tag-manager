@@ -1,40 +1,59 @@
 'use strict'
 
 expect = require('chai').expect
+ASQ = require('asynquence')
 
-Server = require('../../../../app/api/server')
 routes = require('../../../../app/api/routes/containers')
+
+configureServer = (done) ->
+  Server = require('../../../../app/api/server')
+  server = Server.get()
+  server.route(routes)
+
+  done(server)
+
+makeRequest = (config) ->
+  (done, server, response) ->
+    server.inject(config, (response) ->
+      done(server, response)
+    )
+
+createContainerRequest = (container_name) ->
+  options = {
+    method: 'PUT'
+    url: '/v1/containers/'
+    headers: {'Content-Type': 'application/json'}
+    payload: {name: container_name}
+    credentials: {name: 'user name', id: '10'}
+  }
 
 describe 'containersTest', ->
   it 'should create a container', (done) ->
-    server = Server.get()
-    server.route(routes)
+    ASQ(configureServer)
+      .then(makeRequest(createContainerRequest('some name')))
+      .val((server, response) ->
+        result = response.result
 
-    options = {
-      method: 'PUT'
-      url: '/v1/containers/'
-      headers: {
-        'Content-Type': 'application/json'
-      }
-      payload: {
-        name: 'some name'
-      }
+        expect(response.statusCode).to.equal(200)
+        expect(result.name).to.equal('some name')
+        expect(result.storage_namespace).to.not.be.empty
+        expect(result.user_id).to.not.be.empty
 
-      credentials: {
-        name: 'user name'
-        id: '10'
-      }
+        done()
+      )
 
-    }
+  it 'should allow creation of containers with unique names', (done) ->
+    ASQ(configureServer)
+      .then(makeRequest(createContainerRequest('some other name')))
+      .then(makeRequest(createContainerRequest('some other name')))
+      .val((server, response) ->
+        result = response.result
 
-    server.inject(options, (response) ->
-      result = response.result
+        expect(response.statusCode).to.equal(409)
+        done()
+      )
 
-      expect(response.statusCode).to.equal(200)
-      expect(result.name).to.equal('some name')
 
-      done()
-    )
   before(->
     d = require('../../../../app/database/connection')
     d.dropCollection('containers')
