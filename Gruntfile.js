@@ -37,7 +37,7 @@ module.exports = function (grunt) {
             });
           },
           env: {
-            DB_SUFFIX: '',
+            DB_SUFFIX: '_prod',
             PORT: '8000'
           },
           cwd: '<%= yeoman.dist %>/api',
@@ -54,7 +54,10 @@ module.exports = function (grunt) {
         tasks: ['coffeelint:app', 'newer:coffee:app']
       },
       test: {
-        files: ['<%= yeoman.test %>/**/*.{coffee,litcoffee,coffee.md}'],
+        files: [
+          '<%= yeoman.test %>/**/*.{coffee,litcoffee,coffee.md}',
+          '<%= yeoman.app %>/**/*.{coffee,litcoffee,coffee.md}'
+        ],
         tasks: ['coffeelint:app', 'mochaTest:app']
       }
     },
@@ -184,7 +187,6 @@ module.exports = function (grunt) {
       app: {
         tasks: [
           'watch:app',
-          'watch:test',
           'nodemon:api'
         ],
         options: {
@@ -229,7 +231,6 @@ module.exports = function (grunt) {
       'coffeelint:app',
       'coffeelint:test',
       'coffee:app',
-      'mochaTest:app',
       'concurrent:app'
     ]);
   });
