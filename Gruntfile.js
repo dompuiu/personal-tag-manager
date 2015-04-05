@@ -51,7 +51,7 @@ module.exports = function (grunt) {
     watch: {
       app: {
         files: ['<%= yeoman.app %>/**/*.{coffee,litcoffee,coffee.md}'],
-        tasks: ['coffeelint:app', 'newer:coffee:app']
+        tasks: ['coffeelint:app', 'coffee:app']
       },
       test: {
         files: [
