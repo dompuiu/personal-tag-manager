@@ -44,7 +44,10 @@ describe 'ContainersDeleteTest', ->
         .then(makeRequest(createDeleteRequest(container)))
         .val((server, response) ->
           expect(response.statusCode).to.equal(200)
-          done()
+          Container.findOne({_id: container._id}, (err, container) ->
+            expect(container.deleted_at).to.exist
+            done()
+          )
         )
       )
 

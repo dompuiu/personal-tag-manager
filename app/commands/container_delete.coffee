@@ -2,6 +2,7 @@ Joi = require('joi')
 Boom = require('boom')
 Container = require('../models/container')
 ASQ = require('asynquence')
+Server = require('../api/server')
 
 mongoose = require('mongoose')
 ObjectId = mongoose.Types.ObjectId
@@ -17,6 +18,8 @@ class DeleteContainerCommand
       @data.user_id,
       Joi.string().required()
     )
+
+    @server = Server.get()
 
   run: (done) ->
     ASQ(@findById.bind(this))
@@ -51,8 +54,10 @@ class DeleteContainerCommand
     done(container)
 
   tryToDelete: (done, container) ->
-    container.remove((err) ->
+    container.deleted_at = new Date()
+    container.save((err, container) ->
       if (err)
+        console.log(err)
         server.log(['error', 'database'], err)
         done.fail(Boom.badImplementation('Database error'))
 
