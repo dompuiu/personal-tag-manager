@@ -8,11 +8,6 @@ Database = require('../database/connection')
 Server = {
   server: null
 
-  standardHTTPErrors: [
-    {code: 400, message: 'Bad Request'},
-    {code: 500, message: 'Internal Server Error'}
-  ]
-
   start: (done) ->
     server = @get()
     @bindRoutes(server)

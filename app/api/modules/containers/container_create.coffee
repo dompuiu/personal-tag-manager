@@ -21,7 +21,12 @@ class ContainerCreate
       tags: ['api']
       plugins: {
         'hapi-swagger': {
-          responseMessages: Server.standardHTTPErrors
+          responseMessages: [
+            {code: 200, message: 'OK'},
+            {code: 400, message: 'Bad Request'},
+            {code: 409, message: 'Conflict'},
+            {code: 500, message: 'Internal Server Error'}
+          ]
         }
       }
       validate: @validate()
