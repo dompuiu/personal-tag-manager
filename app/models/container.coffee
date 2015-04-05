@@ -1,4 +1,6 @@
 mongoose = require('mongoose')
+_ = require('lodash')
+bcrypt = require('bcrypt')
 
 ContainerSchema = new mongoose.Schema({
   name: {type: String, required: true},
@@ -10,8 +12,21 @@ ContainerSchema = new mongoose.Schema({
 })
 
 ContainerSchema.methods.generateStorageNamespace = ->
-  c = require('bcrypt')
-  @storage_namespace = c.hashSync(@name + @user_id, c.genSaltSync())
+  c = require('crypto')
+  key = @name + @user_id + bcrypt.genSaltSync()
+  @storage_namespace =
+    c.createHash('md5').update(key).digest('hex')
+
+ContainerSchema.methods.toSwaggerFormat = ->
+  container = this
+
+  data = _.pick(container, ['name', 'storage_namespace', 'user_id'])
+
+  data.id = container._id.toString()
+  data.created_at = container.created_at.toISOString()
+  data.updated_at = container.updated_at.toISOString()
+
+  return data
 
 Container = mongoose.model('Container', ContainerSchema)
 
