@@ -1,8 +1,8 @@
 _ = require('lodash')
 Joi = require('joi')
 Server = require('../../server')
-ContainerValidatorSchema = require('./schemas/container')
-CreateContainerCommand = require('../../../commands/create_container')
+ContainerSchema = require('./schemas/container')
+CreateContainerCommand = require('../../../commands/container_create')
 
 class ContainerCreate
   route: ->
@@ -31,7 +31,7 @@ class ContainerCreate
       }
       validate: @validate()
       response: {
-        schema : ContainerValidatorSchema
+        schema : ContainerSchema
       }
     }
 
