@@ -4,29 +4,8 @@ describe 'ContainersDeleteTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
   routes = require('../../../../app/api/routes/containers')
-  faker = require('faker')
   Container = require('../../../../app/models/container')
-
-  createContainer = (done) ->
-    c = new Container({
-      name: faker.name.findName(),
-      user_id: faker.helpers.randomNumber(10)
-      storage_namespace: faker.lorem.sentence()
-    })
-    c.save((err, container) -> done(container))
-
-  configureServer = (done) ->
-    Server = require('../../../../app/api/server')
-    server = Server.get()
-    server.route(routes)
-
-    done(server)
-
-  makeRequest = (config) ->
-    (done, server) ->
-      server.inject(config, (response) ->
-        done(server, response)
-      )
+  utils = require('../../../utils')
 
   createDeleteRequest = (container) ->
     options = {
@@ -38,10 +17,10 @@ describe 'ContainersDeleteTest', ->
     }
 
   it 'should delete a container', (done) ->
-    ASQ(createContainer)
+    ASQ(utils.createContainer())
       .val((container) ->
-        ASQ(configureServer)
-        .then(makeRequest(createDeleteRequest(container)))
+        ASQ(utils.configureServer(routes))
+        .then(utils.makeRequest(createDeleteRequest(container)))
         .val((server, response) ->
           expect(response.statusCode).to.equal(200)
           Container.findOne({_id: container._id}, (err, container) ->
@@ -52,8 +31,8 @@ describe 'ContainersDeleteTest', ->
       )
 
   it 'should not accept un invalid object id', (done) ->
-    ASQ(configureServer)
-    .then(makeRequest(createDeleteRequest(
+    ASQ(utils.configureServer(routes))
+    .then(utils.makeRequest(createDeleteRequest(
       {
         user_id: '10',
         _id: '111'
@@ -65,8 +44,8 @@ describe 'ContainersDeleteTest', ->
     )
 
   it 'should not delete an unexisting container', (done) ->
-    ASQ(configureServer)
-    .then(makeRequest(createDeleteRequest(
+    ASQ(utils.configureServer(routes))
+    .then(utils.makeRequest(createDeleteRequest(
       {
         user_id: '10',
         _id: '00219cdb4fd2759a0b228099'
@@ -79,10 +58,10 @@ describe 'ContainersDeleteTest', ->
 
 
   it 'should allow deleting only containers they own', (done) ->
-    ASQ(createContainer)
+    ASQ(utils.createContainer())
       .val((container) ->
-        ASQ(configureServer)
-        .then(makeRequest(createDeleteRequest(
+        ASQ(utils.configureServer(routes))
+        .then(utils.makeRequest(createDeleteRequest(
           {
             user_id: '20',
             _id: container._id
@@ -97,8 +76,8 @@ describe 'ContainersDeleteTest', ->
   it 'should not allow deletion of already deleted containers', (done) ->
     ASQ(utils.createContainer({deleted_at: new Date()}))
       .val((container) ->
-        ASQ(configureServer)
-        .then(makeRequest(createDeleteRequest(
+        ASQ(utils.configureServer(routes))
+        .then(utils.makeRequest(createDeleteRequest(
           {
             user_id: '20',
             _id: container._id
@@ -109,10 +88,9 @@ describe 'ContainersDeleteTest', ->
           done()
         )
       )
-  before((done) ->
-    d = require('../../../utils')
 
-    d.emptyColection(Container, done)
+  before((done) ->
+    utils.emptyColection(Container, done)
   )
 
 
