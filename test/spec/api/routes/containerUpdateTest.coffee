@@ -106,9 +106,5 @@ describe 'ContainersUpdateTest', ->
         expect(response.statusCode).to.equal(401)
         done()
 
-  before((done) ->
+  before (done) ->
     utils.emptyColection(Container, done)
-  )
-
-
-

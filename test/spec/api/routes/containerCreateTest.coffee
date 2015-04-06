@@ -8,19 +8,19 @@ describe 'ContainersCreateTest', ->
   Container = require('../../../../app/models/container')
   utils = require('../../../utils')
 
-  createContainerRequest = (container_name) ->
+  createContainerRequest = (container) ->
     options = {
       method: 'PUT'
       url: '/containers/'
       headers: {'Content-Type': 'application/json'}
-      payload: {name: container_name}
-      credentials: {name: 'user name', id: '10'}
+      payload: {name: container.name}
+      credentials: {name: 'user name', id: container.user_id}
     }
 
   it 'should create a container', (done) ->
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(createContainerRequest('some name')))
-      .val((server, response) ->
+    request = createContainerRequest({name: 'some name', user_id: '10'})
+    ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
+      .val (server, response) ->
         result = response.result
 
         expect(response.statusCode).to.equal(200)
@@ -29,31 +29,30 @@ describe 'ContainersCreateTest', ->
         expect(result.user_id).to.not.be.empty
 
         done()
-      )
 
   it 'should allow creation of containers with unique names', (done) ->
+    request = createContainerRequest({name: 'some new name', user_id: '10'})
+
     ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(createContainerRequest('some other name')))
-      .then(utils.makeRequest(createContainerRequest('some other name')))
-      .val((server, response) ->
+      .then(utils.makeRequest(request))
+      .then(utils.makeRequest(request))
+      .val (server, response) ->
         expect(response.statusCode).to.equal(409)
         done()
-      )
 
   it 'should allow creation of containers with names of deleted containers', (done) ->
-    ASQ(utils.createContainer({name: 'some unexisting name'}))
-      .val((container) ->
-        ASQ(utils.configureServer(routes))
-          .then(utils.makeRequest(createContainerRequest('some unexisting name')))
-          .val((server, response) ->
-            expect(response.statusCode).to.equal(200)
-            done()
-          )
-        )
+    callback = utils.createContainer({
+      name: 'some unexisting name',
+      user_id: '10',
+      deleted_at: new Date()
+    })
 
-  before((done) ->
+    ASQ(callback).val (container) ->
+      request = createContainerRequest(container)
+      ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
+        .val (server, response) ->
+          expect(response.statusCode).to.equal(200)
+          done()
+
+  before (done) ->
     utils.emptyColection(Container, done)
-  )
-
-
-
