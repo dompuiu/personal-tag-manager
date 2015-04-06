@@ -66,5 +66,5 @@ describe 'ContainersDeleteTest', ->
           expect(response.statusCode).to.equal(404)
           done()
 
-  before (done) ->
+  beforeEach (done) ->
     utils.emptyColection(Container, done)

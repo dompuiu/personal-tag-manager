@@ -55,5 +55,5 @@ describe 'ContainersCreateTest', ->
             expect(response.statusCode).to.equal(200)
             done()
 
-  before (done) ->
+  beforeEach (done) ->
     utils.emptyColection(Container, done)
