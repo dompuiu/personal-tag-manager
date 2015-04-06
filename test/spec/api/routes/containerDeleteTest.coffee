@@ -48,7 +48,7 @@ describe 'ContainersDeleteTest', ->
 
   it 'should allow deleting only containers they own', (done) ->
     ASQ(utils.createContainer()).val (container) ->
-      request = createDeleteRequest({user_id: '20', _id: container._id })
+      request = createDeleteRequest({user_id: '20', _id: container._id})
 
       ASQ(utils.configureServer(routes))
         .then(utils.makeRequest(request))
@@ -58,7 +58,7 @@ describe 'ContainersDeleteTest', ->
 
   it 'should not allow deletion of already deleted containers', (done) ->
     ASQ(utils.createContainer({deleted_at: new Date()})).val (container) ->
-      request = createDeleteRequest({user_id: '20', _id: container._id })
+      request = createDeleteRequest({user_id: '20', _id: container._id})
 
       ASQ(utils.configureServer(routes))
         .then(utils.makeRequest(request))

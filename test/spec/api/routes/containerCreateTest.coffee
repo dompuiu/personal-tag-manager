@@ -40,19 +40,20 @@ describe 'ContainersCreateTest', ->
         expect(response.statusCode).to.equal(409)
         done()
 
-  it 'should allow creation of containers with names of deleted containers', (done) ->
-    callback = utils.createContainer({
-      name: 'some unexisting name',
-      user_id: '10',
-      deleted_at: new Date()
-    })
+  it 'should allow creation of containers with names of deleted containers',
+    (done) ->
+      callback = utils.createContainer({
+        name: 'some unexisting name',
+        user_id: '10',
+        deleted_at: new Date()
+      })
 
-    ASQ(callback).val (container) ->
-      request = createContainerRequest(container)
-      ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(200)
-          done()
+      ASQ(callback).val (container) ->
+        request = createContainerRequest(container)
+        ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
+          .val (server, response) ->
+            expect(response.statusCode).to.equal(200)
+            done()
 
   before (done) ->
     utils.emptyColection(Container, done)

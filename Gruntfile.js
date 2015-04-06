@@ -58,7 +58,7 @@ module.exports = function (grunt) {
           '<%= yeoman.test %>/**/*.{coffee,litcoffee,coffee.md}',
           '<%= yeoman.app %>/**/*.{coffee,litcoffee,coffee.md}'
         ],
-        tasks: ['coffeelint:app', 'mochaTest:app']
+        tasks: ['coffeelint', 'mochaTest:app']
       }
     },
 
