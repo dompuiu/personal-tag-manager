@@ -60,5 +60,7 @@ module.exports = {
 
     (done) ->
       c = new Container(data)
-      c.save((err, container) -> done(container))
+      c.save((err, container) ->
+        done.fail(err) if err
+        done(container))
 }
