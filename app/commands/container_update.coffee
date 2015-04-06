@@ -21,7 +21,7 @@ class UpdateContainerCommand
 
     Joi.assert(
       @data.name,
-      Joi.string().required().regex(/^[A-Za-z0-9 -]+$/).min(5)
+      Joi.string().required().regex(/^[A-Za-z0-9 -\.]+$/).min(5)
     )
 
     @server = Server.get()

@@ -41,7 +41,7 @@ class ContainerUpdate
       payload: {
         id: Joi.string().required()
           .description('Container id').example('55217ae69aa4cb095dc12650')
-        name: Joi.string().required().regex(/^[A-Za-z0-9 -]+$/)
+        name: Joi.string().required().regex(/^[A-Za-z0-9 -\.]+$/)
           .min(5).description('Container name').example('some name')
       }
     }
