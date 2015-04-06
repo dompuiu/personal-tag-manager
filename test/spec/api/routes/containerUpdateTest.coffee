@@ -98,6 +98,21 @@ describe 'ContainersUpdateTest', ->
         )
       )
 
+  it 'should allow updating only containers they own', (done) ->
+    ASQ(utils.createContainer()).val((container) ->
+      request = createUpdateRequest({
+        user_id: '20'
+        name: 'some updated name'
+        _id: container._id
+      })
+
+      ASQ(utils.configureServer(routes))
+      .then(utils.makeRequest(request))
+      .val((server, response) ->
+        expect(response.statusCode).to.equal(401)
+        done()
+      )
+    )
   before((done) ->
     d = require('../../../utils')
 

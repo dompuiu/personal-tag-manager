@@ -39,7 +39,10 @@ class UpdateContainerCommand
     catch
       done.fail(Boom.badRequest('Wrong Id Format'))
 
-    Container.findOne(id, (err, container) ->
+    Container.findOne({
+      _id: id,
+      deleted_at: {$exists: false}
+    }, (err, container) ->
       if err
         server.log(['error', 'database'], err)
         done.fail(Boom.badImplementation('Database error'))
@@ -58,6 +61,8 @@ class UpdateContainerCommand
 
   tryToUpdate: (done, container) ->
     container.name = @data.name
+    container.updated_at = new Date()
+
     container.save((err, container) ->
       if (err)
         console.log(err)
