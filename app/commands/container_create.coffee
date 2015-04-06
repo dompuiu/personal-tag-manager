@@ -33,10 +33,10 @@ class CreateContainerCommand
       Container.count(data, (err, count) ->
         if err
           @server.log(['error', 'database'], err)
-          done.fail(Boom.badImplementation('Database error'))
+          return done.fail(Boom.badImplementation('Database error'))
 
         if count > 0
-          done.fail(
+          return done.fail(
             Boom.conflict('A container with the same name already exists')
           )
 
@@ -45,9 +45,11 @@ class CreateContainerCommand
 
   tryToSave: (done, container) ->
     container.save((err, container) ->
-      if (err)
+      if err
         @server.log(['error', 'database'], err)
-        done.fail(Boom.badImplementation('Cannot save container to database'))
+        return done.fail(
+          Boom.badImplementation('Cannot save container to database')
+        )
 
       done(container)
     )

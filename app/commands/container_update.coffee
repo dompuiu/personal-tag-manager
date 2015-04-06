@@ -37,7 +37,7 @@ class UpdateContainerCommand
     try
       id = new ObjectId(@data.id)
     catch
-      done.fail(Boom.badRequest('Wrong Id Format'))
+      return done.fail(Boom.badRequest('Wrong Id Format'))
 
     Container.findOne({
       _id: id,
@@ -45,17 +45,19 @@ class UpdateContainerCommand
     }, (err, container) ->
       if err
         server.log(['error', 'database'], err)
-        done.fail(Boom.badImplementation('Database error'))
+        return done.fail(Boom.badImplementation('Database error'))
 
       if !container
-        done.fail(Boom.notFound('Container not found'))
+        return done.fail(Boom.notFound('Container not found'))
 
       done(container)
     )
 
   checkUserId: (done, container) ->
     if container.user_id != @data.user_id
-      done.fail(Boom.unauthorized('Not authorized to delete this container'))
+      return done.fail(
+        Boom.unauthorized('Not authorized to delete this container')
+      )
 
     done(container)
 
@@ -64,10 +66,9 @@ class UpdateContainerCommand
     container.updated_at = new Date()
 
     container.save((err, container) ->
-      if (err)
-        console.log(err)
+      if err
         server.log(['error', 'database'], err)
-        done.fail(Boom.badImplementation('Database error'))
+        return done.fail(Boom.badImplementation('Database error'))
 
       done(container)
     )
