@@ -10,7 +10,7 @@ describe 'ContainersCreateTest', ->
 
   createContainerRequest = (container) ->
     options = {
-      method: 'PUT'
+      method: 'POST'
       url: '/containers/'
       headers: {'Content-Type': 'application/json'}
       payload: {name: container.name}

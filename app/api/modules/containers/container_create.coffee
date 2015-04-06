@@ -7,7 +7,7 @@ CreateContainerCommand = require('../../../commands/container_create')
 class ContainerCreate
   route: ->
     {
-      method: 'PUT'
+      method: 'POST'
       path:'/containers/'
       config: @config()
       handler: @handler

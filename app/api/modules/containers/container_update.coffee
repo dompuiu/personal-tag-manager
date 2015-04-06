@@ -7,8 +7,8 @@ UpdateContainerCommand = require('../../../commands/container_update')
 class ContainerUpdate
   route: ->
     {
-      method: 'POST'
-      path:'/containers/'
+      method: 'PUT'
+      path:'/containers/{id}/'
       config: @config()
       handler: @handler
     }
@@ -39,15 +39,18 @@ class ContainerUpdate
   validate: ->
     {
       payload: {
-        id: Joi.string().required()
-          .description('Container id').example('55217ae69aa4cb095dc12650')
         name: Joi.string().required().regex(/^[A-Za-z0-9 -\.]+$/)
           .min(5).description('Container name').example('some name')
+      },
+      params: {
+        id: Joi.string().required()
+          .description('Container id').example('55217ae69aa4cb095dc12650')
       }
     }
 
   handler: (request, reply) ->
-    data = _.pick(request.payload, 'id', 'name')
+    data = _.pick(request.payload, 'name')
+    data.id = request.params.id
     data.user_id = request.auth.credentials.id
 
     c = new UpdateContainerCommand(data)

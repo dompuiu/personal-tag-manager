@@ -8,7 +8,7 @@ class ContainerDelete
   route: ->
     {
       method: 'DELETE'
-      path:'/containers/'
+      path:'/containers/{id}/'
       config: @config()
       handler: @handler
     }
@@ -38,15 +38,17 @@ class ContainerDelete
 
   validate: ->
     {
-      payload: {
+      params: {
         id: Joi.string().required()
           .description('Container id').example('55217ae69aa4cb095dc12650')
       }
     }
 
   handler: (request, reply) ->
-    data = _.pick(request.payload, 'id')
-    data.user_id = request.auth.credentials.id
+    data = {
+      id: request.params.id
+      user_id: request.auth.credentials.id
+    }
 
     c = new DeleteContainerCommand(data)
     c.run(reply)

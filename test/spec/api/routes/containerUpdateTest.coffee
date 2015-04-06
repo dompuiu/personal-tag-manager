@@ -10,10 +10,10 @@ describe 'ContainersUpdateTest', ->
 
   createUpdateRequest = (container) ->
     options = {
-      method: 'POST'
-      url: '/containers/'
+      method: 'PUT'
+      url: "/containers/#{container._id}/"
       headers: {'Content-Type': 'application/json'}
-      payload: {id: container._id, name: container.name}
+      payload: {name: container.name}
       credentials: {name: 'user name', id: container.user_id}
     }
 

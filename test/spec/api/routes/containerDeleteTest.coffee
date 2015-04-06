@@ -10,9 +10,8 @@ describe 'ContainersDeleteTest', ->
   createDeleteRequest = (container) ->
     options = {
       method: 'DELETE'
-      url: '/containers/'
+      url: "/containers/#{container._id}/"
       headers: {'Content-Type': 'application/json'}
-      payload: {id: container._id}
       credentials: {name: 'user name', id: container.user_id}
     }
 
