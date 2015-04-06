@@ -36,7 +36,10 @@ class DeleteContainerCommand
     catch
       done.fail(Boom.badRequest('Wrong Id Format'))
 
-    Container.findOne(id, (err, container) ->
+    Container.findOne({
+      _id: id,
+      deleted_at: {$exists: false}
+    }, (err, container) ->
       if err
         server.log(['error', 'database'], err)
         done.fail(Boom.badImplementation('Database error'))

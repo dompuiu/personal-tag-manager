@@ -94,6 +94,21 @@ describe 'ContainersDeleteTest', ->
         )
       )
 
+  it 'should not allow deletion of already deleted containers', (done) ->
+    ASQ(utils.createContainer({deleted_at: new Date()}))
+      .val((container) ->
+        ASQ(configureServer)
+        .then(makeRequest(createDeleteRequest(
+          {
+            user_id: '20',
+            _id: container._id
+          }
+        )))
+        .val((server, response) ->
+          expect(response.statusCode).to.equal(404)
+          done()
+        )
+      )
   before((done) ->
     d = require('../../../utils')
 
