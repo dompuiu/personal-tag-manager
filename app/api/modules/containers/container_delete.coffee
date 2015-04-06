@@ -8,7 +8,7 @@ class ContainerDelete
   route: ->
     {
       method: 'DELETE'
-      path:'/v1/containers/'
+      path:'/containers/'
       config: @config()
       handler: @handler
     }
@@ -22,10 +22,10 @@ class ContainerDelete
       plugins: {
         'hapi-swagger': {
           responseMessages: [
-            {code: 200, message: 'OK'},
-            {code: 400, message: 'Bad Request'},
-            {code: 401, message: 'Unauthorized'},
-            {code: 404, message: 'Not found'},
+            {code: 200, message: 'OK'}
+            {code: 400, message: 'Bad Request'}
+            {code: 401, message: 'Unauthorized'}
+            {code: 404, message: 'Not found'}
             {code: 500, message: 'Internal Server Error'}
           ]
         }

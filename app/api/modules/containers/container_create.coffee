@@ -8,7 +8,7 @@ class ContainerCreate
   route: ->
     {
       method: 'PUT'
-      path:'/v1/containers/'
+      path:'/containers/'
       config: @config()
       handler: @handler
     }
@@ -22,9 +22,9 @@ class ContainerCreate
       plugins: {
         'hapi-swagger': {
           responseMessages: [
-            {code: 200, message: 'OK'},
-            {code: 400, message: 'Bad Request'},
-            {code: 409, message: 'Conflict'},
+            {code: 200, message: 'OK'}
+            {code: 400, message: 'Bad Request'}
+            {code: 409, message: 'Conflict'}
             {code: 500, message: 'Internal Server Error'}
           ]
         }
