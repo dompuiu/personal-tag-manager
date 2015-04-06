@@ -17,7 +17,7 @@ class ContainerUpdate
     {
       auth: 'simple'
       description: 'Update an existing container'
-      notes: 'Returns the updated container'
+      notes: 'Returns the updated container object'
       tags: ['api']
       plugins: {
         'hapi-swagger': {
