@@ -40,7 +40,7 @@ module.exports = function (grunt) {
             DB_SUFFIX: '_prod',
             PORT: '8000'
           },
-          cwd: '<%= yeoman.dist %>/api',
+          cwd: '<%= yeoman.dist %>/app/api',
           ignore: ['node_modules/**'],
           delay: 1000,
         }
@@ -141,7 +141,7 @@ module.exports = function (grunt) {
             'level': 'error'
           },
           'no_implicit_braces': {
-            'level': 'error'
+            'level': 'warn'
           },
           'no_interpolation_in_single_quotes': {
             'level': 'error'
@@ -179,7 +179,16 @@ module.exports = function (grunt) {
           expand: true,
           cwd: '<%= yeoman.app %>',
           src: '**/*.coffee',
-          dest: '<%= yeoman.dist %>',
+          dest: '<%= yeoman.dist %>/app',
+          ext: '.js'
+        }]
+      },
+      test: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.test %>',
+          src: '**/*.coffee',
+          dest: '<%= yeoman.dist %>/test',
           ext: '.js'
         }]
       }
@@ -218,13 +227,24 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('default', 'Compile then start a connect web server', function (target) {
+  grunt.registerTask('build', 'Build all coffeescript files to js', function (target) {
     grunt.task.run([
       'clean:dist',
       'coffeelint:app',
       'coffeelint:test',
       'coffee:app',
-      'watch:app'
+      'coffee:test'
+    ]);
+  });
+
+  grunt.registerTask('test', 'Run tests whilde developing code', function (target) {
+    grunt.task.run([
+      'clean:dist',
+      'coffeelint:app',
+      'coffeelint:test',
+      'coffee:app',
+      'coffee:test',
+      'watch:test'
     ]);
   });
 
@@ -234,6 +254,7 @@ module.exports = function (grunt) {
       'coffeelint:app',
       'coffeelint:test',
       'coffee:app',
+      'coffee:test',
       'concurrent:app'
     ]);
   });
