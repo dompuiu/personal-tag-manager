@@ -9,7 +9,6 @@
     "hapi-swagger": "^0.7.1",
     "joi": "^6.1.0",
     "lodash": "^3.6.0",
-    "mockery": "^1.4.0",
     "mongoose": "^4.0.1"
   },
   "repository": {},
