@@ -46,8 +46,5 @@ Server = {
 
 ASQ(Database.openConnection.bind(Database))
   .then(Server.start.bind(Server))
-  .or((err) ->
-    console.log(err)
-  )
 
 module.exports = Server
