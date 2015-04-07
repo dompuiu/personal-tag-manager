@@ -14,6 +14,14 @@ class UpdateContainerCommand
       Joi.string().required()
     )
 
+    r = '^(?!:\/\/)([a-zA-Z0-9]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,6}?$'
+    domain_regexp = new RegExp(r, 'i')
+
+    Joi.assert(
+      @data.domain,
+      Joi.string().regex(domain_regexp)
+    )
+
     Joi.assert(
       @data.user_id,
       Joi.string().required()
@@ -21,7 +29,7 @@ class UpdateContainerCommand
 
     Joi.assert(
       @data.name,
-      Joi.string().required().regex(/^[A-Za-z0-9 -\.]+$/).min(5)
+      Joi.string().regex(/^[A-Za-z0-9 -\.]+$/).min(5)
     )
 
     @server = Server.get()
@@ -62,7 +70,8 @@ class UpdateContainerCommand
     done(container)
 
   tryToUpdate: (done, container) ->
-    container.name = @data.name
+    container.name = @data.name if @data.name
+    container.domain = @data.domain if @data.domain
     container.updated_at = new Date()
 
     container.save((err, container) ->

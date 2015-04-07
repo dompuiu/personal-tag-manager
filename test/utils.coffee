@@ -54,6 +54,7 @@ module.exports = {
   createContainer: (container = {}) ->
     data = _.merge({
       name: faker.name.findName()
+      domain: faker.internet.domainName()
       user_id: faker.helpers.randomNumber(10)
       storage_namespace: faker.lorem.sentence()
     }, container)

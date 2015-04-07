@@ -13,7 +13,7 @@ describe 'ContainersCreateTest', ->
       method: 'POST'
       url: '/containers/'
       headers: {'Content-Type': 'application/json'}
-      payload: {name: container.name}
+      payload: {name: container.name, domain: 'somedomain.com'}
       credentials: {name: 'user name', id: container.user_id}
     }
 
@@ -43,8 +43,8 @@ describe 'ContainersCreateTest', ->
   it 'should allow creation of containers with names of deleted containers',
     (done) ->
       callback = utils.createContainer({
-        name: 'some unexisting name',
-        user_id: '10',
+        name: 'some unexisting name'
+        user_id: '10'
         deleted_at: new Date()
       })
 

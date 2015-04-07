@@ -9,15 +9,19 @@ describe 'ContainersUpdateTest', ->
   utils = require('../../../utils')
 
   createUpdateRequest = (container) ->
+    payload = {}
+    payload.name = container.name if container.name
+    payload.domain = container.domain if container.domain
+
     options = {
       method: 'PUT'
       url: "/containers/#{container._id}/"
       headers: {'Content-Type': 'application/json'}
-      payload: {name: container.name}
+      payload: payload
       credentials: {name: 'user name', id: container.user_id}
     }
 
-  it 'should update a container', (done) ->
+  it 'should update the container name', (done) ->
     callback = utils.createContainer()
     ASQ(callback).val (container) ->
       request = createUpdateRequest({
@@ -32,6 +36,24 @@ describe 'ContainersUpdateTest', ->
           expect(response.statusCode).to.equal(200)
           Container.findOne({_id: container._id}, (err, container) ->
             expect(container.name).to.equal('some updated name')
+            done()
+          )
+
+  it 'should update the container domain', (done) ->
+    callback = utils.createContainer()
+    ASQ(callback).val (container) ->
+      request = createUpdateRequest({
+        _id: container._id
+        domain: 'someupdateddomain.com'
+        user_id: container.user_id
+      })
+
+      ASQ(utils.configureServer(routes))
+        .then(utils.makeRequest(request))
+        .val (server, response) ->
+          expect(response.statusCode).to.equal(200)
+          Container.findOne({_id: container._id}, (err, container) ->
+            expect(container.domain).to.equal('someupdateddomain.com')
             done()
           )
 

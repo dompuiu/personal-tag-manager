@@ -4,6 +4,7 @@ bcrypt = require('bcrypt')
 
 ContainerSchema = new mongoose.Schema({
   name: {type: String, required: true},
+  domain: {type: String, required: true},
   storage_namespace: {type: String, unique: true},
   user_id: {type: String, required: true},
   created_at: {type: Date, default: Date.now, required: true},
@@ -20,7 +21,7 @@ ContainerSchema.methods.generateStorageNamespace = ->
 ContainerSchema.methods.toSwaggerFormat = ->
   container = this
 
-  data = _.pick(container, ['name', 'storage_namespace', 'user_id'])
+  data = _.pick(container, ['name', 'domain', 'storage_namespace', 'user_id'])
 
   data.id = container._id.toString()
   data.created_at = container.created_at.toISOString()

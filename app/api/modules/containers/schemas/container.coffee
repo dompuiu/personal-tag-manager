@@ -3,6 +3,7 @@ Joi = require('joi')
 ContainerSchema = Joi.object({
   id: Joi.string().required().description('Container ID')
   name: Joi.string().required().description('Container name')
+  domain: Joi.string().required().description('Domain name')
   storage_namespace:
     Joi.string().required().description('Storage folder name')
   user_id: Joi.string().required().description('User ID (owner)')
