@@ -1,12 +1,24 @@
-# testapp
-
-This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
-version 0.11.1.
+# Personal Tag Manager
+Project for my bachlor's degree.
 
 ## Build & development
 
-Run `grunt` for building and `grunt serve` for preview.
+Run `grunt serve` for preview.
 
 ## Testing
 
-Running `grunt test` will run the unit tests with karma.
+Running `grunt test` will run the unit tests with mocha.
+
+## Code coverage
+
+Running `grunt mochaTest:coverage` will export the code coverage result in the `coverage.html` file.
+
+For running with istanbul you can execute
+
+`npm install istanbul`
+`./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./dist/test/ --recursive`
+
+For switching mocha with vows you can run
+`grunt build && ./node_modules/istanbul/lib/cli.js cover ./node_modules/vows/bin/vows -- -R spec ./dist/test/`
+
+
