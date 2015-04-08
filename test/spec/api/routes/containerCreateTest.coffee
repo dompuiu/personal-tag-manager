@@ -6,9 +6,16 @@ describe 'ContainersCreateTest', ->
   faker = require('faker')
   routes = require('../../../../app/api/routes/containers')
   Container = require('../../../../app/models/container')
+  Version = require('../../../../app/models/version')
   utils = require('../../../utils')
 
+  mongoose = require('mongoose')
+  ObjectId = mongoose.Types.ObjectId
+
   createContainerRequest = (container) ->
+    if !container.user_id
+      container.user_id = faker.helpers.randomNumber(10).toString()
+
     options = {
       method: 'POST'
       url: '/containers/'
@@ -18,7 +25,7 @@ describe 'ContainersCreateTest', ->
     }
 
   it 'should create a container', (done) ->
-    request = createContainerRequest({name: 'some name', user_id: '10'})
+    request = createContainerRequest({name: 'some name'})
     ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
       .val (server, response) ->
         result = response.result
@@ -54,6 +61,32 @@ describe 'ContainersCreateTest', ->
           .val (server, response) ->
             expect(response.statusCode).to.equal(200)
             done()
+
+  describe 'after a container is created', ->
+    before (done) ->
+      utils.emptyColection(Version, done)
+
+    getInitialVersion = (done, server, response) ->
+      container = response.result
+      Version.find {container_id: new ObjectId(container.id)},
+        (err, versions) ->
+          done(container, versions)
+
+    it 'should create an editinng version', (done) ->
+      request = createContainerRequest({name: 'some name'})
+      ASQ(utils.configureServer(routes))
+        .then(utils.makeRequest(request))
+        .then(getInitialVersion)
+        .val (container, versions) ->
+          version = versions[0]
+          expect(versions.length).to.equal(1)
+
+          expect(version.version_id).to.equal(1)
+          expect(version.user_id).to.equal(container.user_id)
+          expect(version.status).to.equal('now editing')
+          expect(version.created_at).to.exists
+
+          done()
 
   beforeEach (done) ->
     utils.emptyColection(Container, done)

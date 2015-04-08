@@ -34,10 +34,9 @@ describe 'ContainersUpdateTest', ->
         .then(utils.makeRequest(request))
         .val (server, response) ->
           expect(response.statusCode).to.equal(200)
-          Container.findOne({_id: container._id}, (err, container) ->
+          Container.findOne {_id: container._id}, (err, container) ->
             expect(container.name).to.equal('some updated name')
             done()
-          )
 
   it 'should update the container domain', (done) ->
     callback = utils.createContainer()

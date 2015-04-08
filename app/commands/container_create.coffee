@@ -1,6 +1,7 @@
 Joi = require('joi')
 Boom = require('boom')
 Container = require('../models/container')
+CreateVersionCommand = require('../commands/version_create')
 ASQ = require('asynquence')
 Server = require('../api/server')
 
@@ -29,6 +30,7 @@ class CreateContainerCommand
 
     ASQ(@checkNameIsUnique(c, @data))
       .then(@tryToSave.bind(this))
+      .then(@tryToCreateInitialVersion.bind(this))
       .val((container) -> done(container.toSwaggerFormat()))
       .or((err) -> done(err))
 
@@ -59,5 +61,18 @@ class CreateContainerCommand
       done(container)
     )
 
+  tryToCreateInitialVersion: (done, container) ->
+    c = new CreateVersionCommand({
+      container_id: container._id
+      user_id: container.user_id
+      status: 'now editing'
+    })
+
+    c.run((version) ->
+      if version.isBoom
+        done.fail(version)
+      else
+        done(container)
+    )
 
 module.exports = CreateContainerCommand
