@@ -20,7 +20,7 @@ describe 'ContainersCreateTest', ->
       method: 'POST'
       url: '/containers/'
       headers: {'Content-Type': 'application/json'}
-      payload: {name: container.name, domain: 'somedomain.com'}
+      payload: {name: container.name, domain: faker.internet.domainName()}
       credentials: {name: 'user name', id: container.user_id}
     }
 
@@ -81,7 +81,7 @@ describe 'ContainersCreateTest', ->
           version = versions[0]
           expect(versions.length).to.equal(1)
 
-          expect(version.version_id).to.equal(1)
+          expect(version.version_number).to.equal(1)
           expect(version.user_id).to.equal(container.user_id)
           expect(version.status).to.equal('now editing')
           expect(version.created_at).to.exists
