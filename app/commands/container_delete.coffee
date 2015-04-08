@@ -39,9 +39,9 @@ class DeleteContainerCommand
     Container.findOne({
       _id: id,
       deleted_at: {$exists: false}
-    }, (err, container) ->
+    }, (err, container) =>
       if err
-        server.log(['error', 'database'], err)
+        @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
 
       if !container
@@ -60,10 +60,9 @@ class DeleteContainerCommand
 
   tryToDelete: (done, container) ->
     container.deleted_at = new Date()
-    container.save((err, container) ->
+    container.save((err, container) =>
       if err
-        console.log(err)
-        server.log(['error', 'database'], err)
+        @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
 
       done(container)

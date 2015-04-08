@@ -35,7 +35,7 @@ class CreateContainerCommand
   checkNameIsUnique: (container, data) ->
     (done) ->
       data.deleted_at = {$exists: false}
-      Container.count(data, (err, count) ->
+      Container.count(data, (err, count) =>
         if err
           @server.log(['error', 'database'], err)
           return done.fail(Boom.badImplementation('Database error'))
@@ -49,7 +49,7 @@ class CreateContainerCommand
       )
 
   tryToSave: (done, container) ->
-    container.save((err, container) ->
+    container.save((err, container) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(

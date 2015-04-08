@@ -24,7 +24,7 @@ class ContainersListCommand
 
   tryToGetList: (done) ->
     data = {user_id: @data.user_id, deleted_at: {$exists: false}}
-    Container.find(data, (err, list) ->
+    Container.find(data, (err, list) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Cannot connect to database'))

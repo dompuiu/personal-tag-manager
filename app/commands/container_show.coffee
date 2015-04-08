@@ -36,9 +36,9 @@ class ShowContainerCommand
     Container.findOne({
       _id: id,
       deleted_at: {$exists: false}
-    }, (err, container) ->
+    }, (err, container) =>
       if err
-        server.log(['error', 'database'], err)
+        @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
 
       if !container
