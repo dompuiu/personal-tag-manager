@@ -32,7 +32,7 @@ Server = {
     host = process.env.HOST || 'localhost'
     port = process.env.PORT || 8000
 
-    server = new Hapi.Server()
+    server = new Hapi.Server({debug: {request: ['error']}})
     server.connection({
       host: host
       port: port
