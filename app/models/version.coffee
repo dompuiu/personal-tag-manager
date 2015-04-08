@@ -3,7 +3,7 @@ _ = require('lodash')
 bcrypt = require('bcrypt')
 
 VersionSchema = new mongoose.Schema({
-  version_id: {type: Number, required: true},
+  version_number: {type: Number, required: true},
   container_id: {type: mongoose.Schema.ObjectId, required: true},
   user_id: {type: String, required: true},
   status: {type: String},
@@ -11,7 +11,7 @@ VersionSchema = new mongoose.Schema({
   published_at: {type: Date}
 })
 
-VersionSchema.statics.generateNewVersionId = (container_id, done) ->
+VersionSchema.statics.generateNewVersionNumber = (container_id, done) ->
   Version.count({container_id: container_id}, (err, count) ->
     if err && done.fail
       done.fail(err)

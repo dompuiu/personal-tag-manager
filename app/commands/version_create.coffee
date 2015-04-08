@@ -31,12 +31,12 @@ class CreateVersionCommand
       .or((err) -> done(err))
 
   generateNewVersionId: (done) =>
-    Version.generateNewVersionId(@data.container_id, done)
+    Version.generateNewVersionNumber(@data.container_id, done)
 
 
-  tryToSave: (done, version_id) =>
+  tryToSave: (done, version_number) =>
     v = new Version(@data)
-    v.version_id = version_id
+    v.version_number = version_number
 
     v.save((err, version) =>
       if err
