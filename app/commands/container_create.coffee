@@ -11,13 +11,9 @@ class CreateContainerCommand
       Joi.string().required().regex(/^[A-Za-z0-9 -]+$/).min(5)
     )
 
-    r = '^(?!:\/\/)([a-zA-Z0-9]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,6}?$'
-    domain_regexp = new RegExp(r, 'i')
-
     Joi.assert(
       @data.domain,
-      Joi.string().required()
-        .regex(domain_regexp)
+      Joi.string().hostname().required()
     )
 
     Joi.assert(

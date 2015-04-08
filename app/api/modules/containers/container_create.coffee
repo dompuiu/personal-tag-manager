@@ -36,16 +36,12 @@ class ContainerCreate
     }
 
   validate: ->
-    r = '^(?!:\/\/)([a-zA-Z0-9]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,6}?$'
-    domain_regexp = new RegExp(r, 'i')
-
     {
       payload: {
         name: Joi.string().required().regex(/^[A-Za-z0-9 -]+$/)
           .min(5).description('Container name').example('some name')
 
-        domain: Joi.string().required()
-          .regex(domain_regexp)
+        domain: Joi.string().hostname().required()
           .description('Domain name').example('www.google.com')
       }
     }

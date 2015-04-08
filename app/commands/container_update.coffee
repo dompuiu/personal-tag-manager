@@ -14,12 +14,9 @@ class UpdateContainerCommand
       Joi.string().required()
     )
 
-    r = '^(?!:\/\/)([a-zA-Z0-9]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,6}?$'
-    domain_regexp = new RegExp(r, 'i')
-
     Joi.assert(
       @data.domain,
-      Joi.string().regex(domain_regexp)
+      Joi.string().hostname()
     )
 
     Joi.assert(
