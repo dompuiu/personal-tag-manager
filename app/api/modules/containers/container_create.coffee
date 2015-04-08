@@ -1,8 +1,10 @@
 _ = require('lodash')
 Joi = require('joi')
+ASQ = require('asynquence')
 Server = require('../../server')
 ContainerSchema = require('./schemas/container')
 CreateContainerCommand = require('../../../commands/container_create')
+CreateVersionCommand = require('../../../commands/version_create')
 
 class ContainerCreate
   route: ->
@@ -46,11 +48,42 @@ class ContainerCreate
       }
     }
 
-  handler: (request, reply) ->
-    data = _.pick(request.payload, 'name', 'domain')
-    data.user_id = request.auth.credentials.id
+  handler: (request, reply) =>
+    ASQ({request: request})
+      .then(@createContainer)
+      .then(@createInitialVersion)
+      .val((storage) -> reply(storage.container.toSwaggerFormat()))
+      .or((err) -> reply(err))
+
+  createContainer: (done, storage) =>
+    data = _.pick(storage.request.payload, 'name', 'domain')
+    data.user_id = storage.request.auth.credentials.id
 
     c = new CreateContainerCommand(data)
-    c.run(reply)
+    c.run(@onContainerCreate(done, storage))
+
+  onContainerCreate: (done, storage) ->
+    (err, container) ->
+      if (err)
+        done.fail(err)
+      else
+        storage.container = container
+        done(storage)
+
+  createInitialVersion: (done, storage) =>
+    c = new CreateVersionCommand({
+      container_id: storage.container._id
+      user_id: storage.container.user_id
+      status: 'now editing'
+    })
+    c.run(@onVersionCreate(done, storage))
+
+  onVersionCreate: (done, storage) ->
+    (err, version) ->
+      if (err)
+        done.fail(err)
+      else
+        storage.version = version
+        done(storage)
 
 module.exports = ContainerCreate

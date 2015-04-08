@@ -13,12 +13,10 @@ VersionSchema = new mongoose.Schema({
 
 VersionSchema.statics.generateNewVersionNumber = (container_id, done) ->
   Version.count({container_id: container_id}, (err, count) ->
-    if err && done.fail
-      done.fail(err)
-    else if err
-      done(err)
+    if err
+      done(err, null)
     else
-      done(count + 1)
+      done(null, count + 1)
   )
 
 Version = mongoose.model('Version', VersionSchema)

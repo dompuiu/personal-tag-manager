@@ -25,28 +25,41 @@ class CreateVersionCommand
     @server = Server.get()
 
   run: (done) ->
-    ASQ(@generateNewVersionId)
+    ASQ({data: @data})
+      .then(@generateNewVersionId)
       .then(@tryToSave)
-      .val((version) -> done(version))
-      .or((err) -> done(err))
+      .val((version) -> done(null, version))
+      .or((err) -> done(err, null))
 
-  generateNewVersionId: (done) =>
-    Version.generateNewVersionNumber(@data.container_id, done)
+  generateNewVersionId: (done, storage) =>
+    Version.generateNewVersionNumber(
+      storage.data.container_id,
+      @onGeneratedVersionNumber(done, storage)
+    )
 
+  onGeneratedVersionNumber: (done, storage) ->
+    (err, version_number) ->
+      if err
+        done.fail(err)
+      else
+        storage.version_number = version_number
+        done(storage)
 
-  tryToSave: (done, version_number) =>
+  tryToSave: (done, storage) =>
     v = new Version(@data)
-    v.version_number = version_number
+    v.version_number = storage.version_number
 
-    v.save((err, version) =>
+    v.save(@onSave(done, storage))
+
+  onSave: (done, storage) ->
+    (err, version) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(
           Boom.badImplementation('Cannot save version to database')
         )
 
-      done(version)
-    )
-
+      storage.version = version
+      done(storage)
 
 module.exports = CreateVersionCommand

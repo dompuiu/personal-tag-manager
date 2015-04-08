@@ -25,54 +25,48 @@ class CreateContainerCommand
     @server = Server.get()
 
   run: (done) ->
-    c = new Container(@data)
+    ASQ({data: @data})
+      .then(@checkNameIsUnique)
+      .then(@createAndSaveContainer)
+      .val((storage) -> done(null, storage.container))
+      .or((err) -> done(err, null))
+
+  checkNameIsUnique: (done, storage) =>
+    data = {
+      name: storage.data.name
+      user_id: storage.data.user_id
+      deleted_at: {$exists: false}
+    }
+    Container.count(data, @onCount(done, storage))
+
+  onCount: (done, storage) ->
+    (err, count) =>
+      if err
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
+
+      if count > 0
+        return done.fail(
+          Boom.conflict('A container with the same name already exists')
+        )
+
+      done(storage)
+
+  createAndSaveContainer: (done, storage) =>
+    c = new Container(storage.data)
     c.generateStorageNamespace()
 
-    ASQ(@checkNameIsUnique(c, @data))
-      .then(@tryToSave.bind(this))
-      .then(@tryToCreateInitialVersion.bind(this))
-      .val((container) -> done(container.toSwaggerFormat()))
-      .or((err) -> done(err))
+    c.save(@onSave(done, storage))
 
-  checkNameIsUnique: (container, data) ->
-    (done) ->
-      data.deleted_at = {$exists: false}
-      Container.count(data, (err, count) =>
-        if err
-          @server.log(['error', 'database'], err)
-          return done.fail(Boom.badImplementation('Database error'))
-
-        if count > 0
-          return done.fail(
-            Boom.conflict('A container with the same name already exists')
-          )
-
-        done(container)
-      )
-
-  tryToSave: (done, container) ->
-    container.save((err, container) =>
+  onSave: (done, storage) ->
+    (err, container) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(
           Boom.badImplementation('Cannot save container to database')
         )
 
-      done(container)
-    )
-
-  tryToCreateInitialVersion: (done, container) ->
-    c = new CreateVersionCommand({
-      container_id: container._id
-      user_id: container.user_id
-      status: 'now editing'
-    })
-
-    c.run((version) ->
-      if version.isBoom
-        done.fail(version)
-      else
-        done(container)
-    )
+      storage.container = container
+      done(storage)
 
 module.exports = CreateContainerCommand
