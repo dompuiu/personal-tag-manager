@@ -22,7 +22,7 @@ class CreateVersionCommand
       Joi.string().valid('published', 'now editing', 'archived').required()
     )
 
-    @server = Server.get()
+    Server.get((server) => @server = server)
 
   run: (done) ->
     ASQ({data: @data})

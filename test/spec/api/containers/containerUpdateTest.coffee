@@ -21,55 +21,70 @@ describe 'ContainersUpdateTest', ->
       credentials: {name: 'user name', id: container.user_id}
     }
 
-  it 'should update the container name', (done) ->
-    callback = utils.createContainer()
-    ASQ(callback).val (container) ->
-      request = createUpdateRequest({
-        _id: container._id
-        name: 'some updated name'
-        user_id: container.user_id
-      })
-
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(200)
-          Container.findOne {_id: container._id}, (err, container) ->
-            expect(container.name).to.equal('some updated name')
-            done()
-
   it 'should update the container domain', (done) ->
-    callback = utils.createContainer()
-    ASQ(callback).val (container) ->
-      request = createUpdateRequest({
-        _id: container._id
-        domain: 'someupdateddomain.com'
-        user_id: container.user_id
-      })
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createUpdateRequest({
+          _id: storage.container._id
+          domain: 'someupdateddomain.com'
+          user_id: storage.container.user_id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
 
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(200)
-          Container.findOne({_id: container._id}, (err, container) ->
-            expect(container.domain).to.equal('someupdateddomain.com')
-            done()
-          )
+        expect(response.statusCode).to.equal(200)
+        Container.findOne {_id: storage.container._id}, (err, container) ->
+          expect(container.domain).to.equal('someupdateddomain.com')
+          done()
+      .or((err) -> console.error(err))
+
+  it 'should update the container name', (done) ->
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createUpdateRequest({
+          _id: storage.container._id
+          name: 'some updated name'
+          user_id: storage.container.user_id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
+        expect(response.statusCode).to.equal(200)
+        Container.findOne {_id: storage.container._id}, (err, container) ->
+          expect(container.name).to.equal('some updated name')
+          done()
+      .or((err) -> console.error(err))
 
   it 'should refresh updated_at field on any update', (done) ->
-    callback = utils.createContainer({updated_at: new Date('2013-01-01')})
-    ASQ(callback).val (container) ->
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(createUpdateRequest(container)))
-        .val (server, response) ->
-          Container.findOne(container._id, (err, container) ->
-            updated_at = container.updated_at
-            now = new Date()
+    ASQ({routes: routes})
+      .then(utils.createContainer({updated_at: new Date('2013-01-01')}))
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createUpdateRequest(storage.container)
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
 
-            expect(updated_at.getYear()).to.equal(now.getYear())
-            expect(updated_at.getMonth()).to.equal(now.getMonth())
-            done()
-          )
+        Container.findOne storage.container._id, (err, container) ->
+          updated_at = container.updated_at
+          now = new Date()
+
+          expect(updated_at.getYear()).to.equal(now.getYear())
+          expect(updated_at.getMonth()).to.equal(now.getMonth())
+          done()
+      .or((err) -> console.error(err))
 
   it 'should not accept un invalid object id', (done) ->
     request = createUpdateRequest({
@@ -78,9 +93,11 @@ describe 'ContainersUpdateTest', ->
       _id: '111'
     })
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
         expect(response.statusCode).to.equal(400)
         done()
 
@@ -91,41 +108,55 @@ describe 'ContainersUpdateTest', ->
       _id: '00219cdb4fd2759a0b228099'
     })
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
         expect(response.statusCode).to.equal(404)
         done()
+      .or((err) -> console.error(err))
 
   it 'should not update an deleted container', (done) ->
-    callback = utils.createContainer({deleted_at: new Date('2013-01-01')})
+    ASQ({routes: routes})
+      .then(utils.createContainer({deleted_at: new Date('2013-01-01')}))
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createUpdateRequest({
+          user_id: storage.container.user_id
+          name: 'some updated name'
+          _id: storage.container._id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
 
-    ASQ(callback).val (container) ->
-      request = createUpdateRequest({
-        user_id: container.user_id
-        name: 'some updated name'
-        _id: container._id
-      })
-
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(404)
-          done()
+        expect(response.statusCode).to.equal(404)
+        done()
+      .or((err) -> console.error(err))
 
   it 'should allow updating only containers they own', (done) ->
-    ASQ(utils.createContainer()).val (container) ->
-      request = createUpdateRequest({
-        user_id: '20'
-        name: 'some updated name'
-        _id: container._id
-      })
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createUpdateRequest({
+          user_id: '20'
+          name: 'some updated name'
+          _id: storage.container._id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
 
-      ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
         expect(response.statusCode).to.equal(401)
         done()
+      .or((err) -> console.error(err))
 
   beforeEach (done) ->
     utils.emptyColection(Container, done)

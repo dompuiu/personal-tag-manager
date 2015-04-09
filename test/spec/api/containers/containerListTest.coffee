@@ -17,48 +17,66 @@ describe 'ContainersListTest', ->
     }
 
   it 'should list containers', (done) ->
-    callback = utils.createContainer()
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = listContainerRequest(storage.container.user_id)
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        result = response.result
 
-    ASQ(callback).val (container) ->
-      request = listContainerRequest(container.user_id)
-      ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
-        .val (server, response) ->
-          result = response.result
-
-          expect(result.items[0].name).to.equal(container.name)
-          expect(result.count).to.equal(1)
-          expect(response.statusCode).to.equal(200)
-          done()
+        expect(result.items[0].name).to.equal(storage.container.name)
+        expect(result.count).to.equal(1)
+        expect(response.statusCode).to.equal(200)
+        done()
+      .or((err) -> console.error(err))
 
   it 'should list only owned containers', (done) ->
-    callback_1 = utils.createContainer({user_id: '10'})
-    callback_2 = utils.createContainer({user_id: '11'})
+    ASQ({routes: routes})
+      .then(utils.createContainer({user_id: '10'}, 'container1'))
+      .then(utils.createContainer({user_id: '11'}, 'container2'))
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = listContainerRequest(storage.container1.user_id)
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        result = response.result
 
-    ASQ().all(callback_1, callback_2).val (container1, container2) ->
-      request = listContainerRequest(container1.user_id)
-      ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
-        .val (server, response) ->
-          result = response.result
-
-          expect(result.items[0].name).to.equal(container1.name)
-          expect(result.count).to.equal(1)
-          expect(response.statusCode).to.equal(200)
-          done()
+        expect(result.items[0].name).to.equal(storage.container1.name)
+        expect(result.count).to.equal(1)
+        expect(response.statusCode).to.equal(200)
+        done()
+      .or((err) -> console.error(err))
 
   it 'should not list deleted containers', (done) ->
-    callback_1 = utils.createContainer({user_id: '11', deleted_at: new Date()})
-    callback_2 = utils.createContainer({user_id: '11'})
+    ASQ({routes: routes})
+      .then(utils.createContainer({
+        user_id: '11',
+        deleted_at: new Date()
+      }, 'container1'))
+      .then(utils.createContainer({user_id: '11'}, 'container2'))
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = listContainerRequest(storage.container2.user_id)
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        result = response.result
 
-    ASQ().all(callback_1, callback_2).val (container1, container2) ->
-      request = listContainerRequest(container2.user_id)
-      ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
-        .val (server, response) ->
-          result = response.result
-
-          expect(result.items[0].name).to.equal(container2.name)
-          expect(result.count).to.equal(1)
-          expect(response.statusCode).to.equal(200)
-          done()
+        expect(result.items[0].name).to.equal(storage.container2.name)
+        expect(result.count).to.equal(1)
+        expect(response.statusCode).to.equal(200)
+        done()
+      .or((err) -> console.error(err))
 
   beforeEach (done) ->
     utils.emptyColection(Container, done)

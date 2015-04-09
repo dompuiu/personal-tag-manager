@@ -17,30 +17,35 @@ describe 'ContainersShowTest', ->
     }
 
   it 'should show a container', (done) ->
-    callback = utils.createContainer()
-    ASQ(callback).val (container) ->
-      request = createShowRequest(container)
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createShowRequest(storage.container)
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        result = response.result
 
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          result = response.result
-
-          expect(result.name).to.equal(container.name)
-          expect(response.statusCode).to.equal(200)
-          done()
+        expect(result.name).to.equal(storage.container.name)
+        expect(response.statusCode).to.equal(200)
+        done()
+      .or((err) -> console.error(err))
 
   it 'should not accept un invalid object id', (done) ->
-    request = createShowRequest({
-      user_id: '10'
-      _id: '111'
-    })
+    request = createShowRequest({user_id: '10', _id: '111'})
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
         expect(response.statusCode).to.equal(400)
         done()
+      .or((err) -> console.error(err))
 
   it 'should not show an unexisting container', (done) ->
     request = createShowRequest({
@@ -48,39 +53,55 @@ describe 'ContainersShowTest', ->
       _id: '111111111111111111111111'
     })
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
         expect(response.statusCode).to.equal(404)
         done()
+      .or((err) -> console.error(err))
 
   it 'should not show an deleted container', (done) ->
-    callback = utils.createContainer({deleted_at: new Date('2013-01-01')})
+    ASQ({routes: routes})
+      .then(utils.createContainer({deleted_at: new Date('2013-01-01')}))
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createShowRequest({
+          user_id: storage.container.user_id
+          _id: storage.container._id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        result = response.result
 
-    ASQ(callback).val (container) ->
-      request = createShowRequest({
-        user_id: container.user_id
-        _id: container._id
-      })
-
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(404)
-          done()
+        expect(response.statusCode).to.equal(404)
+        done()
+      .or((err) -> console.error(err))
 
   it 'should show only containers they own', (done) ->
-    ASQ(utils.createContainer()).val (container) ->
-      request = createShowRequest({
-        user_id: '20'
-        _id: container._id
-      })
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createShowRequest({
+          user_id: '20'
+          _id: storage.container._id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        result = response.result
 
-      ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
         expect(response.statusCode).to.equal(401)
         done()
+      .or((err) -> console.error(err))
 
   beforeEach (done) ->
     utils.emptyColection(Container, done)

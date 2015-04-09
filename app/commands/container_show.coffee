@@ -19,7 +19,7 @@ class ShowContainerCommand
       Joi.string().required()
     )
 
-    @server = Server.get()
+    Server.get((server) => @server = server)
 
   run: (done) ->
     ASQ(@findById.bind(this))

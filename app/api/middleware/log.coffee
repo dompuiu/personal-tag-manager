@@ -1,14 +1,18 @@
+Good = require('good')
 ASQ = require('asynquence')
 
-registerHapiSwagger = (done, storage) ->
+registerLog = (done, storage) ->
   config = {
-    register: require('hapi-swagger'),
+    register: Good,
     options: {
-      apiVersion: '1.0'
-      info: {
-        title: 'Personal Tag Manager API'
-        description: 'API pentru lucrarea de licenta'
-      }
+      reporters: [{
+        reporter: require('good-console'),
+        events: {
+          error: '*',
+          request: '*',
+          log: 'error'
+        }
+      }]
     }
   }
 
@@ -17,17 +21,17 @@ registerHapiSwagger = (done, storage) ->
 onRegister = (done, storage) ->
   (err) ->
     if err
-      storage.server.log(['error'], 'hapi-swagger load error: ' + err)
+      storage.server.log(['error'], 'log load error: ' + err)
       done.fail(err)
     else
-      storage.server.log(['start'], 'hapi-swagger interface loaded')
+      storage.server.log(['start'], 'log interface loaded')
       done(storage)
 
 
 module.exports = {
   register: (done, storage) ->
     ASQ({server: storage.server})
-      .then(registerHapiSwagger)
+      .then(registerLog)
       .val((storage) -> done(storage))
       .or((err) -> done.fail(err))
 }

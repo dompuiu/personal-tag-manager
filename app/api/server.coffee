@@ -8,43 +8,64 @@ Database = require('../database/connection')
 Server = {
   server: null
 
-  start: (done) ->
-    server = @get()
-    @bindRoutes(server)
+  build: (done) ->
+    ASQ({})
+      .then(@create.bind(this))
+      .val((storage) -> done(storage.server))
+      .or((err) -> done(err))
 
-    if !module.parent
-      server.start()
+  init: (done) ->
+    return if module.parent
 
-  get: ->
-    server = @server or @create()
-    return server
+    ASQ({})
+      .then(@get.bind(this))
+      .then(@bindRoutes.bind(this))
+      .then(@start.bind(this))
+      .val((storage) -> done(storage.server))
+      .or((err) -> done(err))
 
-  bindRoutes: (server) ->
+  get: (done, storage) ->
+    if @server
+      return done(@server)
+
+    @create(done, storage)
+
+  bindRoutes: (done, storage) ->
     fs.readdirSync(__dirname + '/routes').forEach((file) ->
       if !/(\.js|\.coffee)$/.test(file)
         return
 
       name = file.substr(0, file.indexOf('.'))
-      server.route(require(__dirname + '/routes/' + name))
+      storage.server.route(require(__dirname + '/routes/' + name))
     )
+    done(storage)
 
-  create: ->
+  start: (done, storage) ->
+    storage.server.start()
+    done(storage)
+
+  create: (done, storage) ->
     host = process.env.HOST || 'localhost'
     port = process.env.PORT || 8000
 
-    server = new Hapi.Server({debug: {request: ['error']}})
+    server = new Hapi.Server()
     server.connection({
       host: host
       port: port
     })
 
-    require('./middleware/auth').register(server)
-    require('./middleware/swagger')(server)
-
-    return server
+    ASQ({server: server})
+      .then(require('./middleware/log').register)
+      .then(require('./middleware/auth').register)
+      .then(require('./middleware/swagger').register)
+      .val((inner_storage) =>
+        storage.server = @server = server
+        done(storage)
+      )
+      .or((err) -> done.fail(err))
 }
 
 ASQ(Database.openConnection.bind(Database))
-  .then(Server.start.bind(Server))
+  .then(Server.init.bind(Server))
 
 module.exports = Server

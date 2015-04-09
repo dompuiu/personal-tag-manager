@@ -16,54 +16,89 @@ describe 'ContainersDeleteTest', ->
     }
 
   it 'should delete a container', (done) ->
-    ASQ(utils.createContainer()).val (container) ->
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(createDeleteRequest(container)))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(200)
-          Container.findOne({_id: container._id}, (err, container) ->
-            expect(container.deleted_at).to.exist
-            done()
-          )
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createDeleteRequest(storage.container)
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+        container = storage.container
+
+        expect(response.statusCode).to.equal(200)
+        Container.findOne({_id: container._id}, (err, container) ->
+          expect(container.deleted_at).to.exist
+          done()
+        )
+      .or((err) -> console.error(err))
 
   it 'should not accept un invalid object id', (done) ->
     request = createDeleteRequest({user_id: '10', _id: '111'})
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
         expect(response.statusCode).to.equal(400)
         done()
+      .or((err) -> console.error(err))
 
   it 'should not delete an unexisting container', (done) ->
     request =
       createDeleteRequest({user_id: '10', _id: '00219cdb4fd2759a0b228099'})
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
         expect(response.statusCode).to.equal(404)
         done()
+      .or((err) -> console.error(err))
 
   it 'should allow deleting only containers they own', (done) ->
-    ASQ(utils.createContainer()).val (container) ->
-      request = createDeleteRequest({user_id: '20', _id: container._id})
+    ASQ({routes: routes})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createDeleteRequest({
+          user_id: '20',
+          _id: storage.container._id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
 
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(401)
-          done()
+        expect(response.statusCode).to.equal(401)
+        done()
+      .or((err) -> console.error(err))
 
   it 'should not allow deletion of already deleted containers', (done) ->
-    ASQ(utils.createContainer({deleted_at: new Date()})).val (container) ->
-      request = createDeleteRequest({user_id: '20', _id: container._id})
+    ASQ({routes: routes})
+      .then(utils.createContainer({deleted_at: new Date()}))
+      .then(utils.configureServer)
+      .then((done, storage) ->
+        storage.request = createDeleteRequest({
+          user_id: '20',
+          _id: storage.container._id
+        })
+        done(storage)
+      )
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
 
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
-        .val (server, response) ->
-          expect(response.statusCode).to.equal(404)
-          done()
+        expect(response.statusCode).to.equal(404)
+        done()
+      .or((err) -> console.error(err))
 
   beforeEach (done) ->
     utils.emptyColection(Container, done)

@@ -22,7 +22,7 @@ class CreateContainerCommand
       Joi.string().required()
     )
 
-    @server = Server.get()
+    Server.get((server) => @server = server)
 
   run: (done) ->
     ASQ({data: @data})

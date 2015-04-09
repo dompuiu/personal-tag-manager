@@ -29,14 +29,14 @@ class UpdateContainerCommand
       Joi.string().regex(/^[A-Za-z0-9 -\.]+$/).min(5)
     )
 
-    @server = Server.get()
+    Server.get((server) => @server = server)
 
   run: (done) ->
     ASQ(@findById.bind(this))
       .then(@checkUserId.bind(this))
       .then(@tryToUpdate.bind(this))
-      .val((container) -> done(container.toSwaggerFormat()))
-      .or((err) -> done(err))
+      .val((container) -> done(null, container.toSwaggerFormat()))
+      .or((err) -> done(err, null))
 
   findById: (done) ->
     try

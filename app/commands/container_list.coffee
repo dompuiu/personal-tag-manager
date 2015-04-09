@@ -11,33 +11,35 @@ class ContainersListCommand
       Joi.string().required()
     )
 
-    @server = Server.get()
+    Server.get((server) => @server = server)
 
   run: (done) ->
     c = new Container(@data)
     c.generateStorageNamespace()
 
-    ASQ(@tryToGetList.bind(this))
-      .then(@buildLightList.bind(this))
-      .val((list) -> done(list))
-      .or((err) -> done(err))
+    ASQ({data: @data})
+      .then(@tryToGetList)
+      .then(@buildLightList)
+      .val((storage) -> done(null, storage.light_list))
+      .or((err) -> done(err, null))
 
-  tryToGetList: (done) ->
-    data = {user_id: @data.user_id, deleted_at: {$exists: false}}
+  tryToGetList: (done, storage) =>
+    data = {user_id: storage.data.user_id, deleted_at: {$exists: false}}
     Container.find(data, (err, list) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Cannot connect to database'))
 
-      done(list)
+      storage.list = list
+      done(storage)
     )
 
-  buildLightList: (done, list) ->
+  buildLightList: (done, storage) ->
     result = {
       items: [],
-      count: list.length
+      count: storage.list.length
     }
-    list.forEach((item) ->
+    storage.list.forEach((item) ->
       s = item.toSwaggerFormat()
 
       result.items.push({
@@ -46,6 +48,7 @@ class ContainersListCommand
       })
     )
 
-    done(result)
+    storage.light_list = result
+    done(storage)
 
 module.exports = ContainersListCommand

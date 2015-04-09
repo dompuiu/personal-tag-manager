@@ -26,8 +26,12 @@ describe 'ContainersCreateTest', ->
 
   it 'should create a container', (done) ->
     request = createContainerRequest({name: 'some name'})
-    ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
         result = response.result
 
         expect(response.statusCode).to.equal(200)
@@ -36,57 +40,75 @@ describe 'ContainersCreateTest', ->
         expect(result.user_id).to.not.be.empty
 
         done()
+      .or((err) -> console.error(err))
 
   it 'should allow creation of containers with unique names', (done) ->
     request = createContainerRequest({name: 'some new name', user_id: '10'})
 
-    ASQ(utils.configureServer(routes))
-      .then(utils.makeRequest(request))
-      .then(utils.makeRequest(request))
-      .val (server, response) ->
+    ASQ({routes: routes, request: request})
+      .then(utils.createContainer())
+      .then(utils.configureServer)
+      .then(utils.makeRequest)
+      .then(utils.makeRequest)
+      .val (storage) ->
+        response = storage.response
+
         expect(response.statusCode).to.equal(409)
         done()
+      .or((err) -> console.error(err))
 
   it 'should allow creation of containers with names of deleted containers',
     (done) ->
-      callback = utils.createContainer({
+      container_data = {
         name: 'some unexisting name'
         user_id: '10'
         deleted_at: new Date()
-      })
-
-      ASQ(callback).val (container) ->
-        request = createContainerRequest(container)
-        ASQ(utils.configureServer(routes)).then(utils.makeRequest(request))
-          .val (server, response) ->
-            expect(response.statusCode).to.equal(200)
-            done()
+      }
+      ASQ({routes: routes})
+        .then(utils.createContainer(container_data))
+        .then(utils.configureServer)
+        .then((done, storage) ->
+          storage.request = createContainerRequest(storage.container)
+          done(storage)
+        )
+        .then(utils.makeRequest)
+        .val (storage) ->
+          response = storage.response
+          expect(response.statusCode).to.equal(200)
+          done()
+        .or((err) -> console.error(err))
 
   describe 'after a container is created', ->
     before (done) ->
       utils.emptyColection(Version, done)
 
-    getInitialVersion = (done, server, response) ->
-      container = response.result
+    getInitialVersion = (done, storage) ->
+      container = storage.response.result
       Version.find {container_id: new ObjectId(container.id)},
         (err, versions) ->
-          done(container, versions)
+          storage.versions = versions
+          done(storage)
 
     it 'should create an editinng version', (done) ->
       request = createContainerRequest({name: 'some name'})
-      ASQ(utils.configureServer(routes))
-        .then(utils.makeRequest(request))
+
+      ASQ({routes: routes, request: request})
+        .then(utils.configureServer)
+        .then(utils.makeRequest)
         .then(getInitialVersion)
-        .val (container, versions) ->
+        .val (storage) ->
+          response = storage.response
+          versions = storage.versions
+
           version = versions[0]
           expect(versions.length).to.equal(1)
-
           expect(version.version_number).to.equal(1)
-          expect(version.user_id).to.equal(container.user_id)
+          expect(version.user_id).to.equal(storage.response.result.user_id)
           expect(version.status).to.equal('now editing')
           expect(version.created_at).to.exists
 
           done()
+        .or((err) -> console.error(err))
 
   beforeEach (done) ->
     utils.emptyColection(Container, done)
