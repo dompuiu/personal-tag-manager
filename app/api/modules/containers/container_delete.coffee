@@ -50,7 +50,6 @@ class ContainerDelete
       user_id: request.auth.credentials.id
     }
 
-    c = new DeleteContainerCommand(data)
-    c.run(reply)
+    new DeleteContainerCommand(data).run(reply)
 
 module.exports = ContainerDelete

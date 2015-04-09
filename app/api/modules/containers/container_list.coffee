@@ -34,7 +34,6 @@ class ContainersList
 
   handler: (request, reply) ->
     data = {user_id: request.auth.credentials.id}
-    c = new ContainersListCommand(data)
-    c.run(reply)
+    new ContainersListCommand(data).run(reply)
 
 module.exports = ContainersList

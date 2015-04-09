@@ -56,7 +56,6 @@ class ContainerUpdate
     data.id = request.params.id
     data.user_id = request.auth.credentials.id
 
-    c = new UpdateContainerCommand(data)
-    c.run(reply)
+    new UpdateContainerCommand(data).run(reply)
 
 module.exports = ContainerUpdate

@@ -50,7 +50,6 @@ class ContainerShow
       user_id: request.auth.credentials.id
     }
 
-    c = new ShowContainerCommand(data)
-    c.run(reply)
+    new ShowContainerCommand(data).run(reply)
 
 module.exports = ContainerShow
