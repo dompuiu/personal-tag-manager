@@ -72,6 +72,12 @@ module.exports = {
       done(storage)
     )
 
+  configureServerAndMakeRequest: (done, storage) ->
+    ASQ(storage)
+      .then(module.exports.configureServer)
+      .then(module.exports.makeRequest)
+      .val((storage) -> done(storage))
+
   createContainer: (data = {}, storage_name = 'container') ->
     data = _.merge({
       name: faker.name.findName()

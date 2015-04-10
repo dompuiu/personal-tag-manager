@@ -28,8 +28,7 @@ describe 'ContainersCreateTest', ->
     request = createContainerRequest({name: 'some name'})
     ASQ({routes: routes, request: request})
       .then(utils.createContainer())
-      .then(utils.configureServer)
-      .then(utils.makeRequest)
+      .then(utils.configureServerAndMakeRequest)
       .val (storage) ->
         response = storage.response
         result = response.result
@@ -47,9 +46,8 @@ describe 'ContainersCreateTest', ->
 
     ASQ({routes: routes, request: request})
       .then(utils.createContainer())
-      .then(utils.configureServer)
-      .then(utils.makeRequest)
-      .then(utils.makeRequest)
+      .then(utils.configureServerAndMakeRequest)
+      .then(utils.makeRequest) # Try to create the same container
       .val (storage) ->
         response = storage.response
 
@@ -66,12 +64,11 @@ describe 'ContainersCreateTest', ->
       }
       ASQ({routes: routes})
         .then(utils.createContainer(container_data))
-        .then(utils.configureServer)
         .then((done, storage) ->
           storage.request = createContainerRequest(storage.container)
           done(storage)
         )
-        .then(utils.makeRequest)
+        .then(utils.configureServerAndMakeRequest)
         .val (storage) ->
           response = storage.response
           expect(response.statusCode).to.equal(200)
@@ -93,8 +90,7 @@ describe 'ContainersCreateTest', ->
       request = createContainerRequest({name: 'some name'})
 
       ASQ({routes: routes, request: request})
-        .then(utils.configureServer)
-        .then(utils.makeRequest)
+        .then(utils.configureServerAndMakeRequest)
         .then(getInitialVersion)
         .val (storage) ->
           response = storage.response
