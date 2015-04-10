@@ -22,10 +22,11 @@ class DeleteContainerCommand
     Server.get((server) => @server = server)
 
   run: (done) ->
-    ASQ(@findById)
+    ASQ({data: @data})
+      .then(@findById)
       .then(@checkUserId)
       .then(@tryToDelete)
-      .val((container) ->
+      .val((storage) ->
         done(
           null,
           {result: true, message: 'Container was successfully deleted'}
@@ -33,12 +34,14 @@ class DeleteContainerCommand
       )
       .or((err) -> done(err, null))
 
-  findById: (done) =>
-    Container.findOne({
-      _id: @data.id,
-      deleted_at: {$exists: false}
-    }, (err, container) =>
+  findById: (done, storage) =>
+    Container.findOne(
+      {_id: storage.data.id, deleted_at: {$exists: false}},
+      @onFind(done, storage)
+    )
 
+  onFind: (done, storage) =>
+    (err, container) =>
       if err
         @server.log(['error', 'database'], err)
         if err.name == 'CastError' && err.kind = 'ObjectId'
@@ -49,25 +52,27 @@ class DeleteContainerCommand
       if !container
         return done.fail(Boom.notFound('Container not found'))
 
-      done(container)
-    )
+      storage.container = container
+      done(storage)
 
-  checkUserId: (done, container) =>
-    if container.user_id != @data.user_id
+  checkUserId: (done, storage) ->
+    if storage.container.user_id != storage.data.user_id
       return done.fail(
         Boom.unauthorized('Not authorized to delete this container')
       )
 
-    done(container)
+    done(storage)
 
-  tryToDelete: (done, container) ->
-    container.deleted_at = new Date()
-    container.save((err, container) =>
+  tryToDelete: (done, storage) =>
+    storage.container.deleted_at = new Date()
+    storage.container.save(@onDelete(done, storage))
+
+  onDelete: (done, storage) =>
+    (err, container) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
 
-      done(container)
-    )
+      done(storage)
 
 module.exports = DeleteContainerCommand

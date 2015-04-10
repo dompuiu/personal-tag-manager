@@ -32,22 +32,26 @@ class UpdateContainerCommand
     Server.get((server) => @server = server)
 
   run: (done) ->
-    ASQ(@findById.bind(this))
-      .then(@checkUserId.bind(this))
-      .then(@tryToUpdate.bind(this))
-      .val((container) -> done(null, container.toSwaggerFormat()))
+    ASQ({data: @data})
+      .then(@findById)
+      .then(@checkUserId)
+      .then(@tryToUpdate)
+      .val((storage) -> done(null, storage.container.toSwaggerFormat()))
       .or((err) -> done(err, null))
 
-  findById: (done) ->
+  findById: (done, storage) =>
     try
-      id = new ObjectId(@data.id)
+      id = new ObjectId(storage.data.id)
     catch
       return done.fail(Boom.badRequest('Wrong Id Format'))
 
-    Container.findOne({
-      _id: id,
-      deleted_at: {$exists: false}
-    }, (err, container) =>
+    Container.findOne(
+      {_id: id, deleted_at: {$exists: false}},
+      @onFind(done, storage)
+    )
+
+  onFind: (done, storage) =>
+    (err, container) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
@@ -55,28 +59,30 @@ class UpdateContainerCommand
       if !container
         return done.fail(Boom.notFound('Container not found'))
 
-      done(container)
-    )
+      storage.container = container
+      done(storage)
 
-  checkUserId: (done, container) ->
-    if container.user_id != @data.user_id
+  checkUserId: (done, storage) ->
+    if storage.container.user_id != storage.data.user_id
       return done.fail(
         Boom.unauthorized('Not authorized to delete this container')
       )
 
-    done(container)
+    done(storage)
 
-  tryToUpdate: (done, container) ->
-    container.name = @data.name if @data.name
-    container.domain = @data.domain if @data.domain
-    container.updated_at = new Date()
+  tryToUpdate: (done, storage) =>
+    storage.container.name = storage.data.name if storage.data.name
+    storage.container.domain = storage.data.domain if storage.data.domain
+    storage.container.updated_at = new Date()
 
-    container.save((err, container) =>
+    storage.container.save(@onUpdate(done, storage))
+
+  onUpdate: (done, storage) =>
+    (err, container) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
 
-      done(container)
-    )
+      done(storage)
 
 module.exports = UpdateContainerCommand

@@ -25,14 +25,16 @@ class ContainersListCommand
 
   tryToGetList: (done, storage) =>
     data = {user_id: storage.data.user_id, deleted_at: {$exists: false}}
-    Container.find(data, (err, list) =>
+    Container.find(data, @onGetList(done, storage))
+
+  onGetList: (done, storage) =>
+    (err, list) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Cannot connect to database'))
 
       storage.list = list
       done(storage)
-    )
 
   buildLightList: (done, storage) ->
     result = {
