@@ -10,7 +10,7 @@ registerLog = (done, storage) ->
         events: {
           error: '*',
           request: '*',
-          log: 'error'
+          log: '*'
         }
       }]
     }

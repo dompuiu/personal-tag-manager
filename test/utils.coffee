@@ -1,9 +1,11 @@
 Database = require('../app/database/connection')
 ASQ = require('asynquence')
-Container = require('../app/models/container')
-Version = require('../app/models/version')
 _ = require('lodash')
 faker = require('faker')
+
+Container = require('../app/models/container')
+Version = require('../app/models/version')
+Tag = require('../app/models/tag')
 
 class CollectionEmptyer
   constructor: (data, done) ->
@@ -52,7 +54,8 @@ module.exports = {
       storage.server = TestServers.server
 
       unless TestServers.isRouteAdded(storage.routes)
-        server.route(storage.routes)
+        TestServers.server.route(storage.routes)
+        TestServers.routes.push(storage.routes)
 
       return done(storage)
 
@@ -96,18 +99,47 @@ module.exports = {
           done(storage)
       )
 
-  createVersion: (done, container) ->
-    data = {
-      version_number: 1
-      container_id: container._id
-      user_id: container.user_id
-    }
+  createVersion:
+    (data = {}, from_storage = 'container', storage_name = 'version') ->
+      (done, storage) ->
+        data = {
+          version_number: data.version_number || 1
+          container_id: storage[from_storage]._id
+          user_id: storage[from_storage].user_id
+          status: data.status || ''
+        }
 
-    v = new Version(data)
-    v.save((err, version) ->
-      if err
-        done.fail(err)
-      else
-        done(version)
-    )
+        v = new Version(data)
+        v.save((err, version) ->
+          if err
+            done.fail(err)
+          else
+            storage[storage_name] = version
+            done(storage)
+        )
+
+  createTag:
+    (data = {}, from_storage = 'version', storage_name = 'tag') ->
+      (done, storage) ->
+        data = {
+          name: data.name || faker.name.firstName()
+          dom_id: data.dom_id || faker.internet.userName()
+          type: data.type || 'html'
+          src: data.src || '<div>some html code</div>'
+          on_load: data.onload || 'console.log("JS")'
+          container_id: storage[from_storage].container_id
+          version_id: storage[from_storage]._id
+          user_id: storage[from_storage].user_id
+          created_at: data.created_at || new Date()
+          updated_at: data.updated_at || new Date()
+        }
+
+        t = new Tag(data)
+        t.save((err, tag) ->
+          if err
+            done.fail(err)
+          else
+            storage[storage_name] = tag
+            done(storage)
+        )
 }
