@@ -220,7 +220,7 @@ module.exports = function (grunt) {
           captureFile: 'coverage.html',
           quiet: true,
           clearRequireCache: true,
-          require: 'coffee-coverage/register'
+          require: ['coffee-script/register', 'coffee-coverage/register']
         },
         src: ['<%= yeoman.test %>/**/*.coffee']
       }
