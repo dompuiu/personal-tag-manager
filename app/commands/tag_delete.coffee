@@ -38,7 +38,7 @@ class DeleteTagCommand
       .then(@checkObjectIdFormat)
       .then(@checkVersionId)
       .then(@tryToDelete)
-      .val((storage) ->
+      .val(->
         done(
           null,
           {result: true, message: 'Tag was successfully deleted'}

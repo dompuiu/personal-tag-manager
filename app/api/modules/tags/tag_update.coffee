@@ -39,29 +39,29 @@ class TagCreate
   validate: ->
     {
       params: {
-        container_id: Joi.string().required()
+        container_id: Joi.string().required()\
           .description('Container id').example('55217ae69aa4cb095dc12650')
 
-        version_id: Joi.string().required()
+        version_id: Joi.string().required()\
           .description('Version id').example('55217ae69aa4cb095dc12650')
 
-        id: Joi.string().required()
+        id: Joi.string().required()\
           .description('Tag id').example('55217ae69aa4cb095dc12650')
       }
       payload: {
-        name: Joi.string()
+        name: Joi.string()\
           .description('Tag Name').example('Google Analytics Tag')
 
-        dom_id: Joi.string().regex(/^[A-Za-z0-9_\-\.]+$/)
+        dom_id: Joi.string().regex(/^[A-Za-z0-9_\-\.]+$/)\
           .description('Tag ID to be used in DOM').example('mytag')
 
-        type: Joi.string().description('Tag type')
+        type: Joi.string().description('Tag type')\
           .example('html, js, block-script, script')
 
-        src: Joi.string()
+        src: Joi.string()\
           .description('Tag source').example('console.log("a");')
 
-        on_load: Joi.string()
+        on_load: Joi.string()\
           .description('Code to be executed after tag load')
       }
     }

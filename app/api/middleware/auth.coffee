@@ -6,7 +6,7 @@ ASQ = require('asynquence')
 authenticated_user = null
 
 validate = (username, password, callback) ->
-  query = User.findOne({'email': username}).exec((err, user) ->
+  User.findOne({'email': username}).exec((err, user) ->
     return callback(null, false) if err or !user
 
     Bcrypt.compare(password, user.password, (err, isValid) ->

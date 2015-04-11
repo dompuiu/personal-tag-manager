@@ -4,8 +4,6 @@ describe 'ContainersShowTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
   routes = require('../../../../app/api/routes/containers')
-  faker = require('faker')
-  Container = require('../../../../app/models/container')
   utils = require('../../../utils')
 
   createShowRequest = (container) ->
@@ -104,4 +102,5 @@ describe 'ContainersShowTest', ->
       .or((err) -> console.error(err))
 
   beforeEach (done) ->
+    Container = require('../../../../app/models/container')
     utils.emptyColection(Container, done)

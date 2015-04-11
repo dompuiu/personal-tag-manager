@@ -40,10 +40,10 @@ class ContainerCreate
   validate: ->
     {
       payload: {
-        name: Joi.string().required().regex(/^[A-Za-z0-9 -\.]+$/)
+        name: Joi.string().required().regex(/^[A-Za-z0-9 -\.]+$/)\
           .min(5).description('Container name').example('some name')
 
-        domain: Joi.string().hostname().required()
+        domain: Joi.string().hostname().required()\
           .description('Domain name').example('www.google.com')
       }
     }

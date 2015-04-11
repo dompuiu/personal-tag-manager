@@ -39,14 +39,14 @@ class ContainerUpdate
   validate: ->
     {
       payload: {
-        name: Joi.string().regex(/^[A-Za-z0-9 -\.]+$/)
+        name: Joi.string().regex(/^[A-Za-z0-9 -\.]+$/)\
           .min(5).description('Container name').example('some name')
 
-        domain: Joi.string().hostname()
+        domain: Joi.string().hostname()\
           .description('Domain name').example('www.google.com')
       },
       params: {
-        id: Joi.string().required()
+        id: Joi.string().required()\
           .description('Container id').example('55217ae69aa4cb095dc12650')
       }
     }

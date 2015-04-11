@@ -39,13 +39,13 @@ class TagDelete
   validate: ->
     {
       params: {
-        container_id: Joi.string().required()
+        container_id: Joi.string().required()\
           .description('Container id').example('55217ae69aa4cb095dc12650')
 
-        version_id: Joi.string().required()
+        version_id: Joi.string().required()\
           .description('Version id').example('55217ae69aa4cb095dc12650')
 
-        id: Joi.string().required()
+        id: Joi.string().required()\
           .description('Tag id').example('55217ae69aa4cb095dc12650')
       }
     }

@@ -4,7 +4,6 @@ describe 'ContainersUpdateTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
   routes = require('../../../../app/api/routes/containers')
-  faker = require('faker')
   Container = require('../../../../app/models/container')
   utils = require('../../../utils')
 

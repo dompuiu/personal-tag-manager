@@ -81,6 +81,7 @@ class UpdateContainerCommand
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
 
+      storage.container = container
       done(storage)
 
 module.exports = UpdateContainerCommand

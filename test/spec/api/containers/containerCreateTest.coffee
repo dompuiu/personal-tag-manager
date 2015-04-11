@@ -5,7 +5,6 @@ describe 'ContainersCreateTest', ->
   ASQ = require('asynquence')
   faker = require('faker')
   routes = require('../../../../app/api/routes/containers')
-  Container = require('../../../../app/models/container')
   Version = require('../../../../app/models/version')
   utils = require('../../../utils')
 
@@ -107,4 +106,5 @@ describe 'ContainersCreateTest', ->
         .or((err) -> console.error(err))
 
   beforeEach (done) ->
+    Container = require('../../../../app/models/container')
     utils.emptyColection(Container, done)

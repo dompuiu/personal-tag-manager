@@ -3,11 +3,7 @@
 describe 'TagsUpdateTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
-  faker = require('faker')
   routes = require('../../../../app/api/routes/tags')
-  Container = require('../../../../app/models/container')
-  Version = require('../../../../app/models/version')
-  Tag = require('../../../../app/models/tag')
   utils = require('../../../utils')
   _ = require('lodash')
 
@@ -290,6 +286,10 @@ describe 'TagsUpdateTest', ->
 
 
   beforeEach (done) ->
+    Container = require('../../../../app/models/container')
+    Version = require('../../../../app/models/version')
+    Tag = require('../../../../app/models/tag')
+
     ASQ((done) -> utils.emptyColection(Container, done))
       .then((done) -> utils.emptyColection(Version, done))
       .val(-> utils.emptyColection(Tag, done))

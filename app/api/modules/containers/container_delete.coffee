@@ -39,7 +39,7 @@ class ContainerDelete
   validate: ->
     {
       params: {
-        id: Joi.string().required()
+        id: Joi.string().required()\
           .description('Container id').example('55217ae69aa4cb095dc12650')
       }
     }

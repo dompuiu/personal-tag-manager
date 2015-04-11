@@ -26,7 +26,7 @@ class DeleteContainerCommand
       .then(@findById)
       .then(@checkUserId)
       .then(@tryToDelete)
-      .val((storage) ->
+      .val(->
         done(
           null,
           {result: true, message: 'Container was successfully deleted'}
@@ -68,7 +68,7 @@ class DeleteContainerCommand
     storage.container.save(@onDelete(done, storage))
 
   onDelete: (done, storage) =>
-    (err, container) =>
+    (err) =>
       if err
         @server.log(['error', 'database'], err)
         return done.fail(Boom.badImplementation('Database error'))
