@@ -6,6 +6,13 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
+var mountFolder = function (connect, dir) {
+  return connect.static(require('path').resolve(dir));
+};
+
+var webpackDistConfig = require('./webpack.dist.config.js'),
+    webpackDevConfig = require('./webpack.config.js');
+
 module.exports = function (grunt) {
 
   // Load grunt tasks automatically
@@ -17,14 +24,72 @@ module.exports = function (grunt) {
   // Configurable paths for the application
   var appConfig = {
     api_app: 'app/api_app',
+    api_app_port: 8100,
     api_app_test: 'test/spec/api',
     api_app_dist: 'dist/api_app',
+    ui_app: 'app/ui_app',
+    ui_app_port: 8000,
+    ui_app_dist: 'dist/ui_app',
   };
 
   // Define the configuration for all the tasks
   grunt.initConfig({
     // Project settings
     yeoman: appConfig,
+
+    webpack: {
+      options: webpackDistConfig,
+
+      ui_app_dist: {
+        cache: false
+      }
+    },
+
+    'webpack-dev-server': {
+      options: {
+        hot: true,
+        port: '<%= yeoman.ui_app_port %>',
+        webpack: webpackDevConfig,
+        publicPath: '/assets/',
+        contentBase: './<%= yeoman.ui_app %>/',
+      },
+
+      start: {
+        keepAlive: true,
+      }
+    },
+
+    connect: {
+      options: {
+        port: '<%= yeoman.ui_app_port %>'
+      },
+
+      ui_app_dist: {
+        options: {
+          keepalive: true,
+          middleware: function (connect) {
+            return [
+              mountFolder(connect, appConfig.ui_app_dist)
+            ];
+          }
+        }
+      }
+    },
+
+    open: {
+      options: {
+        delay: 500
+      },
+      ui_app_dev: {
+        path: 'http://localhost:<%= connect.options.port %>/webpack-dev-server/'
+      },
+      ui_app_dist: {
+        path: 'http://localhost:<%= connect.options.port %>/'
+      },
+      api_app: {
+        path: 'http://localhost:<%= yeoman.api_app_port %>/documentation'
+      }
+    },
 
     nodemon: {
       api_app: {
@@ -38,7 +103,7 @@ module.exports = function (grunt) {
           },
           env: {
             DB_SUFFIX: '_prod',
-            PORT: '8100'
+            PORT: '<%= yeoman.api_app_port %>'
           },
           cwd: '<%= yeoman.api_app_dist %>/api',
           ignore: ['node_modules/**'],
@@ -67,7 +132,15 @@ module.exports = function (grunt) {
 
     // Empties folders to start fresh
     clean: {
-      api_app_dist: '<%= yeoman.api_app_dist %>'
+      api_app_dist: '<%= yeoman.api_app_dist %>',
+      ui_app_dist: {
+        files: [{
+          dot: true,
+          src: [
+            '<%= yeoman.ui_app_dist %>'
+          ]
+        }]
+      }
     },
 
     coffeelint: {
@@ -185,6 +258,28 @@ module.exports = function (grunt) {
       },
     },
 
+    copy: {
+      ui_app_dist: {
+        files: [
+          // includes files within path
+          {
+            flatten: true,
+            expand: true,
+            src: ['<%= yeoman.ui_app %>/*'],
+            dest: '<%= yeoman.ui_app_dist %>/',
+            filter: 'isFile'
+          },
+          {
+            flatten: true,
+            expand: true,
+            src: ['<%= yeoman.ui_app %>/images/*'],
+            dest: '<%= yeoman.ui_app_dist %>/images/'
+          },
+        ]
+      }
+    },
+
+
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       api_app: {
@@ -195,6 +290,12 @@ module.exports = function (grunt) {
         options: {
           logConcurrentOutput: true
         }
+      },
+      both_apps: {
+        tasks: [
+          'connect:ui_app_dist',
+          'nodemon:api_app'
+        ]
       }
     },
 
@@ -215,37 +316,65 @@ module.exports = function (grunt) {
         },
         src: ['<%= yeoman.api_app_test %>/**/*.coffee']
       }
-    }
+    },
+
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
+    },
   });
 
-  grunt.registerTask('build:api_app', 'Build all coffeescript files to js', function (target) {
-    grunt.task.run([
-      'clean:api_app_dist',
-      'coffeelint:app',
-      //'coffeelint:api_app_test',
-      'coffee:app',
-      //'coffee:test'
-    ]);
-  });
-
-  grunt.registerTask('test:api_app', 'Run tests while developing api app code', function (target) {
-    grunt.task.run([
-      //'clean:api_app_dist',
-      'coffeelint:api_app',
-      'coffeelint:api_app_test',
-      //'coffee:api_app',
-      'mochaTest:api_app',
-      'watch:api_app_test'
-    ]);
-  });
-
-  grunt.registerTask('serve:api_app', 'Compile then start a connect web server', function (target) {
+  grunt.registerTask('build', 'Build all coffeescript files to js', function (target) {
     grunt.task.run([
       'clean:api_app_dist',
       'coffeelint:api_app',
-      'coffeelint:api_app_test',
       'coffee:api_app',
-      'concurrent:api_app'
+      'clean:ui_app_dist',
+      'copy:ui_app_dist',
+      'webpack'
     ]);
   });
+
+  grunt.registerTask('test', 'Run tests while developing app code', function (target) {
+    if (target === 'api_app') {
+      return grunt.task.run([
+        'coffeelint:api_app',
+        'coffeelint:api_app_test',
+        'mochaTest:api_app',
+        'watch:api_app_test'
+      ]);
+    }
+
+    return grunt.task.run(['karma']);
+  });
+
+  grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
+    if (target === 'api_app') {
+      return grunt.task.run([
+        'clean:api_app_dist',
+        'coffeelint:api_app',
+        'coffeelint:api_app_test',
+        'coffee:api_app',
+        'open:api_app',
+        'concurrent:api_app'
+      ]);
+    }
+
+    if (target === 'ui_app') {
+      grunt.task.run([
+        'open:ui_app_dev',
+        'webpack-dev-server'
+      ]);
+    }
+
+    return grunt.task.run([
+      'build',
+      'open:ui_app_dist',
+      'open:api_app',
+      'concurrent:both_apps'
+    ]);
+  });
+
+  grunt.registerTask('default', []);
 };

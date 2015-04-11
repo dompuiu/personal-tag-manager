@@ -39,10 +39,10 @@ module.exports = function (config) {
       },
       resolve: {
         alias: {
-          'styles': path.join(process.cwd(), './src/styles/'),
-          'components': path.join(process.cwd(), './src/scripts/components/'),
-          'stores': '../../../src/scripts/stores/',
-          'actions': '../../../src/scripts/actions/'
+          'styles': path.join(process.cwd(), './app/ui_app/styles/'),
+          'components': path.join(process.cwd(), './app/ui_app/scripts/components/'),
+          'stores': '../../../app/ui_app/scripts/stores/',
+          'actions': '../../../app/ui_app/scripts/actions/'
         }
       }
     },
