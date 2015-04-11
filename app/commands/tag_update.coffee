@@ -64,9 +64,8 @@ class CreateTagCommand
   run: (done) ->
     ASQ({data: @data})
       .then(@checkObjectIdFormat)
-      .then(@checkContainerAndAuthId)
-      .then(@checkVersionId)
       .then(@checkDomIdIsUnique)
+      .then(@checkVersionId)
       .then(@findById)
       .then(@tryToUpdate)
       .val((storage) -> done(null, storage.tag))
@@ -84,32 +83,6 @@ class CreateTagCommand
       return done.fail(Boom.badRequest('Wrong Id Format'))
 
     done(storage)
-
-
-  checkContainerAndAuthId: (done, storage) =>
-    data = {
-      _id: storage.data.container_id
-    }
-
-    Container.findOne(data, @onContainerFind(done, storage))
-
-  onContainerFind: (done, storage) =>
-    (err, container) =>
-      if err
-        @server.log(['error', 'database'], err)
-        return done.fail(Boom.badImplementation('Database error'))
-
-      if !container
-        return done.fail(
-          Boom.notFound('Container not found')
-        )
-
-      if storage.data.user_id != container.user_id
-        return done.fail(
-          Boom.unauthorized('Not authorized to add tags on this container')
-        )
-
-      done(storage)
 
   checkVersionId: (done, storage) =>
     data = {
@@ -161,10 +134,12 @@ class CreateTagCommand
       done(storage)
 
   findById: (done, storage) =>
-    Tag.findOne(
-      {_id: storage.data.id, deleted_at: {$exists: false}},
-      @onFind(done, storage)
-    )
+    Tag.findOne({
+      _id: storage.data.id,
+      container_id: storage.data.container_id,
+      version_id: storage.data.version_id,
+      user_id: storage.data.user_id,
+    }, @onFind(done, storage))
 
   onFind: (done, storage) =>
     (err, tag) =>

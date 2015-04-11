@@ -285,7 +285,7 @@ describe 'TagsUpdateTest', ->
       )
       .then(utils.configureServerAndMakeRequest)
       .val (storage) ->
-        expect(storage.response.statusCode).to.equal(401)
+        expect(storage.response.statusCode).to.equal(409)
         done()
 
 

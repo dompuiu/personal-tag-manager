@@ -17,8 +17,8 @@ class TagCreate
   config: ->
     {
       auth: 'simple'
-      description: 'Create a new tag'
-      notes: 'Returns a tag object'
+      description: 'Update a tag'
+      notes: 'Returns the updated tag object'
       tags: ['api']
       plugins: {
         'hapi-swagger': {
