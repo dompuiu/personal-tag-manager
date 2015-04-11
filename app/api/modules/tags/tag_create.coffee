@@ -49,7 +49,7 @@ class TagCreate
         name: Joi.string().required()
           .description('Tag Name').example('Google Analytics Tag')
 
-        dom_id: Joi.string().required()
+        dom_id: Joi.string().required().regex(/^[A-Za-z0-9_\-\.]+$/)
           .description('Tag ID to be used in DOM').example('mytag')
 
         type: Joi.string().required()

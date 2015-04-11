@@ -32,7 +32,7 @@ class CreateTagCommand
 
     Joi.assert(
       @data.dom_id,
-      Joi.string().required()
+      Joi.string().required().regex(/^[A-Za-z0-9_\-\.]+$/)
     )
 
     Joi.assert(
