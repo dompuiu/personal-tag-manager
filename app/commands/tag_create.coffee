@@ -5,8 +5,6 @@ Container = require('../models/container')
 Version = require('../models/version')
 Tag = require('../models/tag')
 
-CreateVersionCommand = require('../commands/version_create')
-
 mongoose = require('mongoose')
 ObjectId = mongoose.Types.ObjectId
 
@@ -59,14 +57,14 @@ class CreateTagCommand
 
   run: (done) ->
     ASQ({data: @data})
-      .then(@checkContainerId)
+      .then(@checkContainerAndAuthId)
       .then(@checkVersionId)
       .then(@checkDomIdIsUnique)
       .then(@createAndSaveTag)
       .val((storage) -> done(null, storage.tag))
       .or((err) -> done(err, null))
 
-  checkContainerId: (done, storage) =>
+  checkContainerAndAuthId: (done, storage) =>
     data = {
       _id: storage.data.container_id
     }
