@@ -29,21 +29,19 @@ class ShowContainerCommand
       .or((err) -> done(err, null))
 
   findById: (done, storage) =>
-    try
-      id = new ObjectId(storage.data.id)
-    catch
-      return done.fail(Boom.badRequest('Wrong Id Format'))
-
     Container.findOne(
-      {_id: id, deleted_at: {$exists: false}},
+      {_id: storage.data.id, deleted_at: {$exists: false}},
       @onFind(done, storage)
     )
 
   onFind: (done, storage) =>
     (err, container) =>
       if err
-        @server.log(['error', 'database'], err)
-        return done.fail(Boom.badImplementation('Database error'))
+        if err.name == 'CastError' && err.kind = 'ObjectId'
+          return done.fail(Boom.badRequest('Wrong Id Format'))
+        else
+          @server.log(['error', 'database'], err)
+          return done.fail(Boom.badImplementation('Database error'))
 
       if !container
         return done.fail(Boom.notFound('Container not found'))
