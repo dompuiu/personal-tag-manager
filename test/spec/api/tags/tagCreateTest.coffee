@@ -4,8 +4,8 @@ describe 'TagsCreateTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
   faker = require('faker')
-  routes = require('../../../../app/api/routes/tags')
-  utils = require('../../../utils')
+  routes = require('../../../../app/api_app/api/routes/tags')
+  utils = require('../../../helpers/api_utils')
 
   createTagRequest = (data) ->
     options = {
@@ -137,9 +137,9 @@ describe 'TagsCreateTest', ->
 
 
   beforeEach (done) ->
-    Container = require('../../../../app/models/container')
-    Version = require('../../../../app/models/version')
-    Tag = require('../../../../app/models/tag')
+    Container = require('../../../../app/api_app/models/container')
+    Version = require('../../../../app/api_app/models/version')
+    Tag = require('../../../../app/api_app/models/tag')
 
     ASQ((done) -> utils.emptyColection(Container, done))
       .then((done) -> utils.emptyColection(Version, done))

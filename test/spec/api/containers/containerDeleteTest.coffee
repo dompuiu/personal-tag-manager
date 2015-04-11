@@ -3,9 +3,9 @@
 describe 'ContainersDeleteTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
-  routes = require('../../../../app/api/routes/containers')
-  Container = require('../../../../app/models/container')
-  utils = require('../../../utils')
+  routes = require('../../../../app/api_app/api/routes/containers')
+  Container = require('../../../../app/api_app/models/container')
+  utils = require('../../../helpers/api_utils')
 
   createDeleteRequest = (container) ->
     options = {

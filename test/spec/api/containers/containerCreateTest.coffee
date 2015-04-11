@@ -4,9 +4,9 @@ describe 'ContainersCreateTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
   faker = require('faker')
-  routes = require('../../../../app/api/routes/containers')
-  Version = require('../../../../app/models/version')
-  utils = require('../../../utils')
+  routes = require('../../../../app/api_app/api/routes/containers')
+  Version = require('../../../../app/api_app/models/version')
+  utils = require('../../../helpers/api_utils')
 
   mongoose = require('mongoose')
   ObjectId = mongoose.Types.ObjectId
@@ -106,5 +106,5 @@ describe 'ContainersCreateTest', ->
         .or((err) -> console.error(err))
 
   beforeEach (done) ->
-    Container = require('../../../../app/models/container')
+    Container = require('../../../../app/api_app/models/container')
     utils.emptyColection(Container, done)

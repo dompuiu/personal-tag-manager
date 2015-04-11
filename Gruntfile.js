@@ -16,9 +16,9 @@ module.exports = function (grunt) {
 
   // Configurable paths for the application
   var appConfig = {
-    app: require('./bower.json').appPath || 'app',
-    test: 'test',
-    dist: 'dist',
+    api_app: 'app/api_app',
+    api_app_test: 'test/spec/api',
+    api_app_dist: 'dist/api_app',
   };
 
   // Define the configuration for all the tasks
@@ -27,7 +27,7 @@ module.exports = function (grunt) {
     yeoman: appConfig,
 
     nodemon: {
-      api: {
+      api_app: {
         script: 'server.js',
         options: {
           nodeArgs: ['--debug'],
@@ -38,9 +38,9 @@ module.exports = function (grunt) {
           },
           env: {
             DB_SUFFIX: '_prod',
-            PORT: '8000'
+            PORT: '8100'
           },
-          cwd: '<%= yeoman.dist %>/app/api',
+          cwd: '<%= yeoman.api_app_dist %>/api',
           ignore: ['node_modules/**'],
           delay: 1000,
         }
@@ -49,16 +49,16 @@ module.exports = function (grunt) {
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
-      app: {
-        files: ['<%= yeoman.app %>/**/*.{coffee,litcoffee,coffee.md}'],
-        tasks: ['coffeelint:app', 'coffee:app']
+      api_app: {
+        files: ['<%= yeoman.api_app %>/**/*.{coffee,litcoffee,coffee.md}'],
+        tasks: ['coffeelint:api_app', 'coffee:api_app']
       },
-      test: {
+      api_app_test: {
         files: [
-          '<%= yeoman.test %>/**/*.{coffee,litcoffee,coffee.md}',
-          '<%= yeoman.app %>/**/*.{coffee,litcoffee,coffee.md}'
+          '<%= yeoman.api_app_test %>/**/*.{coffee,litcoffee,coffee.md}',
+          '<%= yeoman.api_app %>/**/*.{coffee,litcoffee,coffee.md}'
         ],
-        tasks: ['coffeelint', 'mochaTest:app']
+        tasks: ['coffeelint:api_app', 'coffeelint:api_app_test', 'mochaTest:api_app']
       },
       options: {
         event: ['changed', 'added', 'deleted']
@@ -67,13 +67,13 @@ module.exports = function (grunt) {
 
     // Empties folders to start fresh
     clean: {
-      dist: '<%= yeoman.dist %>'
+      api_app_dist: '<%= yeoman.api_app_dist %>'
     },
 
     coffeelint: {
-      app: {
+      api_app: {
         files: {
-          src: ['<%= yeoman.app %>/**/*.coffee']
+          src: ['<%= yeoman.api_app %>/**/*.coffee']
         },
         options: {
           'arrow_spacing': {
@@ -120,9 +120,9 @@ module.exports = function (grunt) {
           }
         }
       },
-      test: {
+      api_app_test: {
         files: {
-          src: ['<%= yeoman.test %>/**/*.coffee']
+          src: ['<%= yeoman.api_app_test %>/**/*.coffee']
         },
         options: {
           'arrow_spacing': {
@@ -174,32 +174,23 @@ module.exports = function (grunt) {
         sourceMap: true,
         sourceRoot: ''
       },
-      app: {
+      api_app: {
         files: [{
           expand: true,
-          cwd: '<%= yeoman.app %>',
+          cwd: '<%= yeoman.api_app %>',
           src: '**/*.coffee',
-          dest: '<%= yeoman.dist %>/app',
+          dest: '<%= yeoman.api_app_dist %>',
           ext: '.js'
         }]
       },
-      test: {
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.test %>',
-          src: '**/*.coffee',
-          dest: '<%= yeoman.dist %>/test',
-          ext: '.js'
-        }]
-      }
     },
 
     // Run some tasks in parallel to speed up the build process
     concurrent: {
-      app: {
+      api_app: {
         tasks: [
-          'watch:app',
-          'nodemon:api'
+          'watch:api_app',
+          'nodemon:api_app'
         ],
         options: {
           logConcurrentOutput: true
@@ -208,13 +199,13 @@ module.exports = function (grunt) {
     },
 
     mochaTest: {
-      app: {
+      api_app: {
         options: {
           require: 'coffee-script/register'
         },
-        src: ['<%= yeoman.test %>/**/*.coffee']
+        src: ['<%= yeoman.api_app_test %>/**/*.coffee']
       },
-      coverage: {
+      api_app_coverage: {
         options: {
           reporter: 'html-cov',
           captureFile: 'coverage.html',
@@ -222,40 +213,39 @@ module.exports = function (grunt) {
           clearRequireCache: true,
           require: ['coffee-script/register', 'coffee-coverage/register']
         },
-        src: ['<%= yeoman.test %>/**/*.coffee']
+        src: ['<%= yeoman.api_app_test %>/**/*.coffee']
       }
     }
   });
 
-  grunt.registerTask('build', 'Build all coffeescript files to js', function (target) {
+  grunt.registerTask('build:api_app', 'Build all coffeescript files to js', function (target) {
     grunt.task.run([
-      'clean:dist',
+      'clean:api_app_dist',
       'coffeelint:app',
-      'coffeelint:test',
+      //'coffeelint:api_app_test',
       'coffee:app',
-      'coffee:test'
+      //'coffee:test'
     ]);
   });
 
-  grunt.registerTask('test', 'Run tests whilde developing code', function (target) {
+  grunt.registerTask('test:api_app', 'Run tests while developing api app code', function (target) {
     grunt.task.run([
-      'clean:dist',
-      'coffeelint:app',
-      'coffeelint:test',
-      'coffee:app',
-      'coffee:test',
-      'watch:test'
+      //'clean:api_app_dist',
+      'coffeelint:api_app',
+      'coffeelint:api_app_test',
+      //'coffee:api_app',
+      'mochaTest:api_app',
+      'watch:api_app_test'
     ]);
   });
 
-  grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
+  grunt.registerTask('serve:api_app', 'Compile then start a connect web server', function (target) {
     grunt.task.run([
-      'clean:dist',
-      'coffeelint:app',
-      'coffeelint:test',
-      'coffee:app',
-      'coffee:test',
-      'concurrent:app'
+      'clean:api_app_dist',
+      'coffeelint:api_app',
+      'coffeelint:api_app_test',
+      'coffee:api_app',
+      'concurrent:api_app'
     ]);
   });
 };

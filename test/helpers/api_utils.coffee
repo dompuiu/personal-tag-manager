@@ -1,11 +1,11 @@
-Database = require('../app/database/connection')
+Database = require('../../app/api_app/database/connection')
 ASQ = require('asynquence')
 _ = require('lodash')
 faker = require('faker')
 
-Container = require('../app/models/container')
-Version = require('../app/models/version')
-Tag = require('../app/models/tag')
+Container = require('../../app/api_app/models/container')
+Version = require('../../app/api_app/models/version')
+Tag = require('../../app/api_app/models/tag')
 
 class CollectionEmptyer
   constructor: (data, done) ->
@@ -59,7 +59,7 @@ module.exports = {
 
       return done(storage)
 
-    Server = require('../app/api/server')
+    Server = require('../../app/api_app/api/server')
     Server.build (server) ->
       server.route(storage.routes)
       storage.server = server

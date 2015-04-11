@@ -3,8 +3,8 @@
 describe 'TagsListTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
-  routes = require('../../../../app/api/routes/tags')
-  utils = require('../../../utils')
+  routes = require('../../../../app/api_app/api/routes/tags')
+  utils = require('../../../helpers/api_utils')
   _ = require('lodash')
 
   showListRequest = (data) ->
@@ -129,9 +129,9 @@ describe 'TagsListTest', ->
           done()
 
   beforeEach (done) ->
-    Container = require('../../../../app/models/container')
-    Version = require('../../../../app/models/version')
-    Tag = require('../../../../app/models/tag')
+    Container = require('../../../../app/api_app/models/container')
+    Version = require('../../../../app/api_app/models/version')
+    Tag = require('../../../../app/api_app/models/tag')
 
     ASQ((done) -> utils.emptyColection(Container, done))
       .then((done) -> utils.emptyColection(Version, done))

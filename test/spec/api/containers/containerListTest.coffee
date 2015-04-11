@@ -3,8 +3,8 @@
 describe 'ContainersListTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
-  routes = require('../../../../app/api/routes/containers')
-  utils = require('../../../utils')
+  routes = require('../../../../app/api_app/api/routes/containers')
+  utils = require('../../../helpers/api_utils')
 
   listContainerRequest = (user_id) ->
     options = {
@@ -77,5 +77,5 @@ describe 'ContainersListTest', ->
       .or((err) -> console.error(err))
 
   beforeEach (done) ->
-    Container = require('../../../../app/models/container')
+    Container = require('../../../../app/api_app/models/container')
     utils.emptyColection(Container, done)
