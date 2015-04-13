@@ -6,6 +6,7 @@ faker = require('faker')
 Container = require('../../app/api_app/models/container')
 Version = require('../../app/api_app/models/version')
 Tag = require('../../app/api_app/models/tag')
+User = require('../../app/api_app/models/user')
 
 class CollectionEmptyer
   constructor: (data, done) ->
@@ -140,6 +141,23 @@ module.exports = {
             done.fail(err)
           else
             storage[storage_name] = tag
+            done(storage)
+        )
+
+  createUser: (data = {}, storage_name = 'user') ->
+      (done, storage) ->
+        data = _.merge({
+          name: faker.name.findName()
+          email: faker.internet.email()
+          password: User.makePassword(faker.internet.password())
+        }, data)
+
+        u = new User(data)
+        u.save((err, user) ->
+          if err
+            done.fail(err)
+          else
+            storage[storage_name] = user
             done(storage)
         )
 }
