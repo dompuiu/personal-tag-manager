@@ -368,6 +368,14 @@ module.exports = function (grunt) {
       ]);
     }
 
+    if (target === 'ui_app_dist') {
+      grunt.task.run([
+        'build',
+        'open:ui_app_dist',
+        'connect:ui_app_dist'
+      ]);
+    }
+
     return grunt.task.run([
       'build',
       'open:ui_app_dist',
