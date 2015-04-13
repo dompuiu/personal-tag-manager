@@ -23,6 +23,7 @@ module.exports = function (grunt) {
 
   // Configurable paths for the application
   var appConfig = {
+    test: 'test',
     api_app: 'app/api_app',
     api_app_port: 8100,
     api_app_test: 'test/spec/api',
@@ -121,6 +122,7 @@ module.exports = function (grunt) {
       api_app_test: {
         files: [
           '<%= yeoman.api_app_test %>/**/*.{coffee,litcoffee,coffee.md}',
+          '<%= yeoman.test %>/helpers/**/*.{coffee,litcoffee,coffee.md}',
           '<%= yeoman.api_app %>/**/*.{coffee,litcoffee,coffee.md}'
         ],
         tasks: ['coffeelint:api_app', 'coffeelint:api_app_test', 'mochaTest:api_app']
