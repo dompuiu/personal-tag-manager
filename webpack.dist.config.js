@@ -7,6 +7,7 @@
 'use strict';
 
 var webpack = require('webpack');
+var path = require("path");
 
 module.exports = {
 
@@ -18,7 +19,7 @@ module.exports = {
 
   debug: false,
   devtool: false,
-  entry: './app/ui_app/scripts/components/main.js',
+  entry: './app/ui_app/scripts/main.js',
 
   stats: {
     colors: true,
@@ -33,6 +34,10 @@ module.exports = {
   ],
 
   resolve: {
+    root: [
+      path.join(__dirname, "bower_components"),
+      path.join(__dirname, "node_modules")
+    ],
     extensions: ['', '.js'],
     alias: {
       'styles': __dirname + '/app/ui_app/styles',
@@ -45,21 +50,35 @@ module.exports = {
 
   module: {
     preLoaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
+      test: /ui_app\/.*\.js$/,
+      exclude: /node_modules|bower_components/,
       loader: 'jsxhint'
     }],
-
     loaders: [{
       test: /\.js$/,
       exclude: /node_modules/,
-      loader: 'babel-loader'
+      loader: 'react-hot!babel-loader'
     }, {
       test: /\.css$/,
       loader: 'style-loader!css-loader'
     }, {
       test: /\.(png|jpg)$/,
       loader: 'url-loader?limit=8192'
+    }, {
+      test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=application/font-woff"
+    }, {
+      test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=application/font-woff"
+    }, {
+      test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=application/octet-stream"
+    }, {
+      test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "file"
+    }, {
+      test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=image/svg+xml"
     }]
   }
 };

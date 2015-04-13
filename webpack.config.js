@@ -6,6 +6,7 @@
  */
 'use strict';
 var webpack = require('webpack');
+var path = require("path");
 
 module.exports = {
 
@@ -19,7 +20,7 @@ module.exports = {
   devtool: false,
   entry: [
       'webpack/hot/only-dev-server',
-      './app/ui_app/scripts/components/main.js'
+      './app/ui_app/scripts/main.js'
   ],
 
   stats: {
@@ -29,18 +30,23 @@ module.exports = {
 
   resolve: {
     extensions: ['', '.js'],
+    root: [
+      path.join(__dirname, "bower_components"),
+      path.join(__dirname, "node_modules")
+    ],
     alias: {
       'styles': __dirname + '/app/ui_app/styles',
       'mixins': __dirname + '/app/ui_app/scripts/mixins',
       'components': __dirname + '/app/ui_app/scripts/components/',
       'stores': __dirname + '/app/ui_app/scripts/stores/',
-      'actions': __dirname + '/app/ui_app/scripts/actions/'
+      'actions': __dirname + '/app/ui_app/scripts/actions/',
+      'jquery': __dirname + '/bower_components/jquery/dist/jquery.min.js'
     }
   },
   module: {
     preLoaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
+      test: /ui_app\/.*\.js$/,
+      exclude: /node_modules|bower_components/,
       loader: 'jsxhint'
     }],
     loaders: [{
@@ -53,12 +59,31 @@ module.exports = {
     }, {
       test: /\.(png|jpg)$/,
       loader: 'url-loader?limit=8192'
+    }, {
+      test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=application/font-woff"
+    }, {
+      test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=application/font-woff"
+    }, {
+      test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=application/octet-stream"
+    }, {
+      test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "file"
+    }, {
+      test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url?limit=10000&minetype=image/svg+xml"
     }]
   },
 
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery'
+    })
   ]
 
 };
