@@ -1,0 +1,16 @@
+{
+  "name": "PersonalTagManager",
+  "version": "0.01",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4",
+    "parsleyjs": "~2.0.7"
+  }
+}
