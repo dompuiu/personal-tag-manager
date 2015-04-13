@@ -5,7 +5,7 @@ Server = require('../../server')
 TagListSchema = require('./schemas/tag_list')
 ShowListCommand = require('../../../commands/tag_list')
 
-class TagShow
+class TagList
   route: ->
     {
       method: 'GET'
@@ -53,4 +53,4 @@ class TagShow
 
     new ShowListCommand(data).run(reply)
 
-module.exports = TagShow
+module.exports = TagList
