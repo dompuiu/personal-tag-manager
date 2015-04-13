@@ -48,7 +48,12 @@ Server = {
     host = process.env.HOST || 'localhost'
     port = process.env.PORT || 8000
 
-    server = new Hapi.Server()
+    server = new Hapi.Server({
+      connections: {
+        routes: {cors: true}
+      }
+    })
+
     server.connection({
       host: host
       port: port
