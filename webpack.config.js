@@ -40,7 +40,8 @@ module.exports = {
       'components': __dirname + '/app/ui_app/scripts/components/',
       'stores': __dirname + '/app/ui_app/scripts/stores/',
       'actions': __dirname + '/app/ui_app/scripts/actions/',
-      'jquery': __dirname + '/bower_components/jquery/dist/jquery.min.js'
+      'jquery': __dirname + '/bower_components/jquery/dist/jquery.min.js',
+      'auth': __dirname + '/app/ui_app/scripts/auth/auth.js'
     }
   },
   module: {

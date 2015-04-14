@@ -1,0 +1,16 @@
+.container-view {
+  width: 70%;
+  min-width: 300px;
+  margin: auto;
+}
+
+.container-detail {
+  width: 50%;
+  min-width: 500px;
+  margin: auto;
+}
+
+.containers-list .options {
+  width: 1%;
+  white-space: nowrap;
+}

@@ -4,7 +4,7 @@ var React = require('react');
 
 var Router = require('react-router');
 var { Route, RouteHandler, Link } = Router;
-var auth = require('../auth/auth');
+var auth = require('auth');
 
 
 var Header = class extends React.Component {

@@ -1,5 +1,5 @@
 'use strict';
-var auth = require('./auth');
+var auth = require('auth');
 var React = require('react');
 
 var requireAuth = (Component) => {

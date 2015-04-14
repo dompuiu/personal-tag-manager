@@ -7,19 +7,17 @@ require('imports?jQuery=jquery!bootstrap/dist/js/bootstrap');
 require('parsleyjs/src/parsley.css');
 require('imports?jQuery=jquery!parsleyjs/dist/parsley');
 
-// CSS
-require('normalize.css');
-
 var React = require('react');
 var Router = require('react-router');
 var { Route, DefaultRoute, RouteHandler, Link } = Router;
 
-var auth = require('./auth/auth');
 var Index = require('./components/Index');
 var Header = require('./components/Header');
 var Login = require('./components/Login');
 var Logout = require('./components/Logout');
-var ContainersList = require('./components/containers/List');
+var ContainersView = require('./components/containers/ContainersView');
+var ContainerNew = require('./components/containers/ContainerNew');
+var ContainerUpdate = require('./components/containers/ContainerUpdate');
 
 class App extends React.Component {
   render () {
@@ -37,7 +35,10 @@ var Routes = (
     <DefaultRoute handler={Index}/>
     <Route name="login" handler={Login}/>
     <Route name="logout" handler={Logout}/>
-    <Route name="containers" handler={ContainersList}/>
+    <Route name="containers" handler={ContainersView}/>
+    <Route name="containers/new" handler={ContainerNew}/>
+    <Route name="containers/:containerId" handler={ContainerUpdate}/>
+    <Route name="containers/:containerId/versions/current" handler={Index}/>
   </Route>
 );
 

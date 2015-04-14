@@ -1,5 +1,5 @@
 var React = require('react');
-var auth = require('../auth/auth');
+var auth = require('auth');
 
 require('../../styles/login.css');
 
@@ -46,7 +46,7 @@ class Login extends React.Component {
       if (nextPath) {
         router.replaceWith(nextPath);
       } else {
-        router.replaceWith('/containers');
+        router.replaceWith('/');
       }
     });
   }

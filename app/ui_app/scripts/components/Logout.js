@@ -3,7 +3,7 @@
 require('../../styles/main.css');
 
 var React = require('react');
-var auth = require('../auth/auth');
+var auth = require('auth');
 
 class Logout extends React.Component {
   componentDidMount () {
@@ -13,7 +13,6 @@ class Logout extends React.Component {
   render () {
     return (
       <div className="inner cover">
-        <h1 className="cover-heading">Personal Tag Manager</h1>
         <p className="lead">You are now logged out</p>
       </div>
     );
