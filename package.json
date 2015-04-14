@@ -16,7 +16,8 @@
     "normalize.css": "~3.0.3",
     "react": "0.13.x",
     "react-router": "^0.13.2",
-    "reflux": "^0.2.7"
+    "reflux": "^0.2.7",
+    "superagent": "^1.2.0"
   },
   "repository": {},
   "devDependencies": {

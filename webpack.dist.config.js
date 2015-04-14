@@ -44,7 +44,8 @@ module.exports = {
       'mixins': __dirname + '/app/ui_app/scripts/mixins',
       'components': __dirname + '/app/ui_app/scripts/components/',
       'stores': __dirname + '/app/ui_app/scripts/stores/',
-      'actions': __dirname + '/app/ui_app/scripts/actions/'
+      'actions': __dirname + '/app/ui_app/scripts/actions/',
+      'jquery': __dirname + '/bower_components/jquery/dist/jquery.min.js'
     }
   },
 
@@ -79,6 +80,12 @@ module.exports = {
     }, {
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
       loader: "url?limit=10000&minetype=image/svg+xml"
-    }]
+    }],
+    plugins: [
+      new webpack.ProvidePlugin({
+          $: 'jquery',
+          jQuery: 'jquery'
+      })
+    ]
   }
 };

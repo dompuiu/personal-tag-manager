@@ -12,44 +12,20 @@ require('normalize.css');
 
 var React = require('react');
 var Router = require('react-router');
-var { Route, RouteHandler, Link } = Router;
+var { Route, DefaultRoute, RouteHandler, Link } = Router;
 
-var auth = require('./auth');
-var ContainersList = require('./components/ContainersList');
+var auth = require('./auth/auth');
+var Index = require('./components/Index');
+var Header = require('./components/Header');
 var Login = require('./components/Login');
 var Logout = require('./components/Logout');
+var ContainersList = require('./components/containers/List');
 
 class App extends React.Component {
-  constructor () {
-    this.state = {
-      loggedIn: auth.loggedIn()
-    };
-  }
-
-  setStateOnAuth (loggedIn) {
-    this.setState({
-      loggedIn: loggedIn
-    });
-  }
-
-  componentWillMount () {
-    auth.onChange = this.setStateOnAuth.bind(this);
-    auth.login();
-  }
-
   render () {
     return (
       <div>
-        <ul>
-          <li>
-            {this.state.loggedIn ? (
-              <Link to="logout">Log out</Link>
-            ) : (
-              <Link to="login">Sign in</Link>
-            )}
-          </li>
-          <li><Link to="containers">Containers</Link></li>
-        </ul>
+        <Header />
         <RouteHandler/>
       </div>
     );
@@ -57,7 +33,8 @@ class App extends React.Component {
 }
 
 var Routes = (
-  <Route handler={Login}>
+  <Route handler={App}>
+    <DefaultRoute handler={Index}/>
     <Route name="login" handler={Login}/>
     <Route name="logout" handler={Logout}/>
     <Route name="containers" handler={ContainersList}/>

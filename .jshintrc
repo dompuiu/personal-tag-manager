@@ -21,6 +21,9 @@
   "white": true,
   "newcap": false,
   "globals": {
-    "React": true
+    "React": true,
+    "jQuery": true,
+    "$": true,
+    "Parsley": true
   }
 }
