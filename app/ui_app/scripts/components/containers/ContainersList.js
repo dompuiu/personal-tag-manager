@@ -5,14 +5,38 @@ var ContainerActions = require('../../actions/container_actions');
 var ContainerListItem = require('./ContainerListItem');
 
 var ContainersList = React.createClass({
+  getInitialState: function() {
+    return {error: null};
+  },
+
   componentDidMount: function() {
-    ContainerActions.load();
+    ContainerActions.load().catch(this.onLoadFail);
+  },
+
+  onLoadFail: function() {
+    this.setState({
+      error: 'Cannot load list from server'
+    });
   },
 
   getContainersRows: function() {
     return this.props.list.map(function(item){
       return <ContainerListItem name={item.name} id={item.id} key={item.id}/>;
     });
+  },
+
+  getErrorMessage: function() {
+    return (
+      <tr>
+        <td colSpan="2" className="text-center">
+          <div className="alert alert-danger" role="alert">
+            <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span className="sr-only">Error:</span>
+            &nbsp;&nbsp;{this.state.error}
+          </div>
+        </td>
+      </tr>
+    );
   },
 
   getEmptyMessage: function() {
@@ -27,8 +51,9 @@ var ContainersList = React.createClass({
 
   render: function() {
     var items;
-
-    if (this.props.list.length > 0) {
+    if (this.state.error) {
+      items = this.getErrorMessage();
+    } else if (this.props.list.length > 0) {
       items = this.getContainersRows();
     } else {
       items = this.getEmptyMessage();

@@ -12,35 +12,24 @@ var ContainersStore = Reflux.createStore({
   init: function () {
     this.list = null;
 
-    this.listenTo(ContainerActions.load, this.fetchData);
-    this.listenTo(ContainerActions.removeContainer, this.onRemoveContainer);
+    this.listenTo(ContainerActions.load.completed, this.onListFetched);
+    this.listenTo(ContainerActions.removeContainer.completed, this.onRemoveContainer);
   },
 
-  fetchData: function () {
-    var token = auth.getToken();
+  onListFetched: function (containers) {
+    this.list = containers.map(function (container) {
+      return new Container(container.id, container.name);
+    });
 
-    request.get(API_URL + '/containers/')
-      .set('Authorization', 'Basic ' + token)
-      .end(function (err, res) {
-        var containers = JSON.parse(res.text).items;
-        this.list = containers.map(function (container) {
-          return new Container(container.id, container.name);
-        });
-
-        this.trigger(this.list);
-      }.bind(this));
+    this.trigger(this.list);
   },
 
-  onRemoveContainer: function (key) {
-    request.del(API_URL + '/containers/' + key + '/')
-      .auth('serban.stancu@yahoo.com', 'qwe123')
-      .end(function (err, res) {
-        var list = _.reject(this.list, function (item) {
-          return item.id === key;
-        });
+  onRemoveContainer: function (container_id) {
+    var list = _.reject(this.list, function (item) {
+      return item.id === container_id;
+    });
 
-        this.updateList(list);
-      }.bind(this));
+    this.updateList(list);
   },
 
   updateList: function (list) {

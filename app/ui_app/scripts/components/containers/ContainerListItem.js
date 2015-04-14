@@ -7,14 +7,29 @@ var { Route, RouteHandler, Link } = Router;
 var ContainerActions = require('../../actions/container_actions');
 
 var ContainerItem = React.createClass({
+  getInitialState: function() {
+    return {error: null};
+  },
+
   onDelete: function() {
-    ContainerActions.removeContainer.triggerAsync(this.props.id);
+    ContainerActions.removeContainer(this.props.id).catch(this.onDeleteFail);
+  },
+
+  onDeleteFail: function() {
+    this.setState({
+      error: 'Cannot delete container'
+    });
   },
 
   render: function() {
     return (
       <tr>
-        <td>{this.props.name}</td>
+        <td>
+          {this.props.name}&nbsp;
+          {this.state.error && (
+            <span title={this.state.error} className="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+          )}
+        </td>
         <td className="options">
           <Link to="containers/:containerId/versions/current" params={{containerId: this.props.id}} className="btn btn-default btn-xs">
             <span className="glyphicon glyphicon-tag" aria-hidden="true"></span> Tags
