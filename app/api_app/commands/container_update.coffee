@@ -33,11 +33,41 @@ class UpdateContainerCommand
 
   run: (done) ->
     ASQ({data: @data})
+      .then(@checkObjectIdFormat)
+      .then(@checkNameIsUnique)
       .then(@findById)
       .then(@checkUserId)
       .then(@tryToUpdate)
       .val((storage) -> done(null, storage.container.toSwaggerFormat()))
       .or((err) -> done(err, null))
+
+  checkObjectIdFormat: (done, storage) ->
+    unless /^[0-9a-fA-F]{24}$/.test(storage.data.id)
+      return done.fail(Boom.badRequest('Wrong Id Format'))
+
+    done(storage)
+
+  checkNameIsUnique: (done, storage) =>
+    data = {
+      _id: {$ne: storage.data.id}
+      name: storage.data.name
+      user_id: storage.data.user_id
+      deleted_at: {$exists: false}
+    }
+    Container.count(data, @onCount(done, storage))
+
+  onCount: (done, storage) ->
+    (err, count) =>
+      if err
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
+
+      if count > 0
+        return done.fail(
+          Boom.conflict('A container with the same name already exists')
+        )
+
+      done(storage)
 
   findById: (done, storage) =>
     Container.findOne(
@@ -48,11 +78,8 @@ class UpdateContainerCommand
   onFind: (done, storage) =>
     (err, container) =>
       if err
-        if err.name == 'CastError' && err.kind = 'ObjectId'
-          return done.fail(Boom.badRequest('Wrong Id Format'))
-        else
-          @server.log(['error', 'database'], err)
-          return done.fail(Boom.badImplementation('Database error'))
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
 
       if !container
         return done.fail(Boom.notFound('Container not found'))

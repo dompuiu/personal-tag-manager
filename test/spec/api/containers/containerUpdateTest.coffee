@@ -64,6 +64,31 @@ describe 'ContainersUpdateTest', ->
           done()
       .or((err) -> console.error(err))
 
+  it 'should not allow the update of containers if name is not unique',
+    (done) ->
+      ASQ({routes: routes})
+        .then(utils.createContainer({user_id: '10'}, 'container1'))
+        .then(utils.createContainer({user_id: '10'}, 'container2'))
+        .then((done, storage) ->
+          request = createUpdateRequest({
+            _id: storage.container1._id
+            name: storage.container2.name
+            user_id: storage.container1.user_id
+          })
+
+          storage.request = request
+          done(storage)
+        )
+        .then(utils.configureServer)
+        .then(utils.makeRequest)
+        .val (storage) ->
+          response = storage.response
+
+          expect(response.statusCode).to.equal(409)
+          done()
+        .or((err) -> console.error(err))
+
+
   it 'should refresh updated_at field on any update', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer({updated_at: new Date('2013-01-01')}))
@@ -77,7 +102,9 @@ describe 'ContainersUpdateTest', ->
         response = storage.response
 
         Container.findOne storage.container._id, (err, container) ->
-          updated_at = container.updated_at
+          result = storage.response.result
+
+          updated_at = new Date(result.updated_at)
           now = new Date()
 
           expect(updated_at.getYear()).to.equal(now.getYear())
