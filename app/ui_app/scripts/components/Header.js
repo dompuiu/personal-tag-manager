@@ -27,10 +27,9 @@ var Header = class extends React.Component {
   loggedInItems () {
     var { router } = this.context;
     var path = router.getCurrentPathname();
-
     return (
       <ul className="nav navbar-nav">
-        <li className={path === "/containers" ? "active" : ""}><Link to="containers">Containers</Link></li>
+        <li className={/^\/containers/.test(path) ? "active" : ""}><Link to="containers">Containers</Link></li>
         <li><Link to="logout">Log out</Link></li>
       </ul>
     );
