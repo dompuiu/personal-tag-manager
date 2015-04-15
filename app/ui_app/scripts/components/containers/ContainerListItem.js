@@ -25,13 +25,16 @@ var ContainerItem = React.createClass({
     return (
       <tr>
         <td>
-          {this.props.name}&nbsp;
+          <Link to="versions/overview" params={{containerId: this.props.id}}>
+            {this.props.name}
+          </Link>
+          &nbsp;
           {this.state.error && (
             <span title={this.state.error} className="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
           )}
         </td>
         <td className="options">
-          <Link to="containers/:containerId/versions/current" params={{containerId: this.props.id}} className="btn btn-default btn-xs">
+          <Link to="versions/overview" params={{containerId: this.props.id}} className="btn btn-default btn-xs">
             <span className="glyphicon glyphicon-tag" aria-hidden="true"></span> Tags
           </Link>
           &nbsp;

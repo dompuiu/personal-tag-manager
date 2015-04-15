@@ -24,12 +24,12 @@ var ContainersView = React.createClass({
   },
 
   componentDidMount: function() {
-      this.listenTo(ContainersListStore, this.onListChange);
+    this.listenTo(ContainersListStore, this.onListChange);
   },
 
   render () {
     return (
-      <div className="container-view">
+      <div className="container-fluid">
         <h1>Containers list</h1>
         <ContainerList list={this.state.list} />
 

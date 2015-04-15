@@ -20,6 +20,8 @@ var Logout = require('./components/Logout');
 var ContainersView = require('./components/containers/ContainersView');
 var ContainerNew = require('./components/containers/ContainerNew');
 var ContainerUpdate = require('./components/containers/ContainerUpdate');
+var ContainerDetails = require('./components/container_details/ContainerDetails');
+var VersionOverview = require('./components/container_details/VersionOverview');
 
 class App extends React.Component {
   render () {
@@ -40,7 +42,10 @@ var Routes = (
     <Route name="containers" handler={ContainersView}/>
     <Route name="containers/new" handler={ContainerNew}/>
     <Route name="containers/:containerId" handler={ContainerUpdate}/>
-    <Route name="containers/:containerId/versions/current" handler={Index}/>
+    <Route name="containers/:containerId/" handler={ContainerDetails}>
+      <Route name="versions/overview" handler={VersionOverview}/>
+      <Route name="versions/:versionId/tags/new" handler={ContainerNew}/>
+    </Route>
   </Route>
 );
 
