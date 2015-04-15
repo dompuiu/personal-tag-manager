@@ -1,7 +1,5 @@
 'use strict';
 
-require('../../styles/main.css');
-
 var React = require('react/addons');
 
 var Index = React.createClass({

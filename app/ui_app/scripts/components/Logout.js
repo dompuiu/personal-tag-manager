@@ -1,7 +1,5 @@
 'use strict';
 
-require('../../styles/main.css');
-
 var React = require('react');
 var auth = require('auth');
 

@@ -1,7 +1,5 @@
 'use strict';
 
-require('../../../styles/containers.css');
-
 var requireAuth = require('../../auth/require_auth');
 var React = require('react');
 var Reflux = require('reflux');

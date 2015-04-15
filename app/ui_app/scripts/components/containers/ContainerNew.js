@@ -17,7 +17,7 @@ var ContainerDetail = React.createClass({
   },
 
   componentDidMount: function () {
-    this.formValidator = new Parsley('.container-detail form');
+    this.formValidator = new Parsley('.container-form form');
   },
 
   handleSubmit: function(event) {
@@ -60,7 +60,7 @@ var ContainerDetail = React.createClass({
 
   render: function() {
     return (
-      <div className="container-detail">
+      <div className="container container-form">
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">Create new container</h3>

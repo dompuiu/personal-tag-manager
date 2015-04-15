@@ -7,6 +7,8 @@ require('imports?jQuery=jquery!bootstrap/dist/js/bootstrap');
 require('parsleyjs/src/parsley.css');
 require('imports?jQuery=jquery!parsleyjs/dist/parsley');
 
+require('../styles/main.css');
+
 var React = require('react');
 var Router = require('react-router');
 var { Route, DefaultRoute, RouteHandler, Link } = Router;
