@@ -103,12 +103,12 @@ module.exports = {
   createVersion:
     (data = {}, from_storage = 'container', storage_name = 'version') ->
       (done, storage) ->
-        data = {
-          version_number: data.version_number || 1
+        data = _.merge({
+          version_number: 1
           container_id: storage[from_storage]._id
           user_id: storage[from_storage].user_id
-          status: data.status || ''
-        }
+          status: ''
+        }, data)
 
         v = new Version(data)
         v.save((err, version) ->
@@ -122,18 +122,18 @@ module.exports = {
   createTag:
     (data = {}, from_storage = 'version', storage_name = 'tag') ->
       (done, storage) ->
-        data = {
-          name: data.name || faker.name.firstName()
-          dom_id: data.dom_id || faker.internet.userName()
-          type: data.type || 'html'
-          src: data.src || '<div>some html code</div>'
-          on_load: data.onload || 'console.log("JS")'
+        data = _.merge({
+          name: faker.name.firstName()
+          dom_id: faker.internet.userName()
+          type: 'html'
+          src: '<div>some html code</div>'
+          on_load: 'console.log("JS")'
           container_id: storage[from_storage].container_id
           version_id: storage[from_storage]._id
           user_id: storage[from_storage].user_id
-          created_at: data.created_at || new Date()
-          updated_at: data.updated_at || new Date()
-        }
+          created_at: new Date()
+          updated_at: new Date()
+        }, data)
 
         t = new Tag(data)
         t.save((err, tag) ->
