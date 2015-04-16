@@ -35,6 +35,8 @@ var ContainerNew = require('./components/containers/ContainerNew');
 var ContainerUpdate = require('./components/containers/ContainerUpdate');
 var ContainerDetails = require('./components/container_details/ContainerDetails');
 var VersionOverview = require('./components/container_details/VersionOverview');
+var TagCreate = require('./components/container_details/tags/TagCreate');
+var TagUpdate = require('./components/container_details/tags/TagUpdate');
 
 class App extends React.Component {
   render () {
@@ -53,11 +55,12 @@ var Routes = (
     <Route name="login" handler={Login}/>
     <Route name="logout" handler={Logout}/>
     <Route name="containers" handler={ContainersView}/>
-    <Route name="containers/new" handler={ContainerNew}/>
-    <Route name="containers/:containerId" handler={ContainerUpdate}/>
-    <Route name="containers/:containerId/" handler={ContainerDetails}>
-      <Route name="versions/overview" handler={VersionOverview}/>
-      <Route name="versions/:versionId/tags/new" handler={ContainerNew}/>
+    <Route name="container_new" path="containers/new" handler={ContainerNew}/>
+    <Route name="container_details" path="containers/:container_id" handler={ContainerUpdate}/>
+    <Route name="containers/:container_id/" handler={ContainerDetails}>
+      <Route name="container_overview" path="overview" handler={VersionOverview}/>
+      <Route name="tag_new" path="versions/:version_id/tags/new" handler={TagCreate}/>
+      <Route name="tag_details" path="versions/:version_id/tags/:tag_id" handler={TagUpdate}/>
     </Route>
   </Route>
 );

@@ -23,9 +23,9 @@ var ContainerDetail = React.createClass({
 
   loadContainerData: function() {
     var {router} = this.context;
-    var containerId = router.getCurrentParams().containerId;
+    var container_id = router.getCurrentParams().container_id;
 
-    ContainerActions.getContainer.triggerPromise(containerId)
+    ContainerActions.getContainer.triggerPromise(container_id)
       .then(this.onLoad).catch(this.onLoadFail);
   },
 
@@ -135,7 +135,7 @@ var ContainerDetail = React.createClass({
               </div>
               <div className="pull-right">
                 <Link className="btn btn-default" to="containers">
-                  Back to list
+                  Back
                 </Link>
               </div>
             </form>

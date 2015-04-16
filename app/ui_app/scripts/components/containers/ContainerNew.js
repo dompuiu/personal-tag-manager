@@ -87,7 +87,7 @@ var ContainerDetail = React.createClass({
               </div>
               <div className="pull-right">
                 <Link className="btn btn-default" to="containers">
-                  Back to list
+                  Cancel
                 </Link>
               </div>
             </form>
