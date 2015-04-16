@@ -4,12 +4,17 @@ var React = require('react');
 var Reflux = require('reflux');
 var Router = require('react-router');
 var { Route, RouteHandler, Link } = Router;
+var _ = require('lodash');
 
 var TagActions = require('../../../actions/tag_actions');
 var TagStore = require('../../../stores/tag_store');
 
 var TagUpdate = React.createClass({
   mixins: [Reflux.ListenerMixin],
+
+  contextTypes: {
+    router: React.PropTypes.func
+  },
 
   getInitialState: function() {
     return {
@@ -23,25 +28,19 @@ var TagUpdate = React.createClass({
 
   componentDidMount: function() {
     this.formValidator = new Parsley('.container-form form');
-    TagActions.loadTag.triggerAsync(this.props.container_id, this.props.version_id, this.props.tag_id);
+
+    if (this.props.tag_id) {
+      TagActions.loadTag.triggerAsync(this.props.container_id, this.props.version_id, this.props.tag_id);
+    }
   },
 
   onTagChange: function(data) {
     if (data.result) {
-      data.tag.error = null;
-      data.tag.initial_type = data.tag.type;
-      data.tag.initial_src = data.tag.src;
-      if (data.tag.type === 'block-script') {
-        data.tag.sync = true;
-        data.tag.type = 'script';
+      if (data.tag.action === 'create') {
+        this.onTagCreate(data);
+      } else {
+        this.onTagLoad(data);
       }
-
-      if (data.tag.type === 'block-script' || data.tag.type === 'script') {
-        data.tag.url = data.tag.src;
-        delete data.tag.src;
-      }
-
-      this.setState(data.tag);
     } else {
       this.setState({
         error: data.error
@@ -49,6 +48,39 @@ var TagUpdate = React.createClass({
     }
 
     this.enableForm();
+  },
+
+  onTagCreate: function (data) {
+    this.setState({
+      id: data.tag.id,
+      created_at: data.tag.created_at,
+      updated_at: data.tag.updated_at
+    });
+
+    this.context.router.replaceWith('tag_details', {
+      container_id: data.tag.container_id,
+      version_id: data.tag.version_id,
+      tag_id: data.tag.id
+    },{
+      backPath: this.getBackPath()
+    });
+  },
+
+  onTagLoad: function (data) {
+    data.tag.error = null;
+    data.tag.initial_type = data.tag.type;
+    data.tag.initial_src = data.tag.src;
+    if (data.tag.type === 'block-script') {
+      data.tag.sync = true;
+      data.tag.type = 'script';
+    }
+
+    if (data.tag.type === 'block-script' || data.tag.type === 'script') {
+      data.tag.url = data.tag.src;
+      delete data.tag.src;
+    }
+
+    this.setState(data.tag);
   },
 
   handleChange: function(evt) {
@@ -72,6 +104,7 @@ var TagUpdate = React.createClass({
 
   handleSubmit: function(event) {
     event.preventDefault();
+    var pickNonfalsy = _.partial(_.pick, _, _.identity);
 
     if (!this.formValidator.isValid()) {
       return;
@@ -80,15 +113,23 @@ var TagUpdate = React.createClass({
     this.disableForm();
 
     var t = this.state.type;
-    var data = this['get' + t[0].toUpperCase() + t.slice(1) + 'Data']();
     var props = this.props;
+    var data = pickNonfalsy(this['get' + t[0].toUpperCase() + t.slice(1) + 'Data']());
 
-    TagActions.updateTag.triggerAsync(
-      props.container_id,
-      props.version_id,
-      props.tag_id,
-      data
-    );
+    if (props.tag_id) {
+      TagActions.updateTag.triggerAsync(
+        props.container_id,
+        props.version_id,
+        props.tag_id,
+        data
+      );
+    } else {
+      TagActions.createTag.triggerAsync(
+        props.container_id,
+        props.version_id,
+        data
+      );
+    }
   },
 
   getHtmlData: function() {
@@ -122,7 +163,7 @@ var TagUpdate = React.createClass({
     this.refs.dom_id.getDOMNode().disabled = 'disabled';
     this.refs.type.getDOMNode().disabled = 'disabled';
     this.refs.on_load.getDOMNode().disabled = 'disabled';
-    $(this.refs.create.getDOMNode()).button('loading');
+    $(this.refs.submit.getDOMNode()).button('loading');
 
     if (this.refs.src) {
       this.refs.src.getDOMNode().disabled = 'disabled';
@@ -143,7 +184,7 @@ var TagUpdate = React.createClass({
     this.refs.dom_id.getDOMNode().removeAttribute('disabled');
     this.refs.type.getDOMNode().removeAttribute('disabled');
     this.refs.on_load.getDOMNode().removeAttribute('disabled');
-    $(this.refs.create.getDOMNode()).button('reset');
+    $(this.refs.submit.getDOMNode()).button('reset');
 
     if (this.refs.src) {
       this.refs.src.getDOMNode().removeAttribute('disabled');
@@ -158,12 +199,22 @@ var TagUpdate = React.createClass({
     }
   },
 
+  getBackPath: function() {
+    var { router } = this.context;
+    var backPath = router.getCurrentQuery().backPath;
+    if (!backPath) {
+      backPath = 'tag_list';
+    }
+
+    return backPath;
+  },
+
   render: function() {
     return (
       <div className="container container-form">
         <div className="panel panel-default">
           <div className="panel-heading">
-            <h3 className="panel-title">Update tag</h3>
+            <h3 className="panel-title">{this.props.tag_id?'Update tag' : 'Create tag'}</h3>
           </div>
           <div className="panel-body">
             {this.state.error && (
@@ -174,10 +225,12 @@ var TagUpdate = React.createClass({
               </div>
             )}
             <form onSubmit={this.handleSubmit}>
+              {this.props.tag_id && (
               <div className="form-group">
                 <label>Tag Id</label>
                  <p className="form-control-static">{this.state.id}</p>
               </div>
+              )}
               <div className="form-group">
                 <label htmlFor="name">Name</label>
                 <input ref="name" type="text" className="form-control" id="name" onChange={this.handleChange} value={this.state.name} required autoFocus/>
@@ -218,20 +271,29 @@ var TagUpdate = React.createClass({
                 <label htmlFor="on_load">Run the following code after tag is loaded</label>
                 <textarea ref="on_load" id="on_load" className="form-control" rows="3" value={this.state.on_load} onChange={this.handleChange}></textarea>
               </div>
-              <div className="form-group">
-                <label>Created At</label>
-                 <p className="form-control-static">{this.state.created_at}</p>
-              </div>
-              <div className="form-group">
-                <label>Updated At</label>
-                 <p className="form-control-static">{this.state.updated_at}</p>
-              </div>
+              {this.props.tag_id && (
+                <div className="form-group">
+                  <label>Created At</label>
+                   <p className="form-control-static">{this.state.created_at}</p>
+                </div>
+              )}
+              {this.props.tag_id && (
+                <div className="form-group">
+                  <label>Updated At</label>
+                   <p className="form-control-static">{this.state.updated_at}</p>
+                </div>
+              )}
               <div className="pull-left">
-                <button ref="create" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span> Updating ..." className="btn btn-primary" type="submit">Update</button>
+                {this.props.tag_id && (
+                  <button ref="submit" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span> Updating ..." className="btn btn-primary" type="submit">Update</button>
+                )}
+                {!this.props.tag_id && (
+                  <button ref="submit" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span> Creating ..." className="btn btn-primary" type="submit">Create</button>
+                )}
               </div>
               <div className="pull-right">
-                <Link className="btn btn-default" to="container_overview" params={{container_id: this.props.container_id}}>
-                  Cancel
+                <Link className="btn btn-default" to={this.getBackPath()} params={{container_id: this.props.container_id, version_id: this.props.version_id}}>
+                  Back
                 </Link>
               </div>
             </form>

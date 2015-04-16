@@ -6,8 +6,8 @@ var Reflux = require('reflux');
 var Router = require('react-router');
 var { Route, RouteHandler, Link } = Router;
 
-var VersionOverviewStore = require('../../stores/version_overview_store');
-var VersionsActions = require('../../actions/version_actions');
+var VersionOverviewStore = require('../../../stores/version_overview_store');
+var VersionsActions = require('../../../actions/version_actions');
 
 var VersionOverview = React.createClass({
   mixins: [Reflux.ListenerMixin],
@@ -60,7 +60,7 @@ var VersionOverview = React.createClass({
                 <div className="list-group-first list-group-item">
                   {this.state.editing_version && (
                     <h4>
-                      <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}}>
+                      <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}} query={{backPath: 'container_overview'}}>
                         New tag
                       </Link>
                     </h4>
@@ -69,7 +69,7 @@ var VersionOverview = React.createClass({
                 </div>
                 <div className="list-group-item">
                   {this.state.editing_version && (
-                    <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}}>
+                    <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}} query={{backPath: 'container_overview'}}>
                       <span className="glyphicon glyphicon-tag"></span>
                       &nbsp;Add new tag
                     </Link>
