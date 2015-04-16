@@ -26,7 +26,7 @@ var ContainerDetails = React.createClass({
 
   componentDidMount: function() {
     this.listenTo(ContainerInfoStore, this.onContainerData);
-    ContainerActions.getContainer(this.getParams().container_id);
+    ContainerActions.getContainer.triggerAsync(this.getParams().container_id);
   },
 
   getParams: function() {

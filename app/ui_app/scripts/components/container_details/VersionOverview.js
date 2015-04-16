@@ -27,7 +27,7 @@ var VersionOverview = React.createClass({
 
   componentDidMount: function() {
     this.listenTo(VersionOverviewStore, this.onOverviewData);
-    VersionsActions.getOverviewInfo(this.state.container_id);
+    VersionsActions.getOverviewInfo.triggerAsync(this.props.container_id);
   },
 
   onOverviewData: function(data) {
