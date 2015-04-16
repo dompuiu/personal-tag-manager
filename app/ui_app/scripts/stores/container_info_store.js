@@ -19,7 +19,7 @@ var ContainerInfoStore = Reflux.createStore({
   onContainerFailed: function (err) {
     this.trigger({
       result: false,
-      error: (err.response && JSON.parse(err.response.text)) || err
+      error: err.message
     });
   }
 });
