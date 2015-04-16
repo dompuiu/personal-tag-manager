@@ -4,7 +4,7 @@ var VersionActions = require('../actions/version_actions');
 var date = require('../helpers/date');
 
 
-var ContainerInfoStore = Reflux.createStore({
+var VersionOverviewStore = Reflux.createStore({
   init: function () {
     this.listenTo(VersionActions.getOverviewInfo.completed, this.onOverviewLoad);
     this.listenTo(VersionActions.getOverviewInfo.failed, this.onOverviewFail);
@@ -30,4 +30,4 @@ var ContainerInfoStore = Reflux.createStore({
   }
 });
 
-module.exports = ContainerInfoStore;
+module.exports = VersionOverviewStore;

@@ -3,7 +3,7 @@ var Reflux = require('reflux');
 var TagActions = require('../actions/tag_actions');
 var Tag = require('../models/Tag');
 
-var TagCreateStore = Reflux.createStore({
+var TagStore = Reflux.createStore({
   init: function () {
     this.listenTo(TagActions.createTag.completed, this.onCreate);
     this.listenTo(TagActions.createTag.failed, this.onFail);
@@ -36,4 +36,4 @@ var TagCreateStore = Reflux.createStore({
   }
 });
 
-module.exports = TagCreateStore;
+module.exports = TagStore;

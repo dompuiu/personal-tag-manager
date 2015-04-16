@@ -8,7 +8,7 @@ var ContainerActions = Reflux.createActions({
   "load": {aSync: true, children: ['completed', 'failed']},
   "removeContainer": {aSync: true, children: ['completed', 'failed']},
   "createContainer": {aSync: true, children: ['completed', 'failed']},
-  "getContainer": {aSync: true, children: ['completed', 'failed']},
+  "loadContainer": {aSync: true, children: ['completed', 'failed']},
   "updateContainer": {aSync: true, children: ['completed', 'failed']}
 });
 
@@ -52,7 +52,7 @@ ContainerActions.createContainer.listen(function(data) {
     }.bind(this));
 });
 
-ContainerActions.getContainer.listen(function(id) {
+ContainerActions.loadContainer.listen(function(id) {
   request.get(API_URL + '/containers/' + id + '/')
     .set('Authorization', 'Basic ' + auth.getToken())
     .set('Content-Type', 'application/json')
@@ -65,11 +65,8 @@ ContainerActions.getContainer.listen(function(id) {
     }.bind(this));
 });
 
-ContainerActions.updateContainer.listen(function(data) {
-  var id = data.id;
-  delete data.id;
-
-  request.put(API_URL + '/containers/' + id + '/')
+ContainerActions.updateContainer.listen(function(container_id, data) {
+  request.put(API_URL + '/containers/' + container_id + '/')
     .set('Authorization', 'Basic ' + auth.getToken())
     .set('Content-Type', 'application/json')
     .send(JSON.stringify(data))

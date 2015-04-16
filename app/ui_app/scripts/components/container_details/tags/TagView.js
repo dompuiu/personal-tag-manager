@@ -10,7 +10,7 @@ var TagActions = require('../../../actions/tag_actions');
 var TagStore = require('../../../stores/tag_store');
 var Tag = require('../../../models/Tag');
 
-var TagUpdate = React.createClass({
+var TagView = React.createClass({
   mixins: [Reflux.ListenerMixin],
 
   contextTypes: {
@@ -225,4 +225,4 @@ var TagUpdate = React.createClass({
   }
 });
 
-module.exports = TagUpdate;
+module.exports = TagView;

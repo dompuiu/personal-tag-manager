@@ -6,7 +6,7 @@ var Reflux = require('reflux');
 var { Route, DefaultRoute, RouteHandler, Link } = Router;
 
 var VersionOverviewStore = require('../../stores/version_overview_store');
-var ContainerInfoStore = require('../../stores/container_info_store');
+var ContainerStore = require('../../stores/container_store');
 var ContainerActions = require('../../actions/container_actions');
 var VersionActions = require('../../actions/version_actions');
 var Sidebar = require('./Sidebar');
@@ -28,9 +28,9 @@ var ContainerDetails = React.createClass({
 
   componentWillMount: function() {
     this.listenTo(VersionOverviewStore, this.onVersionData);
-    this.listenTo(ContainerInfoStore, this.onContainerData);
+    this.listenTo(ContainerStore, this.onContainerData);
 
-    ContainerActions.getContainer.triggerAsync(this.getParams().container_id);
+    ContainerActions.loadContainer.triggerAsync(this.getParams().container_id);
     VersionActions.getOverviewInfo.triggerAsync(this.getParams().container_id);
   },
 
