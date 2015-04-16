@@ -17,10 +17,8 @@ var ContainerDetails = React.createClass({
   },
 
   getInitialState: function() {
-    var {router} = this.context;
     return {
       error: null,
-      container_id: router.getCurrentParams().containerId,
       container_name: 'Loading...',
       container_domain: 'Loading...'
     };
@@ -28,7 +26,12 @@ var ContainerDetails = React.createClass({
 
   componentDidMount: function() {
     this.listenTo(ContainerInfoStore, this.onContainerData);
-    ContainerActions.getContainer(this.state.container_id);
+    ContainerActions.getContainer(this.getParams().container_id);
+  },
+
+  getParams: function() {
+    var {router} = this.context;
+    return router.getCurrentParams();
   },
 
   onContainerData: function(data) {
@@ -49,14 +52,14 @@ var ContainerDetails = React.createClass({
     return (
       <div className="container-fluid container-details">
         <div className="row">
-          <div className="col-md-2"><Sidebar container_id={this.state.container_id} /></div>
+          <div className="col-md-2"><Sidebar {...this.getParams()}/></div>
           <div className="col-md-10">
             <div className="row">
               <div className="page-header">
                 <h1>{this.state.container_name} <small>{this.state.container_domain}</small></h1>
               </div>
             </div>
-            <RouteHandler/>
+            <RouteHandler {...this.getParams()}/>
           </div>
         </div>
       </div>
