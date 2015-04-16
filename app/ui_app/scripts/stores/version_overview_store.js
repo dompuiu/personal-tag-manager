@@ -1,21 +1,7 @@
 'use strict';
 var Reflux = require('reflux');
-
 var VersionActions = require('../actions/version_actions');
-var getDate = function(date_string) {
-  var myDate = new Date(date_string),
-    year = myDate.getFullYear(),
-    month = myDate.getMonth() + 1,
-    date = myDate.getDate(),
-    hours = myDate.getHours(),
-    minutes = myDate.getMinutes();
-
-  if (month < 10) {
-    month = '0' + month;
-  }
-
-  return year + '-' + month + "-" + date + ' ' + hours + ':' + minutes;
-};
+var date = require('../helpers/date');
 
 
 var ContainerInfoStore = Reflux.createStore({
@@ -25,9 +11,9 @@ var ContainerInfoStore = Reflux.createStore({
   },
 
   onOverviewLoad: function (data) {
-    data.editing.created_at = getDate(data.editing.created_at);
+    data.editing.created_at = date.getDate(data.editing.created_at);
     if (data.published) {
-      data.published.published_at = getDate(data.published.published_at);
+      data.published.published_at = date.getDate(data.published.published_at);
     }
 
     this.trigger({
