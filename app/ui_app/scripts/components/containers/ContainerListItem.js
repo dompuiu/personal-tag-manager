@@ -25,7 +25,7 @@ var ContainerItem = React.createClass({
     return (
       <tr>
         <td>
-          <Link to="versions/overview" params={{container_id: this.props.id}}>
+          <Link to="container_overview" params={{container_id: this.props.id}}>
             {this.props.name}
           </Link>
           &nbsp;
@@ -34,11 +34,11 @@ var ContainerItem = React.createClass({
           )}
         </td>
         <td className="options">
-          <Link to="versions/overview" params={{container_id: this.props.id}} className="btn btn-default btn-xs">
+          <Link to="container_overview" params={{container_id: this.props.id}} className="btn btn-default btn-xs">
             <span className="glyphicon glyphicon-tag" aria-hidden="true"></span> Tags
           </Link>
           &nbsp;
-          <Link to="containers/:container_id" params={{container_id: this.props.id}} className="btn btn-default btn-xs">
+          <Link to="container_details" params={{container_id: this.props.id}} className="btn btn-default btn-xs">
             <span className="glyphicon glyphicon-wrench" aria-hidden="true"></span> Settings
           </Link>
           &nbsp;

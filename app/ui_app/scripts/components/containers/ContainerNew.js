@@ -36,7 +36,7 @@ var ContainerDetail = React.createClass({
 
   onCreate: function(container) {
     var {router} = this.context;
-    router.replaceWith('containers/:container_id', {container_id: container.id});
+    router.replaceWith('container_details', {container_id: container.id});
   },
 
   onCreateFail: function(err) {

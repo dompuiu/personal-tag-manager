@@ -33,7 +33,7 @@ var ContainersView = React.createClass({
         <h1>Containers list</h1>
         <ContainerList list={this.state.list} />
 
-        <Link className="btn btn-primary" to="containers/new">
+        <Link className="btn btn-primary" to="container_new">
           <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
           New container
         </Link>

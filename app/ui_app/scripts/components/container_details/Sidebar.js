@@ -22,7 +22,7 @@ var Index = React.createClass({
               <table className="table">
                 <tr>
                   <td>
-                    <Link to="versions/overview" params={{container_id: this.props.container_id}}>
+                    <Link to="container_overview" params={{container_id: this.props.container_id}}>
                       <span className="glyphicon glyphicon-inbox text-primary"></span>
                       Overview
                     </Link>
@@ -30,7 +30,7 @@ var Index = React.createClass({
                 </tr>
                 <tr>
                   <td>
-                    <Link to="versions/overview" params={{container_id: this.props.container_id}}>
+                    <Link to="container_overview" params={{container_id: this.props.container_id}}>
                       <span className="glyphicon glyphicon-tag text-primary"></span>
                       Tags
                     </Link>
@@ -38,7 +38,7 @@ var Index = React.createClass({
                 </tr>
                 <tr>
                   <td>
-                    <Link to="versions/overview" params={{container_id: this.props.container_id}}>
+                    <Link to="container_overview" params={{container_id: this.props.container_id}}>
                       <span className="glyphicon glyphicon-file text-primary"></span>
                       Versions
                     </Link>
