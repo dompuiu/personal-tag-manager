@@ -8,6 +8,7 @@ var _ = require('lodash');
 
 var TagActions = require('../../../actions/tag_actions');
 var TagStore = require('../../../stores/tag_store');
+var Tag = require('../../../models/Tag');
 
 var TagUpdate = React.createClass({
   mixins: [Reflux.ListenerMixin],
@@ -23,6 +24,7 @@ var TagUpdate = React.createClass({
   },
 
   componentWillMount: function() {
+    this.model = new Tag(this.getInitialState());
     this.listenTo(TagStore, this.onTagChange);
   },
 
@@ -30,173 +32,91 @@ var TagUpdate = React.createClass({
     this.formValidator = new Parsley('.container-form form');
 
     if (this.props.tag_id) {
-      TagActions.loadTag.triggerAsync(this.props.container_id, this.props.version_id, this.props.tag_id);
+      TagActions.loadTag.triggerAsync(
+        this.props.container_id,
+        this.props.version_id,
+        this.props.tag_id
+      );
     }
   },
 
   onTagChange: function(data) {
-    if (data.result) {
-      if (data.tag.action === 'create') {
-        this.onTagCreate(data);
-      } else {
-        this.onTagLoad(data);
-      }
-    } else {
-      this.setState({
+    this.enableForm();
+
+    if (!data.result) {
+      return this.setState({
         error: data.error
       });
     }
 
-    this.enableForm();
+    this.model = data.tag;
+
+    this.setState(this.model.getState());
+    if (this.model.isNewlyCreated()) {
+      this.onTagCreate(data.tag);
+    }
   },
 
   onTagCreate: function (data) {
-    this.setState({
-      id: data.tag.id,
-      created_at: data.tag.created_at,
-      updated_at: data.tag.updated_at
-    });
-
     this.context.router.replaceWith('tag_details', {
-      container_id: data.tag.container_id,
-      version_id: data.tag.version_id,
-      tag_id: data.tag.id
+      container_id: this.model.get('container_id'),
+      version_id: this.model.get('version_id'),
+      tag_id: this.model.get('tag_id')
     },{
       backPath: this.getBackPath()
     });
   },
 
-  onTagLoad: function (data) {
-    data.tag.error = null;
-    data.tag.initial_type = data.tag.type;
-    data.tag.initial_src = data.tag.src;
-    if (data.tag.type === 'block-script') {
-      data.tag.sync = true;
-      data.tag.type = 'script';
-    }
-
-    if (data.tag.type === 'block-script' || data.tag.type === 'script') {
-      data.tag.url = data.tag.src;
-      delete data.tag.src;
-    }
-
-    this.setState(data.tag);
-  },
-
   handleChange: function(evt) {
-    var state = {};
-    if (evt.target.id === 'sync') {
-      state[evt.target.id] = evt.target.checked;
-    } else {
-      state[evt.target.id] = evt.target.value;
-    }
-
-    if (evt.target.id === 'type') {
-      if (this.state.initial_type !== state.type) {
-        state.src = '';
-      } else {
-        state.src = this.state.initial_src;
-      }
-    }
-
-    this.setState(state);
+    this.model.set(evt.target.id, evt.target.id === 'sync' ? evt.target.checked : evt.target.value);
+    this.setState(this.model.getState());
   },
 
   handleSubmit: function(event) {
-    event.preventDefault();
-    var pickNonfalsy = _.partial(_.pick, _, _.identity);
-
     if (!this.formValidator.isValid()) {
-      return;
+      return false;
     }
 
+    event.preventDefault();
     this.disableForm();
 
-    var t = this.state.type;
-    var props = this.props;
-    var data = pickNonfalsy(this['get' + t[0].toUpperCase() + t.slice(1) + 'Data']());
-
-    if (props.tag_id) {
+    if (this.props.tag_id) {
       TagActions.updateTag.triggerAsync(
-        props.container_id,
-        props.version_id,
-        props.tag_id,
-        data
+        this.props.container_id,
+        this.props.version_id,
+        this.props.tag_id,
+        this.model.getActionData()
       );
     } else {
       TagActions.createTag.triggerAsync(
-        props.container_id,
-        props.version_id,
-        data
+        this.props.container_id,
+        this.props.version_id,
+        this.model.getActionData()
       );
     }
   },
 
-  getHtmlData: function() {
-    return {
-      name: this.refs.name.getDOMNode().value,
-      dom_id: this.refs.dom_id.getDOMNode().value,
-      type: this.state.type,
-      src: this.refs.src.getDOMNode().value,
-      on_load: this.refs.on_load.getDOMNode().value
-    };
-  },
-
-  getScriptData: function() {
-    var sync = this.refs.sync.getDOMNode().checked;
-
-    return {
-      name: this.refs.name.getDOMNode().value,
-      dom_id: this.refs.dom_id.getDOMNode().value,
-      type: sync ? 'block-script' : 'script',
-      src: this.refs.url.getDOMNode().value,
-      on_load: this.refs.on_load.getDOMNode().value
-    };
-  },
-
-  getJsData: function() {
-    return this.getHtmlData();
+  getFieldKeys: function() {
+    return ['name', 'dom_id', 'type', 'on_load', 'src', 'sync', 'url'];
   },
 
   disableForm: function() {
-    this.refs.name.getDOMNode().disabled = 'disabled';
-    this.refs.dom_id.getDOMNode().disabled = 'disabled';
-    this.refs.type.getDOMNode().disabled = 'disabled';
-    this.refs.on_load.getDOMNode().disabled = 'disabled';
+    _.each(this.getFieldKeys(), function(key) {
+      if (this.refs[key]) {
+        this.refs[key].getDOMNode().disabled = 'disabled';
+      }
+    }.bind(this));
     $(this.refs.submit.getDOMNode()).button('loading');
-
-    if (this.refs.src) {
-      this.refs.src.getDOMNode().disabled = 'disabled';
-    }
-
-    if (this.refs.sync) {
-      this.refs.sync.getDOMNode().disabled = 'disabled';
-    }
-
-    if (this.refs.url) {
-      this.refs.url.getDOMNode().disabled = 'disabled';
-    }
-
   },
 
   enableForm: function() {
-    this.refs.name.getDOMNode().removeAttribute('disabled');
-    this.refs.dom_id.getDOMNode().removeAttribute('disabled');
-    this.refs.type.getDOMNode().removeAttribute('disabled');
-    this.refs.on_load.getDOMNode().removeAttribute('disabled');
+    _.each(this.getFieldKeys(), function(key) {
+      if (this.refs[key]) {
+        this.refs[key].getDOMNode().removeAttribute('disabled');
+      }
+    }.bind(this));
+
     $(this.refs.submit.getDOMNode()).button('reset');
-
-    if (this.refs.src) {
-      this.refs.src.getDOMNode().removeAttribute('disabled');
-    }
-
-    if (this.refs.url) {
-      this.refs.url.getDOMNode().removeAttribute('disabled');
-    }
-
-    if (this.refs.sync) {
-      this.refs.sync.getDOMNode().removeAttribute('disabled');
-    }
   },
 
   getBackPath: function() {
@@ -228,7 +148,7 @@ var TagUpdate = React.createClass({
               {this.props.tag_id && (
               <div className="form-group">
                 <label>Tag Id</label>
-                 <p className="form-control-static">{this.state.id}</p>
+                 <p className="form-control-static">{this.state.tag_id}</p>
               </div>
               )}
               <div className="form-group">

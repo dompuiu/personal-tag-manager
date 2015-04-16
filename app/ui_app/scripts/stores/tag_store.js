@@ -1,6 +1,7 @@
 'use strict';
 var Reflux = require('reflux');
 var TagActions = require('../actions/tag_actions');
+var Tag = require('../models/Tag');
 
 var TagCreateStore = Reflux.createStore({
   init: function () {
@@ -13,23 +14,17 @@ var TagCreateStore = Reflux.createStore({
   },
 
   onCreate: function (data) {
-    data.action = 'create';
-    this.onLoad(data);
+    this.onLoad(data, 'create');
   },
 
   onUpdate: function (data) {
-    data.action = 'update';
     this.onLoad(data);
   },
 
-  onLoad: function (data) {
-    if (!data.action) {
-      data.action = 'load';
-    }
-
+  onLoad: function (data, action) {
     this.trigger({
       result: true,
-      tag: data
+      tag: new Tag(data, action)
     });
   },
 
