@@ -11,18 +11,13 @@ var VersionsActions = require('../../actions/version_actions');
 
 var VersionOverview = React.createClass({
   mixins: [Reflux.ListenerMixin],
+
   getInitialState: function() {
-    var {router} = this.context;
-
     return {
-      container_id: router.getCurrentParams().containerId,
       editing_version: null,
-      published_version: null
+      published_version: null,
+      error: null
     };
-  },
-
-  contextTypes: {
-    router: React.PropTypes.func
   },
 
   componentDidMount: function() {
