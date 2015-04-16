@@ -47,62 +47,78 @@ var VersionOverview = React.createClass({
   render: function() {
     return (
       <div className="container-fluid container-overview">
-        <div className="row">
-          <div className="col-md-4">
-            <div className="list-group">
-              <div className="list-group-first list-group-item">
-                <h4><Link to="versions/:versionId/tags/new" params={{containerId: this.props.container_id}}>New tag</Link></h4>
-                Choose from the supported tag types.
-              </div>
-              <div className="list-group-item">
-                <Link to="versions/:versionId/tags/new" params={{containerId: this.props.container_id}}>
-                  <span className="glyphicon glyphicon-tag"></span>
-                  &nbsp;Add new tag
-                </Link>
+        {this.state.error ? (
+          <div className="alert alert-danger" role="alert">
+          <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span className="sr-only">Error:</span>
+          &nbsp;&nbsp;{this.state.error}
+          </div>
+        ):(
+          <div className="row">
+            <div className="col-md-4">
+              <div className="list-group">
+                <div className="list-group-first list-group-item">
+                  {this.state.editing_version && (
+                    <h4>
+                      <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}}>
+                        New tag
+                      </Link>
+                    </h4>
+                  )}
+                  Choose from the supported tag types.
+                </div>
+                <div className="list-group-item">
+                  {this.state.editing_version && (
+                    <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}}>
+                      <span className="glyphicon glyphicon-tag"></span>
+                      &nbsp;Add new tag
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="col-md-4">
-            <div className="list-group">
-              <div className="list-group-first list-group-item list-group-item-info">
-                <h4>Now editing</h4>
+            <div className="col-md-4">
+              <div className="list-group">
+                <div className="list-group-first list-group-item list-group-item-info">
+                  <h4>Now editing</h4>
+                  {this.state.editing_version && (
+                    <strong>Version {this.state.editing_version.version_number}</strong>
+                  )}<br/>
+                  {this.state.editing_version && (
+                    <div className="bottom">Created on: {this.state.editing_version.created_at}</div>
+                  )}
+                </div>
                 {this.state.editing_version && (
-                  <strong>Version {this.state.editing_version.version_number}</strong>
-                )}<br/>
-                {this.state.editing_version && (
-                  <div className="bottom">Created on: {this.state.editing_version.created_at}</div>
+                  <div className="list-group-item">Tags: {this.state.editing_version.tags_count}</div>
                 )}
-              </div>
-              {this.state.editing_version && (
-                <div className="list-group-item">Tags: {this.state.editing_version.tags_count}</div>
-              )}
-              <div className="list-group-item">
-                <a href="#"><span className="glyphicon glyphicon-list-alt"></span>&nbsp;View all versions</a>
+                <div className="list-group-item">
+                  <a href="#"><span className="glyphicon glyphicon-list-alt"></span>&nbsp;View all versions</a>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="col-md-4">
-            <div className="list-group">
-              <div className="list-group-first list-group-item list-group-item-success">
-                {this.state.published_version ? (<h4>Last published</h4>) : (<h4>Container not published</h4>)}
-                {this.state.published_version && (
-                  <strong>Version {this.state.published_version.version_number}</strong>
-                )}<br/>
-                {this.state.published_version && (
-                  <div className="bottom">Published on: {this.state.published_version.published_at}</div>
+            <div className="col-md-4">
+              <div className="list-group">
+                <div className="list-group-first list-group-item list-group-item-success">
+                  {this.state.published_version ? (<h4>Last published</h4>) : (<h4>Container not published</h4>)}
+                  {this.state.published_version && (
+                    <strong>Version {this.state.published_version.version_number}</strong>
+                  )}<br/>
+                  {this.state.published_version && (
+                    <div className="bottom">Published on: {this.state.published_version.published_at}</div>
+                  )}
+                </div>
+                {this.state.published_version ? (
+                  <div className="list-group-item">Tags: {this.state.published_version.tags_count}</div>
+                ) : (
+                  <div className="list-group-item" style={{paddingBottom: '13px'}}><h4>Add tags and publish to make your changes live</h4></div>
                 )}
-              </div>
-              {this.state.published_version ? (
-                <div className="list-group-item">Tags: {this.state.published_version.tags_count}</div>
-              ) : (
-                <div className="list-group-item" style={{paddingBottom: '13px'}}><h4>Add tags and publish to make your changes live</h4></div>
-              )}
-              {this.state.published_version && (
-                <div className="list-group-item"> <a href="#"><span className="glyphicon glyphicon-list-alt"></span>&nbsp;View published version</a></div>
-              )}
-             </div>
+                {this.state.published_version && (
+                  <div className="list-group-item"> <a href="#"><span className="glyphicon glyphicon-list-alt"></span>&nbsp;View published version</a></div>
+                )}
+               </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
