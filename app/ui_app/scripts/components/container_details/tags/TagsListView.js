@@ -17,7 +17,7 @@ var TagsListView = React.createClass({
     return {list: []};
   },
 
-  componentDidMount: function() {
+  componentWillMount: function() {
     this.listenTo(TagsListStore, this.onChange);
   },
 

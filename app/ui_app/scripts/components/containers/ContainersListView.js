@@ -17,21 +17,28 @@ var ContainersView = React.createClass({
     return {list: []};
   },
 
-  onListChange: function(list) {
-    this.setState({
-      list: list
-    });
+  componentWillMount: function() {
+    this.listenTo(ContainersListStore, this.onChange);
   },
 
-  componentDidMount: function() {
-    this.listenTo(ContainersListStore, this.onListChange);
+onChange: function(data) {
+    if (!data.result) {
+      return this.setState({
+        error: data.error
+      });
+    }
+
+    this.setState({
+      error: null,
+      list: data.list
+    });
   },
 
   render () {
     return (
       <div className="container-fluid">
         <h1>Containers list</h1>
-        <ContainerList list={this.state.list} />
+        <ContainerList list={this.state.list} error={this.state.error} />
 
         <Link className="btn btn-primary" to="container_new">
           <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>

@@ -6,25 +6,30 @@ var auth = require('auth');
 var API_URL = 'http://localhost:8100';
 
 var ContainerActions = require('../actions/container_actions');
-var Container = require('../models/container');
+var ListContainer = require('../models/ListContainer');
 
 var ContainersStore = Reflux.createStore({
   init: function () {
     this.list = null;
 
-    this.listenTo(ContainerActions.load.completed, this.onListFetched);
-    this.listenTo(ContainerActions.removeContainer.completed, this.onRemoveContainer);
+    this.listenTo(ContainerActions.load.completed, this.onLoad);
+    this.listenTo(ContainerActions.load.failed, this.onFail);
+    this.listenTo(ContainerActions.removeContainer.completed, this.onRemove);
+    this.listenTo(ContainerActions.removeContainer.failed, this.onFail);
   },
 
-  onListFetched: function (containers) {
+  onLoad: function (containers) {
     this.list = containers.map(function (container) {
-      return new Container(container.id, container.name);
+      return new ListContainer(container.id, container.name);
     });
 
-    this.trigger(this.list);
+    this.trigger({
+      result: true,
+      list: this.list
+    });
   },
 
-  onRemoveContainer: function (container_id) {
+  onRemove: function (container_id) {
     var list = _.reject(this.list, function (item) {
       return item.id === container_id;
     });
@@ -32,9 +37,19 @@ var ContainersStore = Reflux.createStore({
     this.updateList(list);
   },
 
+  onFail: function (err) {
+    this.trigger({
+      result: false,
+      error: err.message
+    });
+  },
+
   updateList: function (list) {
     this.list = list;
-    this.trigger(list);
+    this.trigger({
+      result: true,
+      list: this.list
+    });
   }
 });
 

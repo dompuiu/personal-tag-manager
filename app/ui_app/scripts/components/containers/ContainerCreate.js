@@ -7,7 +7,7 @@ var { Route, RouteHandler, Link } = Router;
 
 var ContainerActions = require('../../actions/container_actions');
 
-var ContainerDetail = React.createClass({
+var ContainerCreate = React.createClass({
   contextTypes: {
     router: React.PropTypes.func
   },
@@ -99,4 +99,4 @@ var ContainerDetail = React.createClass({
   }
 });
 
-module.exports = ContainerDetail;
+module.exports = ContainerCreate;

@@ -30,8 +30,8 @@ var Index = require('./components/Index');
 var Header = require('./components/Header');
 var Login = require('./components/Login');
 var Logout = require('./components/Logout');
-var ContainersView = require('./components/containers/ContainersView');
-var ContainerNew = require('./components/containers/ContainerNew');
+var ContainersListView = require('./components/containers/ContainersListView');
+var ContainerCreate = require('./components/containers/ContainerCreate');
 var ContainerUpdate = require('./components/containers/ContainerUpdate');
 var ContainerDetails = require('./components/container_details/ContainerDetails');
 var VersionOverview = require('./components/container_details/versions/VersionOverview');
@@ -54,8 +54,8 @@ var Routes = (
     <DefaultRoute handler={Index}/>
     <Route name="login" handler={Login}/>
     <Route name="logout" handler={Logout}/>
-    <Route name="containers" handler={ContainersView}/>
-    <Route name="container_new" path="containers/new" handler={ContainerNew}/>
+    <Route name="containers" handler={ContainersListView}/>
+    <Route name="container_new" path="containers/new" handler={ContainerCreate}/>
     <Route name="container_details" path="containers/:container_id" handler={ContainerUpdate}/>
     <Route name="containers/:container_id/" handler={ContainerDetails}>
       <Route name="container_overview" path="overview" handler={VersionOverview}/>
