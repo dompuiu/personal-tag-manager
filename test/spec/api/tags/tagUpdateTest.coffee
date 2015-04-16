@@ -266,7 +266,7 @@ describe 'TagsUpdateTest', ->
   it 'should not allow tag having the same DOM Id', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer())
-      .then(utils.createVersion())
+      .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag({dom_id: 'same'}, 'version', 'tag1'))
       .then(utils.createTag({}, 'version', 'tag2'))
       .then((done, storage) ->
@@ -284,6 +284,26 @@ describe 'TagsUpdateTest', ->
         expect(storage.response.statusCode).to.equal(409)
         done()
 
+  it 'should allow tag update with an unchanged DOM ID in request',
+    (done) ->
+      ASQ({routes: routes})
+        .then(utils.createContainer())
+        .then(utils.createVersion({status: 'now editing'}))
+        .then(utils.createTag())
+        .then((done, storage) ->
+          storage.request = updateTagRequest({
+            user_id: storage.version.user_id
+            container_id: storage.version.container_id
+            version_id: storage.version._id.toString()
+            id: storage.tag._id.toString()
+            dom_id: storage.tag.dom_id
+          })
+          done(storage)
+        )
+        .then(utils.configureServerAndMakeRequest)
+        .val (storage) ->
+          expect(storage.response.statusCode).to.equal(200)
+          done()
 
   beforeEach (done) ->
     Container = require('../../../../app/api_app/models/container')

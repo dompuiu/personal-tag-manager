@@ -117,6 +117,7 @@ class CreateTagCommand
       container_id: new ObjectId(storage.data.container_id)
       user_id: storage.data.user_id
       dom_id: storage.data.dom_id
+      _id: {$ne: storage.data.id}
     }
     Tag.count(data, @onTagCount(done, storage))
 
