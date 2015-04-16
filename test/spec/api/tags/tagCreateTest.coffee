@@ -1,6 +1,7 @@
 'use strict'
 
 describe 'TagsCreateTest', ->
+  _ = require('lodash')
   expect = require('chai').expect
   ASQ = require('asynquence')
   faker = require('faker')
@@ -8,20 +9,23 @@ describe 'TagsCreateTest', ->
   utils = require('../../../helpers/api_utils')
 
   createTagRequest = (data) ->
+    url_data = _.pick(data, 'container_id', 'version_id', 'user_id')
+    data = _.omit(data, 'container_id', 'version_id', 'user_id')
+
     options = {
       method: 'POST'
-      url: "/containers/#{data.container_id}/versions/#{data.version_id}/tags/"
+      url: "/containers/#{url_data.container_id}/versions\
+      /#{url_data.version_id}/tags/"
       headers: {'Content-Type': 'application/json'}
 
-      payload: {
-        name: data.name || faker.name.firstName()
-        dom_id: data.dom_id || faker.internet.userName()
-        type: data.type || 'html'
-        src: data.src || '<div>some html code</div>'
-        on_load: data.onload || 'console.log("JS")'
-      }
+      payload: _.merge({
+        name: faker.name.firstName()
+        dom_id: faker.internet.userName()
+        type: 'html'
+        src: '<div>some html code</div>'
+      }, data)
 
-      credentials: {name: 'user name', id: data.user_id}
+      credentials: {name: 'user name', id: url_data.user_id}
     }
 
   it 'should create a tag', (done) ->
@@ -43,7 +47,6 @@ describe 'TagsCreateTest', ->
         expect(storage.response.statusCode).to.equal(200)
         expect(result.dom_id).to.not.be.empty
         expect(result.src).to.not.be.empty
-        expect(result.on_load).to.not.be.empty
         expect(result.type).to.not.be.empty
 
         done()
