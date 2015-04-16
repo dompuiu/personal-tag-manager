@@ -133,7 +133,7 @@ class CreateTagCommand
 
       if count > 0
         return done.fail(
-          Boom.conflict('A tag with the same name already exists')
+          Boom.conflict('A tag with the same ID already exists')
         )
 
       done(storage)
