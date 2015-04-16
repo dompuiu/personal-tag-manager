@@ -9,8 +9,12 @@ var ContainersList = React.createClass({
     return {error: null};
   },
 
-  componentDidMount: function() {
-    ContainerActions.load().catch(this.onLoadFail);
+  load: function() {
+    ContainerActions.load.triggerAsync();
+  },
+
+  componentWillMount: function() {
+    this.load();
   },
 
   onLoadFail: function() {
@@ -29,10 +33,14 @@ var ContainersList = React.createClass({
     return (
       <tr>
         <td colSpan="2" className="text-center">
+          <br/>
           <div className="alert alert-danger" role="alert">
             <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             <span className="sr-only">Error:</span>
-            &nbsp;&nbsp;{this.state.error}
+            &nbsp;&nbsp;{this.state.error}&nbsp;&nbsp;
+            <button onClick={this.loadList} type="button" className="btn btn-default btn-xs">
+              <span className="glyphicon glyphicon-repeat" aria-hidden="true"></span>Reload
+            </button>
           </div>
         </td>
       </tr>

@@ -20,7 +20,7 @@ var VersionOverview = React.createClass({
     };
   },
 
-  componentDidMount: function() {
+  componentWillMount: function() {
     this.listenTo(VersionOverviewStore, this.onOverviewData);
     VersionsActions.getOverviewInfo.triggerAsync(this.props.container_id);
   },

@@ -12,13 +12,7 @@ var ContainerItem = React.createClass({
   },
 
   onDelete: function() {
-    ContainerActions.removeContainer(this.props.id).catch(this.onDeleteFail);
-  },
-
-  onDeleteFail: function() {
-    this.setState({
-      error: 'Cannot delete container'
-    });
+    ContainerActions.removeContainer.triggerAsync(this.props.id);
   },
 
   render: function() {
@@ -28,10 +22,6 @@ var ContainerItem = React.createClass({
           <Link to="container_overview" params={{container_id: this.props.id}}>
             {this.props.name}
           </Link>
-          &nbsp;
-          {this.state.error && (
-            <span title={this.state.error} className="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
-          )}
         </td>
         <td className="options">
           <Link to="container_overview" params={{container_id: this.props.id}} className="btn btn-default btn-xs">

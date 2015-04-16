@@ -5,8 +5,10 @@ var Router = require('react-router');
 var Reflux = require('reflux');
 var { Route, DefaultRoute, RouteHandler, Link } = Router;
 
+var VersionOverviewStore = require('../../stores/version_overview_store');
 var ContainerInfoStore = require('../../stores/container_info_store');
 var ContainerActions = require('../../actions/container_actions');
+var VersionActions = require('../../actions/version_actions');
 var Sidebar = require('./Sidebar');
 
 var ContainerDetails = React.createClass({
@@ -24,9 +26,12 @@ var ContainerDetails = React.createClass({
     };
   },
 
-  componentDidMount: function() {
+  componentWillMount: function() {
+    this.listenTo(VersionOverviewStore, this.onVersionData);
     this.listenTo(ContainerInfoStore, this.onContainerData);
+
     ContainerActions.getContainer.triggerAsync(this.getParams().container_id);
+    VersionActions.getOverviewInfo.triggerAsync(this.getParams().container_id);
   },
 
   getParams: function() {
@@ -48,11 +53,17 @@ var ContainerDetails = React.createClass({
     }
   },
 
+  onVersionData: function(data) {
+    this.setState({
+      version_id: data.versions_info.editing.version_id
+    });
+  },
+
   render: function() {
     return (
       <div className="container-fluid container-details">
         <div className="row">
-          <div className="col-md-2"><Sidebar {...this.getParams()}/></div>
+          <div className="col-md-2"><Sidebar {...this.getParams()} version_id={this.state.version_id}/></div>
           <div className="col-md-10">
             <div className="row">
               <div className="page-header">

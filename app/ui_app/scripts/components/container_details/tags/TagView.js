@@ -58,7 +58,7 @@ var TagUpdate = React.createClass({
   },
 
   onTagCreate: function (data) {
-    this.context.router.replaceWith('tag_details', {
+    this.context.router.transitionTo('tag_details', {
       container_id: this.model.get('container_id'),
       version_id: this.model.get('version_id'),
       tag_id: this.model.get('tag_id')
@@ -213,7 +213,7 @@ var TagUpdate = React.createClass({
               </div>
               <div className="pull-right">
                 <Link className="btn btn-default" to={this.getBackPath()} params={{container_id: this.props.container_id, version_id: this.props.version_id}}>
-                  Back
+                  {this.props.tag_id ? 'Back' : 'Cancel'}
                 </Link>
               </div>
             </form>

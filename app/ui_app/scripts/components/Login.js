@@ -44,9 +44,9 @@ class Login extends React.Component {
         return this.setState({ error: true });
       }
       if (nextPath) {
-        router.replaceWith(nextPath);
+        router.transitionTo(nextPath);
       } else {
-        router.replaceWith('/');
+        router.transitionTo('/');
       }
     });
   }

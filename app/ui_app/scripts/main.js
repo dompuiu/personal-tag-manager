@@ -36,6 +36,7 @@ var ContainerUpdate = require('./components/containers/ContainerUpdate');
 var ContainerDetails = require('./components/container_details/ContainerDetails');
 var VersionOverview = require('./components/container_details/versions/VersionOverview');
 var TagView = require('./components/container_details/tags/TagView');
+var TagListView = require('./components/container_details/tags/TagsListView');
 
 class App extends React.Component {
   render () {
@@ -60,6 +61,7 @@ var Routes = (
       <Route name="container_overview" path="overview" handler={VersionOverview}/>
       <Route name="tag_new" path="versions/:version_id/tags/new" handler={TagView}/>
       <Route name="tag_details" path="versions/:version_id/tags/:tag_id" handler={TagView}/>
+      <Route name="tag_list" path="versions/:version_id/tags/" handler={TagListView}/>
     </Route>
   </Route>
 );
