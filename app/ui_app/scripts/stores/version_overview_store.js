@@ -25,7 +25,7 @@ var VersionOverviewStore = Reflux.createStore({
   onOverviewFail: function (err) {
     this.trigger({
       result: false,
-      error: err.message
+      error: err.message || err.error
     });
   }
 });

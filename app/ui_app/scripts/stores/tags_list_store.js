@@ -37,7 +37,7 @@ var ContainersStore = Reflux.createStore({
   onFail: function (err) {
     this.trigger({
       result: false,
-      error: err.message
+      error: err.message || err.error
     });
   },
 
