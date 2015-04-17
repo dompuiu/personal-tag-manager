@@ -73,8 +73,7 @@ class ShowTagCommand
           Boom.notFound('Version not found')
         )
 
-      if storage.data.user_id != version.user_id \
-      || 'now editing' != version.status
+      if storage.data.user_id != version.user_id
         return done.fail(
           Boom.unauthorized('Not authorized to add tags on this version')
         )
