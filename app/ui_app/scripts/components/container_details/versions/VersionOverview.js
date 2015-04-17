@@ -92,7 +92,9 @@ var VersionOverview = React.createClass({
                   <div className="list-group-item">Tags: {this.state.editing_version.tags_count}</div>
                 )}
                 <div className="list-group-item">
-                  <a href="#"><span className="glyphicon glyphicon-list-alt"></span>&nbsp;View all versions</a>
+                  <Link to="version_list" params={{container_id: this.props.container_id}}>
+                    <span className="glyphicon glyphicon-list-alt"></span>&nbsp;View all versions
+                  </Link>
                 </div>
               </div>
             </div>

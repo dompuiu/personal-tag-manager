@@ -45,7 +45,7 @@ var Index = React.createClass({
                 </tr>
                 <tr>
                   <td>
-                    <Link to="container_overview" params={{container_id: this.props.container_id}}>
+                    <Link to="version_list" params={{container_id: this.props.container_id}}>
                       <span className="glyphicon glyphicon-file text-primary"></span>
                       Versions
                     </Link>
