@@ -3,7 +3,7 @@ Joi = require('joi')
 ASQ = require('asynquence')
 Server = require('../../server')
 TagListSchema = require('./schemas/tag_list')
-ShowListCommand = require('../../../commands/tag_list')
+TagListCommand = require('../../../commands/tag_list')
 
 class TagList
   route: ->
@@ -51,6 +51,6 @@ class TagList
     data = _.pick(request.params, 'version_id', 'container_id')
     data.user_id = request.auth.credentials.id
 
-    new ShowListCommand(data).run(reply)
+    new TagListCommand(data).run(reply)
 
 module.exports = TagList

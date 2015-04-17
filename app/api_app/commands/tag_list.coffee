@@ -9,7 +9,7 @@ Tag = require('../models/tag')
 ASQ = require('asynquence')
 Server = require('../api/server')
 
-class ShowListCommand
+class TagListCommand
   constructor: (@data) ->
     Joi.assert(
       @data.container_id,
@@ -115,4 +115,4 @@ class ShowListCommand
     storage.light_list = result
     done(storage)
 
-module.exports = ShowListCommand
+module.exports = TagListCommand
