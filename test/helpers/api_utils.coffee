@@ -127,7 +127,6 @@ module.exports = {
           dom_id: faker.internet.userName()
           type: 'html'
           src: '<div>some html code</div>'
-          on_load: 'console.log("JS")'
           container_id: storage[from_storage].container_id
           version_id: storage[from_storage]._id
           user_id: storage[from_storage].user_id

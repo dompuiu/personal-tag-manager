@@ -28,7 +28,7 @@ class CreateVersionCommand
     ASQ({data: @data})
       .then(@generateNewVersionId)
       .then(@tryToSave)
-      .val((version) -> done(null, version))
+      .val((storage) -> done(null, storage.version))
       .or((err) -> done(err, null))
 
   generateNewVersionId: (done, storage) =>

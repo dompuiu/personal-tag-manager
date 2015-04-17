@@ -1,7 +1,6 @@
 Joi = require('joi')
 Boom = require('boom')
 Container = require('../models/container')
-CreateVersionCommand = require('../commands/version_create')
 ASQ = require('asynquence')
 Server = require('../api/server')
 
