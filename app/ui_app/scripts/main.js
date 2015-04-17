@@ -32,7 +32,7 @@ var Login = require('./components/Login');
 var Logout = require('./components/Logout');
 var ContainersListView = require('./components/containers/ContainersListView');
 var ContainerView = require('./components/containers/ContainerView');
-var ContainerDetails = require('./components/container_details/ContainerDetails');
+var ContainerDetailsView = require('./components/container_details/ContainerDetailsView');
 var VersionOverview = require('./components/container_details/versions/VersionOverview');
 var TagView = require('./components/container_details/tags/TagView');
 var TagListView = require('./components/container_details/tags/TagsListView');
@@ -57,7 +57,7 @@ var Routes = (
     <Route name="containers" handler={ContainersListView}/>
     <Route name="container_new" path="containers/new" handler={ContainerView}/>
     <Route name="container_details" path="containers/:container_id" handler={ContainerView}/>
-    <Route name="containers/:container_id/" handler={ContainerDetails}>
+    <Route name="containers/:container_id/" handler={ContainerDetailsView}>
       <Route name="container_overview" path="overview" handler={VersionOverview}/>
       <Route name="tag_new" path="versions/:version_id/tags/new" handler={TagView}/>
       <Route name="tag_details" path="versions/:version_id/tags/:tag_id" handler={TagView}/>

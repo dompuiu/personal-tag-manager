@@ -1,6 +1,6 @@
 'use strict';
 
-var requireAuth = require('../../auth/require_auth');
+var requireAuth = require('require_auth');
 var React = require('react');
 var Reflux = require('reflux');
 
@@ -10,7 +10,7 @@ var { Route, RouteHandler, Link } = Router;
 var ContainersListStore = require('../../stores/containers_list_store');
 var ContainerList = require('./ContainersList');
 
-var ContainersView = React.createClass({
+var ContainersView = requireAuth(React.createClass({
   mixins: [Reflux.ListenerMixin],
 
   getInitialState: function () {
@@ -47,6 +47,6 @@ onChange: function(data) {
       </div>
     );
   }
-});
+}));
 
 module.exports = ContainersView;

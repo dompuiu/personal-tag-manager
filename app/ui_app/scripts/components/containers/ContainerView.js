@@ -1,5 +1,6 @@
 'use strict';
 
+var requireAuth = require('require_auth');
 var React = require('react');
 var Reflux = require('reflux');
 var Router = require('react-router');
@@ -10,7 +11,7 @@ var ContainerActions = require('../../actions/container_actions');
 var ContainerStore = require('../../stores/container_store');
 var Container = require('../../models/Container');
 
-var ContainerView = React.createClass({
+var ContainerView = requireAuth(React.createClass({
   mixins: [Reflux.ListenerMixin],
 
   contextTypes: {
@@ -176,6 +177,6 @@ var ContainerView = React.createClass({
       </div>
     );
   }
-});
+}));
 
 module.exports = ContainerView;
