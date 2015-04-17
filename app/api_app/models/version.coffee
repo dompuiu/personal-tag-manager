@@ -19,6 +19,26 @@ VersionSchema.statics.generateNewVersionNumber = (container_id, done) ->
       done(null, count + 1)
   )
 
+VersionSchema.methods.toSwaggerFormat = ->
+  version = this
+
+  data = _.pick(version,
+    [
+      'user_id',
+      'status',
+      'version_number'
+    ]
+  )
+
+  data.id = version._id.toString()
+  data.container_id = version.container_id.toString()
+  data.created_at = version.created_at.toISOString()
+
+  if (version.published_at)
+    data.published_at = version.published_at.toISOString()
+
+  return data
+
 Version = mongoose.model('Version', VersionSchema)
 
 module.exports = Version
