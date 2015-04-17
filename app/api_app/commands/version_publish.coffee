@@ -125,6 +125,7 @@ class VersionPublishCommand
 
   publishVersion: (done, storage) =>
     storage.version.status = 'published'
+    storage.version.published_at = new Date()
     storage.version.save(@onVersionSave(done, storage))
 
   onVersionSave: (done, storage) =>

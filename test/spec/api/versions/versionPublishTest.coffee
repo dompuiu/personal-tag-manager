@@ -7,6 +7,11 @@ describe 'VersionPublishTest', ->
   utils = require('../../../helpers/api_utils')
   _ = require('lodash')
 
+  Container = require('../../../../app/api_app/models/container')
+  Version = require('../../../../app/api_app/models/version')
+  Tag = require('../../../../app/api_app/models/tag')
+
+
   publishRequest = (data) ->
     options = {
       method: 'POST'
@@ -38,9 +43,11 @@ describe 'VersionPublishTest', ->
       .val (storage) ->
         result = storage.response.result
 
-        expect(storage.response.statusCode).to.equal(200)
-
-        done()
+        Version.findOne({_id: storage.version.id}, (err, version) ->
+          expect(storage.response.statusCode).to.equal(200)
+          expect(version.published_at).to.not.be.undefined
+          done()
+        )
 
   it 'should allow version publish only to the container owner', (done) ->
     ASQ({routes: routes})
@@ -125,10 +132,6 @@ describe 'VersionPublishTest', ->
           done()
 
   beforeEach (done) ->
-    Container = require('../../../../app/api_app/models/container')
-    Version = require('../../../../app/api_app/models/version')
-    Tag = require('../../../../app/api_app/models/tag')
-
     ASQ((done) -> utils.emptyColection(Container, done))
       .then((done) -> utils.emptyColection(Version, done))
       .val(-> utils.emptyColection(Tag, done))
