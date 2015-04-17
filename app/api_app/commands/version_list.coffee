@@ -74,7 +74,9 @@ class VersionListCommand
       container_id: storage.data.container_id,
       user_id: storage.data.user_id,
     }
-    Version.find(data, @onGetList(done, storage))
+
+    Version.find(data).sort({version_number : 'descending'})
+      .exec(@onGetList(done, storage))
 
   onGetList: (done, storage) =>
     (err, list) =>
