@@ -102,7 +102,7 @@ class VersionListCommand
         version_number: s.version_number
         created_at: s.created_at
       }
-      result.item.published_at =  s.published_at if (s.published_at)
+      result_item.published_at =  s.published_at if (s.published_at)
 
       result.items.push(result_item)
     )
