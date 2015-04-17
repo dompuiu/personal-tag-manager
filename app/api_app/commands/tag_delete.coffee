@@ -81,7 +81,7 @@ class DeleteTagCommand
       if storage.data.user_id != version.user_id \
       || 'now editing' != version.status
         return done.fail(
-          Boom.unauthorized('Not authorized to add tags on this version')
+          Boom.unauthorized('Not authorized to delete tags on this version')
         )
 
       done(storage)
@@ -99,7 +99,7 @@ class DeleteTagCommand
       if err
         @server.log(['error', 'database'], err)
         return done.fail(
-          Boom.badImplementation('Cannot save tag to database')
+          Boom.badImplementation('Cannot delete tag from database')
         )
 
       if response.result.n == 0
