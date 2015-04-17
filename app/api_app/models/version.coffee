@@ -3,7 +3,7 @@ _ = require('lodash')
 bcrypt = require('bcrypt')
 
 VersionSchema = new mongoose.Schema({
-  version_number: {type: Number, required: true},
+  version_number: {type: Number, required: true, index: true},
   container_id: {type: mongoose.Schema.ObjectId, required: true},
   user_id: {type: String, required: true},
   status: {type: String},
