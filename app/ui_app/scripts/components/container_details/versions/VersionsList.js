@@ -27,7 +27,6 @@ var VersionsList = React.createClass({
   },
 
   render: function() {
-    console.log(this.props);
     return (
       <table className="containers-list table table-bordered table-striped">
         <thead>
