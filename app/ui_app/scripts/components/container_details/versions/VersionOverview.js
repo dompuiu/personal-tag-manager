@@ -7,7 +7,7 @@ var Router = require('react-router');
 var { Route, RouteHandler, Link } = Router;
 
 var VersionOverviewStore = require('../../../stores/version_overview_store');
-var VersionsActions = require('../../../actions/version_actions');
+var VersionActions = require('../../../actions/version_actions');
 
 var VersionOverview = React.createClass({
   mixins: [Reflux.ListenerMixin],
@@ -20,28 +20,40 @@ var VersionOverview = React.createClass({
     };
   },
 
+  reload: function() {
+    VersionActions.getOverviewInfo.triggerAsync(this.props.container_id);
+  },
+
   componentWillMount: function() {
     this.listenTo(VersionOverviewStore, this.onOverviewData);
-    VersionsActions.getOverviewInfo.triggerAsync(this.props.container_id);
+    this.reload();
+  },
+
+  onPublishClick: function() {
+    VersionActions.publish.triggerAsync(this.props.container_id, this.state.editing_version.version_id);
   },
 
   onOverviewData: function(data) {
-    if (data.result) {
-      var state = {
-        error: null,
-        editing_version: data.versions_info.editing
-      };
-
-      if (data.versions_info.published) {
-        state.published_version = data.versions_info.published;
-      }
-
-      this.setState(state);
-    } else {
-      this.setState({
+    if (!data.result) {
+      return this.setState({
         error: data.error
       });
     }
+
+    if (data.reload) {
+      return this.reload();
+    }
+
+    var state = {
+      error: null,
+      editing_version: data.versions_info.editing
+    };
+
+    if (data.versions_info.published) {
+      state.published_version = data.versions_info.published;
+    }
+
+    this.setState(state);
   },
 
   render: function() {
@@ -80,6 +92,13 @@ var VersionOverview = React.createClass({
             <div className="col-md-4">
               <div className="list-group">
                 <div className="list-group-first list-group-item list-group-item-info">
+                  {this.state.editing_version && (
+                    <div className="pull-right">
+                      <button type="button" className="btn btn-primary btn-xs" onClick={this.onPublishClick}>
+                        <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Publish
+                      </button>
+                    </div>
+                  )}
                   <h4>Now editing</h4>
                   {this.state.editing_version && (
                     <strong>Version {this.state.editing_version.version_number}</strong>
@@ -115,7 +134,11 @@ var VersionOverview = React.createClass({
                   <div className="list-group-item" style={{paddingBottom: '13px'}}><h4>Add tags and publish to make your changes live</h4></div>
                 )}
                 {this.state.published_version && (
-                  <div className="list-group-item"> <a href="#"><span className="glyphicon glyphicon-list-alt"></span>&nbsp;View published version</a></div>
+                  <div className="list-group-item">
+                    <Link to="tag_list" params={{container_id: this.props.container_id, version_id: this.state.published_version.version_id}}>
+                      <span className="glyphicon glyphicon-tags" aria-hidden="true"></span> View published version tags
+                    </Link>
+                  </div>
                 )}
                </div>
             </div>

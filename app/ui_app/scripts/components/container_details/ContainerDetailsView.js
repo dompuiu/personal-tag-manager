@@ -55,6 +55,10 @@ var ContainerDetailsView = requireAuth(React.createClass({
   },
 
   onVersionData: function(data) {
+    if (data.reload) {
+      return;
+    }
+
     this.setState({
       version_id: data.versions_info.editing.version_id
     });

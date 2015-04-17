@@ -11,6 +11,7 @@ var VersionsListStore = Reflux.createStore({
 
     this.listenTo(VersionsActions.load.completed, this.onLoad);
     this.listenTo(VersionsActions.load.failed, this.onFail);
+    this.listenTo(VersionsActions.publish.completed, this.onPublished);
     this.listenTo(VersionsActions.publish.failed, this.onFail);
   },
 
@@ -22,6 +23,13 @@ var VersionsListStore = Reflux.createStore({
     this.trigger({
       result: true,
       list: this.list
+    });
+  },
+
+  onPublished: function (response) {
+    this.trigger({
+      result: true,
+      reload: true
     });
   },
 

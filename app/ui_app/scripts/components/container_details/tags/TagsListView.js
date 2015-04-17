@@ -39,6 +39,9 @@ var TagsListView = React.createClass({
       <div className="container-fluid">
         <h1>Tags list</h1>
         <TagsList list={this.state.list} error={this.state.error} {...this.props} />
+        <div className="pull-right">
+          <Link className="btn btn-default" to="version_list" params={{container_id: this.props.container_id}}>Back to versions list</Link>
+        </div>
         <Link className="btn btn-primary" to="tag_new" params={{container_id: this.props.container_id, version_id: this.props.version_id}}>
           <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
           New tag

@@ -35,9 +35,11 @@ var VersionsListItem = React.createClass({
             <span className="glyphicon glyphicon-tags" aria-hidden="true"></span> View tags
           </Link>
           &nbsp;
-          <button onClick={this.onPublish} type="button" className="btn btn-default btn-xs">
-            <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span> Publish
-          </button>
+          {this.props.status === 'now editing' && (
+            <button onClick={this.onPublish} type="button" className="btn btn-default btn-xs">
+              <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span> Publish
+            </button>
+          )}
         </td>
       </tr>
     );

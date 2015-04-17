@@ -10,6 +10,8 @@ var { Route, RouteHandler, Link } = Router;
 var VersionsListStore = require('../../../stores/versions_list_store');
 var VersionsList = require('./VersionsList');
 
+var VersionActions = require('../../../actions/version_actions');
+
 var VersionsListView = React.createClass({
   mixins: [Reflux.ListenerMixin],
 
@@ -28,6 +30,10 @@ var VersionsListView = React.createClass({
       });
     }
 
+    if (data.reload) {
+      return VersionActions.load.triggerAsync(this.props.container_id);
+    }
+
     this.setState({
       error: null,
       list: data.list
@@ -39,6 +45,9 @@ var VersionsListView = React.createClass({
       <div className="container-fluid">
         <h1>Versions list</h1>
         <VersionsList list={this.state.list} error={this.state.error} {...this.props} />
+        <div className="pull-right">
+          <Link className="btn btn-default" to="container_overview" params={{container_id: this.props.container_id}}>Back to Overview</Link>
+        </div>
       </div>
     );
   }
