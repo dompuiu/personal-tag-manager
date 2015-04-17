@@ -43,8 +43,8 @@ var ContainerDetails = React.createClass({
     if (data.result) {
       this.setState({
         error: null,
-        container_name: data.container.name,
-        container_domain: data.container.domain
+        container_name: data.container.get('name'),
+        container_domain: data.container.get('domain')
       });
     } else {
       this.setState({
