@@ -2,17 +2,29 @@
 var Reflux = require('reflux');
 var _ = require('lodash');
 
-var VersionsActions = require('../actions/version_actions');
+var VersionActions = require('../actions/version_actions');
 var ListVersion = require('../models/ListVersion');
 
 var VersionsListStore = Reflux.createStore({
   init: function () {
     this.list = null;
 
-    this.listenTo(VersionsActions.load.completed, this.onLoad);
-    this.listenTo(VersionsActions.load.failed, this.onFail);
-    this.listenTo(VersionsActions.publish.completed, this.onPublished);
-    this.listenTo(VersionsActions.publish.failed, this.onFail);
+    this.listenTo(VersionActions.get, this.onGet);
+    this.listenTo(VersionActions.load.completed, this.onLoad);
+    this.listenTo(VersionActions.load.failed, this.onFail);
+    this.listenTo(VersionActions.publish.completed, this.onPublished);
+    this.listenTo(VersionActions.publish.failed, this.onFail);
+  },
+
+  onGet: function(container_id) {
+    if (this.list) {
+      return this.trigger({
+        result: true,
+        list: this.list
+      });
+    }
+
+    VersionActions.load.triggerAsync(container_id);
   },
 
   onLoad: function (versions) {
@@ -26,11 +38,8 @@ var VersionsListStore = Reflux.createStore({
     });
   },
 
-  onPublished: function (response) {
-    this.trigger({
-      result: true,
-      reload: true
-    });
+  onPublished: function (container_id) {
+    VersionActions.load.triggerAsync(container_id);
   },
 
   onFail: function (err) {
@@ -46,6 +55,12 @@ var VersionsListStore = Reflux.createStore({
       result: true,
       list: this.list
     });
+  },
+
+  getVersionNumber: function(version_id) {
+    return _.result(_.find(this.list, function(version) {
+      return version.version_id === version_id;
+    }), 'version_number');
   }
 });
 

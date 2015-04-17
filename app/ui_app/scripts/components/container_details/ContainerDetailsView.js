@@ -27,12 +27,18 @@ var ContainerDetailsView = requireAuth(React.createClass({
     };
   },
 
+  loadVersionOverviewData: function() {
+    VersionActions.getOverviewInfo.triggerAsync(this.getParams().container_id);
+  },
+
   componentWillMount: function() {
-    this.listenTo(VersionOverviewStore, this.onVersionData);
+    this.listenTo(VersionOverviewStore, this.onOverviewData);
     this.listenTo(ContainerStore, this.onContainerData);
 
     ContainerActions.loadContainer.triggerAsync(this.getParams().container_id);
-    VersionActions.getOverviewInfo.triggerAsync(this.getParams().container_id);
+    VersionActions.get(this.getParams().container_id);
+
+    this.loadVersionOverviewData();
   },
 
   getParams: function() {
@@ -54,28 +60,48 @@ var ContainerDetailsView = requireAuth(React.createClass({
     }
   },
 
-  onVersionData: function(data) {
-    if (data.reload) {
-      return;
+  onOverviewData: function(data) {
+    if (!data.result) {
+      return this.setState({
+        error: data.error
+      });
     }
 
-    this.setState({
-      version_id: data.versions_info.editing.version_id
-    });
+    if (data.reload) {
+      return this.loadVersionOverviewData();
+    }
+
+    var state = {
+      error: null,
+      editing_version: data.versions_info.editing
+    };
+
+    if (data.versions_info.published) {
+      state.published_version = data.versions_info.published;
+    }
+
+    this.setState(state);
+  },
+
+  isEditable: function() {
+    if (!this.state.editing_version) {
+      return false;
+    }
+    return this.getParams().version_id === this.state.editing_version.version_id;
   },
 
   render: function() {
     return (
       <div className="container-fluid container-details">
         <div className="row">
-          <div className="col-md-2"><Sidebar {...this.getParams()} version_id={this.state.version_id}/></div>
+          <div className="col-md-2"><Sidebar {...this.getParams()} editing_version={this.state.editing_version} published_version={this.state.published_version}/></div>
           <div className="col-md-10">
             <div className="row">
               <div className="page-header">
                 <h1>{this.state.container_name} <small>{this.state.container_domain}</small></h1>
               </div>
             </div>
-            <RouteHandler {...this.getParams()}/>
+            <RouteHandler {...this.getParams()} editing_version={this.state.editing_version} published_version={this.state.published_version} editable={this.isEditable()}/>
           </div>
         </div>
       </div>

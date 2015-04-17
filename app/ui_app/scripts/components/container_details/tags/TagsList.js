@@ -22,8 +22,8 @@ var TagsList = React.createClass({
     var props = _.pick(this.props, 'container_id', 'version_id');
 
     return this.props.list.map(function(item) {
-      return <TagsListItem {...item} {...props} key={item.id} />;
-    });
+      return <TagsListItem {...item} container_id={this.props.container_id} version_id={this.props.version_id} editable={this.props.editable} key={item.id} />;
+    }.bind(this));
   },
 
   render: function() {

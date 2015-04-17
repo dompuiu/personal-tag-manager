@@ -30,10 +30,6 @@ var VersionsListView = React.createClass({
       });
     }
 
-    if (data.reload) {
-      return VersionActions.load.triggerAsync(this.props.container_id);
-    }
-
     this.setState({
       error: null,
       list: data.list

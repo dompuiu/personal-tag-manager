@@ -20,40 +20,8 @@ var VersionOverview = React.createClass({
     };
   },
 
-  reload: function() {
-    VersionActions.getOverviewInfo.triggerAsync(this.props.container_id);
-  },
-
-  componentWillMount: function() {
-    this.listenTo(VersionOverviewStore, this.onOverviewData);
-    this.reload();
-  },
-
   onPublishClick: function() {
-    VersionActions.publish.triggerAsync(this.props.container_id, this.state.editing_version.version_id);
-  },
-
-  onOverviewData: function(data) {
-    if (!data.result) {
-      return this.setState({
-        error: data.error
-      });
-    }
-
-    if (data.reload) {
-      return this.reload();
-    }
-
-    var state = {
-      error: null,
-      editing_version: data.versions_info.editing
-    };
-
-    if (data.versions_info.published) {
-      state.published_version = data.versions_info.published;
-    }
-
-    this.setState(state);
+    VersionActions.publish.triggerAsync(this.props.container_id, this.props.editing_version.version_id);
   },
 
   render: function() {
@@ -70,9 +38,9 @@ var VersionOverview = React.createClass({
             <div className="col-md-4">
               <div className="list-group">
                 <div className="list-group-first list-group-item">
-                  {this.state.editing_version && (
+                  {this.props.editing_version && (
                     <h4>
-                      <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}} query={{backPath: 'container_overview'}}>
+                      <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.props.editing_version.version_id}} query={{backPath: 'container_overview'}}>
                         New tag
                       </Link>
                     </h4>
@@ -80,8 +48,8 @@ var VersionOverview = React.createClass({
                   Choose from the supported tag types.
                 </div>
                 <div className="list-group-item">
-                  {this.state.editing_version && (
-                    <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.state.editing_version.version_id}} query={{backPath: 'container_overview'}}>
+                  {this.props.editing_version && (
+                    <Link to="tag_new" params={{container_id: this.props.container_id, version_id: this.props.editing_version.version_id}} query={{backPath: 'container_overview'}}>
                       <span className="glyphicon glyphicon-tag"></span>
                       &nbsp;Add new tag
                     </Link>
@@ -92,7 +60,7 @@ var VersionOverview = React.createClass({
             <div className="col-md-4">
               <div className="list-group">
                 <div className="list-group-first list-group-item list-group-item-info">
-                  {this.state.editing_version && (
+                  {this.props.editing_version && (
                     <div className="pull-right">
                       <button type="button" className="btn btn-primary btn-xs" onClick={this.onPublishClick}>
                         <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Publish
@@ -100,15 +68,15 @@ var VersionOverview = React.createClass({
                     </div>
                   )}
                   <h4>Now editing</h4>
-                  {this.state.editing_version && (
-                    <strong>Version {this.state.editing_version.version_number}</strong>
+                  {this.props.editing_version && (
+                    <strong>Version {this.props.editing_version.version_number}</strong>
                   )}<br/>
-                  {this.state.editing_version && (
-                    <div className="bottom">Created on: {this.state.editing_version.created_at}</div>
+                  {this.props.editing_version && (
+                    <div className="bottom">Created on: {this.props.editing_version.created_at}</div>
                   )}
                 </div>
-                {this.state.editing_version && (
-                  <div className="list-group-item">Tags: {this.state.editing_version.tags_count}</div>
+                {this.props.editing_version && (
+                  <div className="list-group-item">Tags: {this.props.editing_version.tags_count}</div>
                 )}
                 <div className="list-group-item">
                   <Link to="version_list" params={{container_id: this.props.container_id}}>
@@ -120,22 +88,22 @@ var VersionOverview = React.createClass({
             <div className="col-md-4">
               <div className="list-group">
                 <div className="list-group-first list-group-item list-group-item-success">
-                  {this.state.published_version ? (<h4>Last published</h4>) : (<h4>Container not published</h4>)}
-                  {this.state.published_version && (
-                    <strong>Version {this.state.published_version.version_number}</strong>
+                  {this.props.published_version ? (<h4>Last published</h4>) : (<h4>Container not published</h4>)}
+                  {this.props.published_version && (
+                    <strong>Version {this.props.published_version.version_number}</strong>
                   )}<br/>
-                  {this.state.published_version && (
-                    <div className="bottom">Published on: {this.state.published_version.published_at}</div>
+                  {this.props.published_version && (
+                    <div className="bottom">Published on: {this.props.published_version.published_at}</div>
                   )}
                 </div>
-                {this.state.published_version ? (
-                  <div className="list-group-item">Tags: {this.state.published_version.tags_count}</div>
+                {this.props.published_version ? (
+                  <div className="list-group-item">Tags: {this.props.published_version.tags_count}</div>
                 ) : (
                   <div className="list-group-item" style={{paddingBottom: '13px'}}><h4>Add tags and publish to make your changes live</h4></div>
                 )}
-                {this.state.published_version && (
+                {this.props.published_version && (
                   <div className="list-group-item">
-                    <Link to="tag_list" params={{container_id: this.props.container_id, version_id: this.state.published_version.version_id}}>
+                    <Link to="tag_list" params={{container_id: this.props.container_id, version_id: this.props.published_version.version_id}}>
                       <span className="glyphicon glyphicon-tags" aria-hidden="true"></span> View published version tags
                     </Link>
                   </div>

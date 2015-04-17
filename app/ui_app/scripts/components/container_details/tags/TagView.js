@@ -31,6 +31,12 @@ var TagView = React.createClass({
   componentDidMount: function() {
     this.formValidator = new Parsley('.container-form form');
 
+    if (this.props.editable) {
+      this.enableForm();
+    } else {
+      this.disableForm();
+    }
+
     if (this.props.tag_id) {
       TagActions.loadTag.triggerAsync(
         this.props.container_id,
@@ -41,7 +47,9 @@ var TagView = React.createClass({
   },
 
   onTagChange: function(data) {
-    this.enableForm();
+    if (this.props.editable) {
+      this.enableForm();
+    }
 
     if (!data.result) {
       return this.setState({
@@ -106,7 +114,10 @@ var TagView = React.createClass({
         this.refs[key].getDOMNode().disabled = 'disabled';
       }
     }.bind(this));
-    $(this.refs.submit.getDOMNode()).button('loading');
+
+    if (this.refs.submit) {
+      $(this.refs.submit.getDOMNode()).button('loading');
+    }
   },
 
   enableForm: function() {
@@ -116,7 +127,9 @@ var TagView = React.createClass({
       }
     }.bind(this));
 
-    $(this.refs.submit.getDOMNode()).button('reset');
+    if (this.refs.submit) {
+      $(this.refs.submit.getDOMNode()).button('reset');
+    }
   },
 
   getBackPath: function() {
@@ -134,7 +147,10 @@ var TagView = React.createClass({
       <div className="container container-form">
         <div className="panel panel-default">
           <div className="panel-heading">
-            <h3 className="panel-title">{this.props.tag_id?'Update tag' : 'Create tag'}</h3>
+            <h3 className="panel-title">
+              {this.props.editable && (this.props.tag_id ? 'Update tag' : 'Create tag')}
+              {!this.props.editable && 'View tag'}
+            </h3>
           </div>
           <div className="panel-body">
             {this.state.error && (
@@ -204,10 +220,10 @@ var TagView = React.createClass({
                 </div>
               )}
               <div className="pull-left">
-                {this.props.tag_id && (
+                {this.props.editable && this.props.tag_id && (
                   <button ref="submit" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span> Updating ..." className="btn btn-primary" type="submit">Update</button>
                 )}
-                {!this.props.tag_id && (
+                {this.props.editable && !this.props.tag_id && (
                   <button ref="submit" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span> Creating ..." className="btn btn-primary" type="submit">Create</button>
                 )}
               </div>

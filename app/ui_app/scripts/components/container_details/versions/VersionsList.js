@@ -11,7 +11,7 @@ var VersionsList = React.createClass({
   },
 
   loadList: function() {
-    VersionActions.load.triggerAsync(this.props.container_id);
+    VersionActions.get(this.props.container_id);
   },
 
   componentWillMount: function() {
@@ -56,7 +56,7 @@ var VersionsList = React.createClass({
           )}
           {this.props.list.length === 0 && !this.props.error && (
             <tr>
-              <td colSpan="4" className="text-center">
+              <td colSpan="5" className="text-center">
                 There are no versions at this moment.
               </td>
             </tr>

@@ -5,6 +5,7 @@ var request = require('superagent');
 var API_URL = 'http://localhost:8100';
 
 var VersionActions = Reflux.createActions({
+  "get": {},
   "load": {aSync: true, children: ['completed', 'failed']},
   "publish": {aSync: true, children: ['completed', 'failed']},
   "getOverviewInfo": {aSync: true, children: ['completed', 'failed']}
@@ -44,7 +45,7 @@ VersionActions.publish.listen(function(container_id, version_id) {
       if (err) {
         this.failed((err.response && JSON.parse(err.response.text)) || err);
       } else {
-        this.completed(JSON.parse(res.text));
+        this.completed(container_id);
       }
     }.bind(this));
 });

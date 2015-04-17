@@ -1,18 +1,23 @@
 'use strict';
+var _ = require('lodash');
 
 var getDate = function(date_string) {
   var myDate = new Date(date_string),
-    year = myDate.getFullYear(),
-    month = myDate.getMonth() + 1,
-    date = myDate.getDate(),
-    hours = myDate.getHours(),
-    minutes = myDate.getMinutes();
+    data = {
+      year: myDate.getFullYear(),
+      month: myDate.getMonth() + 1,
+      date: myDate.getDate(),
+      hours: myDate.getHours(),
+      minutes: myDate.getMinutes()
+    };
 
-  if (month < 10) {
-    month = '0' + month;
-  }
+  _.each(['month', 'date', 'hours', 'minutes'], function(key) {
+    if (data[key] < 10) {
+      data[key] = '0' + data[key];
+    }
+  });
 
-  return year + '-' + month + "-" + date + ' ' + hours + ':' + minutes;
+  return data.year + '-' + data.month + "-" + data.date + ' ' + data.hours + ':' + data.minutes;
 };
 
 module.exports = {

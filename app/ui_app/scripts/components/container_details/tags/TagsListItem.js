@@ -26,13 +26,21 @@ var TagsListItem = React.createClass({
         <td>{this.props.type}</td>
         <td>{this.props.updated_at}</td>
         <td className="options">
-         <Link to="tag_details" params={{container_id: this.props.container_id, version_id: this.props.version_id, tag_id: this.props.id}} className="btn btn-default btn-xs">
-            <span className="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
-          </Link>
+            {this.props.editable ? (
+              <Link to="tag_details" params={{container_id: this.props.container_id, version_id: this.props.version_id, tag_id: this.props.id}} className="btn btn-default btn-xs">
+                <span className="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+              </Link>
+            ):(
+              <Link to="tag_details" params={{container_id: this.props.container_id, version_id: this.props.version_id, tag_id: this.props.id}} className="btn btn-default btn-xs">
+                <span className="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View
+              </Link>
+            )}
           &nbsp;
-          <button onClick={this.onDelete} type="button" className="btn btn-default btn-xs">
-            <span className="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
-          </button>
+          {this.props.editable && (
+            <button onClick={this.onDelete} type="button" className="btn btn-default btn-xs">
+              <span className="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+            </button>
+          )}
         </td>
       </tr>
     );

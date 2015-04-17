@@ -30,8 +30,8 @@ var Index = React.createClass({
                 </tr>
                 <tr>
                   <td>
-                    {this.props.version_id ? (
-                      <Link to="tag_list" params={{container_id: this.props.container_id, version_id: this.props.version_id}}>
+                    {this.props.editing_version ? (
+                      <Link to="tag_list" params={{container_id: this.props.container_id, version_id: this.props.editing_version.version_id}}>
                         <span className="glyphicon glyphicon-tag text-primary"></span>
                         Tags
                       </Link>
