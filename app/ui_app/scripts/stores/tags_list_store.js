@@ -5,7 +5,7 @@ var _ = require('lodash');
 var TagsActions = require('../actions/tag_actions');
 var ListTag = require('../models/ListTag');
 
-var ContainersStore = Reflux.createStore({
+var TagsListStore = Reflux.createStore({
   init: function () {
     this.list = null;
 
@@ -50,4 +50,4 @@ var ContainersStore = Reflux.createStore({
   }
 });
 
-module.exports = ContainersStore;
+module.exports = TagsListStore;

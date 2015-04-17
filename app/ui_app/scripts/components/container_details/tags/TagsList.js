@@ -5,7 +5,7 @@ var React = require('react');
 var TagActions = require('../../../actions/tag_actions');
 var TagsListItem = require('./TagsListItem');
 
-var TagsListView = React.createClass({
+var TagsList = React.createClass({
   getInitialState: function() {
     return {};
   },
@@ -67,4 +67,4 @@ var TagsListView = React.createClass({
   }
 });
 
-module.exports = TagsListView;
+module.exports = TagsList;
