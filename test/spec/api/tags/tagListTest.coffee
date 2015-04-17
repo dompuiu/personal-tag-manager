@@ -18,7 +18,7 @@ describe 'TagsListTest', ->
   it 'should list tags', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer())
-      .then(utils.createVersion({status: 'now editing'}))
+      .then(utils.createVersion())
       .then(utils.createTag())
       .then((done, storage) ->
         storage.request = showListRequest({
