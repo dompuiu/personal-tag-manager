@@ -35,6 +35,8 @@ class VersionPublishCommand
       .then(@checkContainerAndAuthId)
       .then(@checkVersionId)
       .then(@duplicateVersion)
+      .then(@findPublishedVersion)
+      .then(@archivePublishedVersion)
       .then(@publishVersion)
       .val((storage) ->
         done(
@@ -121,6 +123,42 @@ class VersionPublishCommand
         return done.fail(Boom.badImplementation('Database error'))
 
       storage.new_version = new_version
+      done(storage)
+
+  findPublishedVersion: (done, storage) =>
+    data = {
+      status: 'published'
+      container_id: storage.data.container_id
+      user_id: storage.version.user_id
+    }
+
+    Version.findOne(data, @onPublishedVersionFind(done, storage))
+
+  onPublishedVersionFind: (done, storage) =>
+    (err, published_version) =>
+      if err
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
+
+      if published_version
+        storage.published_version = published_version
+
+      done(storage)
+
+  archivePublishedVersion: (done, storage) =>
+    if !storage.published_version
+      return done(storage)
+
+    storage.published_version.status = 'archived'
+    storage.published_version.published_at = undefined
+    storage.published_version.save(@onArchivedVersionSave(done, storage))
+
+  onArchivedVersionSave: (done, storage) =>
+    (err, version) =>
+      if err
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
+
       done(storage)
 
   publishVersion: (done, storage) =>

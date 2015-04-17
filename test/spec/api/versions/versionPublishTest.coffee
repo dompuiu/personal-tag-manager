@@ -22,32 +22,94 @@ describe 'VersionPublishTest', ->
       credentials: {name: 'user name', id: data.user_id}
     }
 
-  it 'should publish versions', (done) ->
-    ASQ({routes: routes})
-      .then(utils.createContainer())
-      .then(utils.createVersion({
-        status: 'now editing',
-        created_at: new Date('2013-01-01')
-      }))
-      .then(utils.createTag())
-      .then(utils.createTag())
-      .then((done, storage) ->
-        storage.request = publishRequest({
-          user_id: storage.version.user_id
-          container_id: storage.version.container_id
-          version_id: storage.version._id.toString()
-        })
-        done(storage)
-      )
-      .then(utils.configureServerAndMakeRequest)
-      .val (storage) ->
-        result = storage.response.result
-
-        Version.findOne({_id: storage.version.id}, (err, version) ->
-          expect(storage.response.statusCode).to.equal(200)
-          expect(version.published_at).to.not.be.undefined
-          done()
+  describe 'when publishing versions', ->
+    it 'should create a new editing version', (done) ->
+      ASQ({routes: routes})
+        .then(utils.createContainer())
+        .then(utils.createVersion({
+          status: 'now editing',
+          created_at: new Date('2013-01-01')
+        }))
+        .then(utils.createTag())
+        .then(utils.createTag())
+        .then((done, storage) ->
+          storage.request = publishRequest({
+            user_id: storage.version.user_id
+            container_id: storage.version.container_id
+            version_id: storage.version._id.toString()
+          })
+          done(storage)
         )
+        .then(utils.configureServerAndMakeRequest)
+        .val (storage) ->
+          result = storage.response.result
+
+          Version.find({container_id: storage.version.container_id},
+            (err, versions) ->
+              expect(storage.response.statusCode).to.equal(200)
+              expect(versions.length).to.equal(2)
+              done()
+          )
+
+    it 'should update the published_at field', (done) ->
+      ASQ({routes: routes})
+        .then(utils.createContainer())
+        .then(utils.createVersion({
+          status: 'now editing',
+          created_at: new Date('2013-01-01')
+        }))
+        .then(utils.createTag())
+        .then(utils.createTag())
+        .then((done, storage) ->
+          storage.request = publishRequest({
+            user_id: storage.version.user_id
+            container_id: storage.version.container_id
+            version_id: storage.version._id.toString()
+          })
+          done(storage)
+        )
+        .then(utils.configureServerAndMakeRequest)
+        .val (storage) ->
+          result = storage.response.result
+
+          Version.findOne({_id: storage.version.id}, (err, version) ->
+            expect(storage.response.statusCode).to.equal(200)
+            expect(version.published_at).to.not.be.undefined
+            done()
+          )
+
+    it 'should archive the last published version', (done) ->
+      ASQ({routes: routes})
+        .then(utils.createContainer())
+        .then(utils.createVersion({
+          status: 'published',
+          published_at: new Date('2013-01-01')
+        }, 'container', 'version1'))
+        .then(utils.createTag({}, 'version1'))
+        .then(utils.createTag({}, 'version1'))
+        .then(utils.createVersion({
+          status: 'now editing',
+        }, 'container', 'version2'))
+        .then(utils.createTag({}, 'version2'))
+        .then(utils.createTag({}, 'version2'))
+        .then((done, storage) ->
+          storage.request = publishRequest({
+            user_id: storage.version2.user_id
+            container_id: storage.version2.container_id
+            version_id: storage.version2._id.toString()
+          })
+          done(storage)
+        )
+        .then(utils.configureServerAndMakeRequest)
+        .val (storage) ->
+          result = storage.response.result
+
+          Version.findOne({_id: storage.version1.id}, (err, version) ->
+            expect(storage.response.statusCode).to.equal(200)
+            expect(version.published_at).to.be.undefined
+            expect(version.status).to.equal('archived')
+            done()
+          )
 
   it 'should allow version publish only to the container owner', (done) ->
     ASQ({routes: routes})
