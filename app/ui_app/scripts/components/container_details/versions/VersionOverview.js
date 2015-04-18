@@ -20,6 +20,10 @@ var VersionOverview = React.createClass({
     };
   },
 
+  getSnippet: function() {
+    return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.lib.js\"></script>\n<script>amc.call(\"init\");</script>";
+  },
+
   onPublishClick: function() {
     VersionActions.publish.triggerAsync(this.props.container_id, this.props.editing_version.version_id);
   },
@@ -88,6 +92,13 @@ var VersionOverview = React.createClass({
             <div className="col-md-4">
               <div className="list-group">
                 <div className="list-group-first list-group-item list-group-item-success">
+                  {this.props.published_version && (
+                    <div className="pull-right">
+                      <button type="button" className="btn btn-success btn-xs" data-toggle="modal" data-target="#snippetModal">
+                        <span className="glyphicon glyphicon-link" aria-hidden="true"></span>&nbsp;Get container snippet
+                      </button>
+                    </div>
+                  )}
                   {this.props.published_version ? (<h4>Last published</h4>) : (<h4>Container not published</h4>)}
                   {this.props.published_version && (
                     <strong>Version {this.props.published_version.version_number}</strong>
@@ -112,6 +123,24 @@ var VersionOverview = React.createClass({
             </div>
           </div>
         )}
+
+        <div className="modal fade" id="snippetModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 className="modal-title">Install Personal Tag Manager</h4>
+              </div>
+              <div className="modal-body">
+                Copy the code below and paste it onto every page of your website. Place it immediately after the opening &lt;body&gt; tag.<br/><br/>
+                <textarea ref="src" id="src" name="src" className="form-control" rows="3" readonly="readonly" value={this.getSnippet()}></textarea>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

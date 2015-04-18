@@ -51,7 +51,8 @@ var ContainerDetailsView = requireAuth(React.createClass({
       this.setState({
         error: null,
         container_name: data.container.get('name'),
-        container_domain: data.container.get('domain')
+        container_domain: data.container.get('domain'),
+        container_storage_namespace: data.container.get('storage_namespace')
       });
     } else {
       this.setState({
@@ -101,7 +102,7 @@ var ContainerDetailsView = requireAuth(React.createClass({
                 <h1>{this.state.container_name} <small>{this.state.container_domain}</small></h1>
               </div>
             </div>
-            <RouteHandler {...this.getParams()} editing_version={this.state.editing_version} published_version={this.state.published_version} editable={this.isEditable()}/>
+            <RouteHandler {...this.getParams()} editing_version={this.state.editing_version} published_version={this.state.published_version} editable={this.isEditable()} storage_namespace={this.state.container_storage_namespace}/>
           </div>
         </div>
       </div>
