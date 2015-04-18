@@ -1,6 +1,6 @@
 'use strict'
 
-describe 'VersionPublishTest', ->
+describe 'VersionEditAsNewTest', ->
   expect = require('chai').expect
   ASQ = require('asynquence')
   routes = require('../../../../app/api_app/api/routes/versions')
@@ -12,28 +12,29 @@ describe 'VersionPublishTest', ->
   Tag = require('../../../../app/api_app/models/tag')
 
 
-  publishRequest = (data) ->
+  editAsNewRequest = (data) ->
     options = {
       method: 'POST'
       url: "/containers/#{data.container_id}/versions/\
-      #{data.version_id}/publish/"
+      #{data.version_id}/editasnew/"
 
       headers: {'Content-Type': 'application/json'}
       credentials: {name: 'user name', id: data.user_id}
     }
 
-  describe 'when publishing versions', ->
+  describe 'when editing a version as new', ->
     it 'should create a new editing version', (done) ->
       ASQ({routes: routes})
         .then(utils.createContainer())
         .then(utils.createVersion({
           status: 'now editing',
+        }))
+        .then(utils.createVersion({
+          status: 'published',
           created_at: new Date('2013-01-01')
         }))
-        .then(utils.createTag())
-        .then(utils.createTag())
         .then((done, storage) ->
-          storage.request = publishRequest({
+          storage.request = editAsNewRequest({
             user_id: storage.version.user_id
             container_id: storage.version.container_id
             version_id: storage.version._id.toString()
@@ -47,38 +48,15 @@ describe 'VersionPublishTest', ->
           Version.find({container_id: storage.version.container_id},
             (err, versions) ->
               expect(storage.response.statusCode).to.equal(200)
-              expect(versions.length).to.equal(2)
+
+              version_statuses = _.pluck(versions, 'status')
+              expect(version_statuses).to.include('published')
+              expect(version_statuses).to.include('now editing')
+              expect(version_statuses).to.include('archived')
               done()
           )
 
-    it 'should update the published_at field', (done) ->
-      ASQ({routes: routes})
-        .then(utils.createContainer())
-        .then(utils.createVersion({
-          status: 'now editing',
-          created_at: new Date('2013-01-01')
-        }))
-        .then(utils.createTag())
-        .then(utils.createTag())
-        .then((done, storage) ->
-          storage.request = publishRequest({
-            user_id: storage.version.user_id
-            container_id: storage.version.container_id
-            version_id: storage.version._id.toString()
-          })
-          done(storage)
-        )
-        .then(utils.configureServerAndMakeRequest)
-        .val (storage) ->
-          result = storage.response.result
-
-          Version.findOne({_id: storage.version.id}, (err, version) ->
-            expect(storage.response.statusCode).to.equal(200)
-            expect(version.published_at).to.not.be.undefined
-            done()
-          )
-
-    it 'should archive the last published version', (done) ->
+    it 'should archive the last editing version', (done) ->
       ASQ({routes: routes})
         .then(utils.createContainer())
         .then(utils.createVersion({
@@ -93,10 +71,10 @@ describe 'VersionPublishTest', ->
         .then(utils.createTag({}, 'version2'))
         .then(utils.createTag({}, 'version2'))
         .then((done, storage) ->
-          storage.request = publishRequest({
-            user_id: storage.version2.user_id
-            container_id: storage.version2.container_id
-            version_id: storage.version2._id.toString()
+          storage.request = editAsNewRequest({
+            user_id: storage.version1.user_id
+            container_id: storage.version1.container_id
+            version_id: storage.version1._id.toString()
           })
           done(storage)
         )
@@ -104,19 +82,18 @@ describe 'VersionPublishTest', ->
         .val (storage) ->
           result = storage.response.result
 
-          Version.findOne({_id: storage.version1.id}, (err, version) ->
+          Version.findOne({_id: storage.version2.id}, (err, version) ->
             expect(storage.response.statusCode).to.equal(200)
-            expect(version.published_at).to.be.undefined
             expect(version.status).to.equal('archived')
             done()
           )
 
-  it 'should allow version publish only to the container owner', (done) ->
+  it 'should allow editing a new version only to the container owner', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer())
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
-        storage.request = publishRequest({
+        storage.request = editAsNewRequest({
           user_id: '100'
           container_id: storage.version.container_id
           version_id: storage.version._id.toString()
@@ -128,12 +105,12 @@ describe 'VersionPublishTest', ->
         expect(storage.response.statusCode).to.equal(401)
         done()
 
-  it 'should allow version publish only from existing containers', (done) ->
+  it 'should allow editing a new version only on existing containers', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer())
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
-        storage.request = publishRequest({
+        storage.request = editAsNewRequest({
           user_id: storage.version.user_id
           container_id: '111111111111111111111111'
           version_id: storage.version._id.toString()
@@ -145,12 +122,12 @@ describe 'VersionPublishTest', ->
         expect(storage.response.statusCode).to.equal(404)
         done()
 
-  it 'should allow version publishing only on existing versions', (done) ->
+  it 'should allow editing a new version only on existing versions', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer())
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
-        storage.request = publishRequest({
+        storage.request = editAsNewRequest({
           user_id: storage.version.user_id
           container_id: storage.version.container_id
           version_id: '111111111111111111111111'
@@ -162,35 +139,36 @@ describe 'VersionPublishTest', ->
         expect(storage.response.statusCode).to.equal(404)
         done()
 
-  it 'should allow  publishing only on editing versions', (done) ->
-    ASQ({routes: routes})
-      .then(utils.createContainer())
-      .then(utils.createVersion({
-        status: 'published',
-        created_at: new Date('2013-01-01')
-      }))
-      .then(utils.createTag())
-      .then(utils.createTag())
-      .then((done, storage) ->
-        storage.request = publishRequest({
-          user_id: storage.version.user_id
-          container_id: storage.version.container_id
-          version_id: storage.version._id.toString()
-        })
-        done(storage)
-      )
-      .then(utils.configureServerAndMakeRequest)
-      .val (storage) ->
-        expect(storage.response.statusCode).to.equal(412)
-        done()
+  it 'should allow editing a new version only on non editing versions',
+    (done) ->
+      ASQ({routes: routes})
+        .then(utils.createContainer())
+        .then(utils.createVersion({
+          status: 'now editing',
+          created_at: new Date('2013-01-01')
+        }))
+        .then(utils.createTag())
+        .then(utils.createTag())
+        .then((done, storage) ->
+          storage.request = editAsNewRequest({
+            user_id: storage.version.user_id
+            container_id: storage.version.container_id
+            version_id: storage.version._id.toString()
+          })
+          done(storage)
+        )
+        .then(utils.configureServerAndMakeRequest)
+        .val (storage) ->
+          expect(storage.response.statusCode).to.equal(412)
+          done()
 
-  describe 'when trying to publish versions', ->
+  describe 'when trying to edit a new version', ->
     showListWithInvalidId = (done, main_storage) ->
       ASQ({routes: routes})
         .then(utils.createContainer())
         .then(utils.createVersion({status: 'now editing'}))
         .then((done, storage) ->
-          storage.request = publishRequest(_.merge({
+          storage.request = editAsNewRequest(_.merge({
             user_id: storage.version.user_id
             container_id: storage.version.container_id
             version_id: storage.version._id.toString()

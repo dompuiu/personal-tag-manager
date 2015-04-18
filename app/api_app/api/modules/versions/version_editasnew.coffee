@@ -3,13 +3,13 @@ Joi = require('joi')
 ASQ = require('asynquence')
 Server = require('../../server')
 VersionActionResultSchema = require('./schemas/version_action_result')
-PublishVersionCommand = require('../../../commands/version_publish')
+EditAsNewVersionCommand = require('../../../commands/version_editasnew')
 
-class VersionPublish
+class VersionEditAsNew
   route: ->
     {
       method: 'POST'
-      path: '/containers/{container_id}/versions/{version_id}/publish/'
+      path: '/containers/{container_id}/versions/{version_id}/editasnew/'
       config: @config()
       handler: @handler
     }
@@ -17,7 +17,7 @@ class VersionPublish
   config: ->
     {
       auth: 'simple'
-      description: 'Publishes a version'
+      description: 'Creates an editing version starting from the provided one'
       notes: 'Returns a message'
       tags: ['api']
       plugins: {
@@ -56,7 +56,7 @@ class VersionPublish
     }
     data.user_id = request.auth.credentials.id
 
-    c = new PublishVersionCommand(data)
+    c = new EditAsNewVersionCommand(data)
     c.run(reply)
 
-module.exports = VersionPublish
+module.exports = VersionEditAsNew

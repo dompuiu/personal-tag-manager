@@ -10,7 +10,7 @@ VersionDuplicateCommand = require('./version_duplicate')
 ASQ = require('asynquence')
 Server = require('../api/server')
 
-class VersionPublishCommand
+class VersionEditAsNewCommand
   constructor: (@data) ->
     Joi.assert(
       @data.container_id,
@@ -34,10 +34,9 @@ class VersionPublishCommand
       .then(@checkObjectIdFormat)
       .then(@checkContainerAndAuthId)
       .then(@checkVersion)
+      .then(@findEditingVersion)
+      .then(@archiveEditingVersion)
       .then(@duplicateVersion)
-      .then(@findPublishedVersion)
-      .then(@archivePublishedVersion)
-      .then(@publishVersion)
       .val((storage) ->
         done(
           null,
@@ -108,13 +107,45 @@ class VersionPublishCommand
           Boom.unauthorized('Not authorized to add tags on this version')
         )
 
-      if 'now editing' != version.status
+      if 'published' != version.status
         return done.fail(
           Boom.preconditionFailed('Can publish only now editing versions')
         )
 
 
       storage.version = version
+      done(storage)
+
+  findEditingVersion: (done, storage) =>
+    data = {
+      status: 'now editing'
+      container_id: storage.data.container_id
+      user_id: storage.version.user_id
+    }
+
+    Version.findOne(data, @onPublishedVersionFind(done, storage))
+
+  onPublishedVersionFind: (done, storage) =>
+    (err, editing_version) =>
+      if err
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
+
+      if editing_version
+        storage.editing_version = editing_version
+
+      done(storage)
+
+  archiveEditingVersion: (done, storage) =>
+    storage.editing_version.status = 'archived'
+    storage.editing_version.save(@onArchivedVersionSave(done, storage))
+
+  onArchivedVersionSave: (done, storage) =>
+    (err, version) =>
+      if err
+        @server.log(['error', 'database'], err)
+        return done.fail(Boom.badImplementation('Database error'))
+
       done(storage)
 
   duplicateVersion: (done, storage) =>
@@ -130,54 +161,4 @@ class VersionPublishCommand
       storage.new_version = new_version
       done(storage)
 
-  findPublishedVersion: (done, storage) =>
-    data = {
-      status: 'published'
-      container_id: storage.data.container_id
-      user_id: storage.version.user_id
-    }
-
-    Version.findOne(data, @onPublishedVersionFind(done, storage))
-
-  onPublishedVersionFind: (done, storage) =>
-    (err, published_version) =>
-      if err
-        @server.log(['error', 'database'], err)
-        return done.fail(Boom.badImplementation('Database error'))
-
-      if published_version
-        storage.published_version = published_version
-
-      done(storage)
-
-  archivePublishedVersion: (done, storage) =>
-    if !storage.published_version
-      return done(storage)
-
-    storage.published_version.status = 'archived'
-    storage.published_version.published_at = undefined
-    storage.published_version.save(@onArchivedVersionSave(done, storage))
-
-  onArchivedVersionSave: (done, storage) =>
-    (err, version) =>
-      if err
-        @server.log(['error', 'database'], err)
-        return done.fail(Boom.badImplementation('Database error'))
-
-      done(storage)
-
-  publishVersion: (done, storage) =>
-    storage.version.status = 'published'
-    storage.version.published_at = new Date()
-    storage.version.save(@onVersionSave(done, storage))
-
-  onVersionSave: (done, storage) =>
-    (err, version) =>
-      if err
-        @server.log(['error', 'database'], err)
-        return done.fail(Boom.badImplementation('Database error'))
-
-      storage.version = version
-      done(storage)
-
-module.exports = VersionPublishCommand
+module.exports = VersionEditAsNewCommand

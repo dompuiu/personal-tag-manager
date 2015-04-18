@@ -15,11 +15,17 @@ var VersionsListItem = React.createClass({
     VersionActions.publish.triggerAsync(this.props.container_id, this.props.version_id);
   },
 
+  onEditAsNew: function() {
+    VersionActions.publish.triggerAsync(this.props.container_id, this.props.version_id);
+  },
+
   render: function() {
     return (
       <tr>
         <td>
+          <Link to="tag_list" params={{container_id: this.props.container_id, version_id: this.props.version_id}}>
           Version {this.props.version_number}
+          </Link>
         </td>
         <td>
           {this.props.status}
@@ -38,6 +44,12 @@ var VersionsListItem = React.createClass({
           {this.props.status === 'now editing' && (
             <button onClick={this.onPublish} type="button" className="btn btn-default btn-xs">
               <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span> Publish
+            </button>
+          )}
+
+          {this.props.status !== 'now editing' && (
+            <button onClick={this.onEditAsNew} type="button" className="btn btn-default btn-xs">
+              <span className="glyphicon glyphicon-log-out" aria-hidden="true"></span> Edit as New
             </button>
           )}
         </td>
