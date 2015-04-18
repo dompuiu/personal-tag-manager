@@ -2,12 +2,11 @@
 
 var _ = require('lodash');
 
-var Tag = function (data, action) {
+var Tag = function (data) {
   if (!data) {
     data = {};
   }
 
-  this.action = action;
   this.initial = {
     type: data.type,
     src: data.src

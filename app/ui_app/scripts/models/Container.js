@@ -2,12 +2,10 @@
 
 var _ = require('lodash');
 
-var Container = function (data, action) {
+var Container = function (data) {
   if (!data) {
     data = {};
   }
-
-  this.action = action;
 
   this.state = {
     container_id: data.id,
@@ -22,10 +20,6 @@ var Container = function (data, action) {
 };
 
 Container.prototype = {
-  isNewlyCreated: function() {
-    return this.action === 'create';
-  },
-
   set: function(key, value) {
     this.state[key] = value;
   },

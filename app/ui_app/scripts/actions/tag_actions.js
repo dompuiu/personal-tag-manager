@@ -5,6 +5,8 @@ var request = require('superagent');
 var API_URL = 'http://localhost:8100';
 
 var TagActions = Reflux.createActions({
+  "new": {},
+  "changeState": {},
   "load": {aSync: true, children: ['completed', 'failed']},
   "loadTag": {aSync: true, children: ['completed', 'failed']},
   "removeTag": {aSync: true, children: ['completed', 'failed']},

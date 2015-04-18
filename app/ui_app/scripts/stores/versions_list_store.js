@@ -21,7 +21,7 @@ var VersionsListStore = Reflux.createStore({
   },
 
   onGet: function(container_id) {
-    if (container_id == lastContainerId && this.list) {
+    if (container_id === lastContainerId && this.list) {
       return this.trigger({
         result: true,
         list: this.list

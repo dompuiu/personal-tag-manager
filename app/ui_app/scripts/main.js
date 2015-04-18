@@ -34,7 +34,7 @@ var ContainersListView = require('./components/containers/ContainersListView');
 var ContainerView = require('./components/containers/ContainerView');
 var ContainerDetailsView = require('./components/container_details/ContainerDetailsView');
 var VersionOverview = require('./components/container_details/versions/VersionOverview');
-var TagView = require('./components/container_details/tags/TagView');
+var TagDetailsMainView = require('./components/container_details/tags/TagDetailsMainView');
 var TagListView = require('./components/container_details/tags/TagsListView');
 var VersionsListView = require('./components/container_details/versions/VersionsListView');
 
@@ -59,8 +59,8 @@ var Routes = (
     <Route name="container_details" path="containers/:container_id" handler={ContainerView}/>
     <Route name="containers/:container_id/" handler={ContainerDetailsView}>
       <Route name="container_overview" path="overview" handler={VersionOverview}/>
-      <Route name="tag_new" path="versions/:version_id/tags/new" handler={TagView}/>
-      <Route name="tag_details" path="versions/:version_id/tags/:tag_id" handler={TagView}/>
+      <Route name="tag_new" path="versions/:version_id/tags/new" handler={TagDetailsMainView}/>
+      <Route name="tag_details" path="versions/:version_id/tags/:tag_id" handler={TagDetailsMainView}/>
       <Route name="tag_list" path="versions/:version_id/tags/" handler={TagListView}/>
       <Route name="version_list" path="versions" handler={VersionsListView}/>
     </Route>
