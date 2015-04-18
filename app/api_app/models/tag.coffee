@@ -6,7 +6,7 @@ TagSchema = new mongoose.Schema({
   version_id: {type: mongoose.Schema.ObjectId, required: true},
   user_id: {type: String, required: true},
   name: {type: String, required: true},
-  dom_id: {type: String, required: true, unique: true},
+  dom_id: {type: String, required: true},
   type: {type: String, required: true},
   src: {type: String},
   onload: {type: String},
