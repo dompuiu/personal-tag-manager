@@ -241,7 +241,7 @@ describe 'VersionPublishTest', ->
           .then(publish)
           .val (storage) ->
             fs = require('fs')
-            folder = "#{__dirname}/../../../../storage/\
+            folder = "#{__dirname}/../../../../storage/libs/\
               #{storage.container.storage_namespace}"
 
             stats = fs.lstat folder, (err, stats) ->
@@ -253,7 +253,7 @@ describe 'VersionPublishTest', ->
           .then(publish)
           .val (storage) ->
             fs = require('fs')
-            file = "#{__dirname}/../../../../storage/\
+            file = "#{__dirname}/../../../../storage/libs/\
               #{storage.container.storage_namespace}/ptm.lib.js"
 
             stats = fs.lstat file, (err, stats) ->
@@ -264,7 +264,7 @@ describe 'VersionPublishTest', ->
           .then(publish)
           .val (storage) ->
             fs = require('fs')
-            file = "#{__dirname}/../../../../storage/\
+            file = "#{__dirname}/../../../../storage/libs/\
               #{storage.container.storage_namespace}/ptm.lib.js"
 
             fs.readFile file, 'utf8', (err, data) ->
