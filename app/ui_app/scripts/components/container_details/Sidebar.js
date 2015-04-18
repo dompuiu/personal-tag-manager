@@ -11,13 +11,13 @@ var Index = React.createClass({
         <div className="panel panel-default">
           <div className="panel-heading">
             <h4 className="panel-title">
-            <a data-toggle="collapse" data-parent="#sidebar" href="#collapseOne">
+            <a data-toggle="collapse" data-parent="#sidebar" href="#sidebarCollapse">
               <span className="glyphicon glyphicon-menu-hamburger">
               </span>Options
             </a>
             </h4>
           </div>
-          <div id="collapseOne" className="panel-collapse collapse in">
+          <div id="sidebarCollapse" className="panel-collapse collapse in">
             <div className="panel-body">
               <table className="table">
                 <tr>
