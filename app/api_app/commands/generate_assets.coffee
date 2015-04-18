@@ -123,7 +123,9 @@ class GenerateAssetsCommand
 
   generateTagConfig: (tag) ->
     pickNonfalsy = _.partial(_.pick, _, _.identity)
-    config = pickNonfalsy(_.pick(tag, 'dom_id', 'type', 'src', 'onload'))
+    config = pickNonfalsy(
+      _.pick(tag, 'dom_id', 'type', 'src', 'onload', 'match')
+    )
 
     config.inject = {
       position: tag.inject_position,

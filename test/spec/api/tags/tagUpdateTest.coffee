@@ -18,6 +18,7 @@ describe 'TagsUpdateTest', ->
     payload.src = data.src if data.src
     payload.onload = data.onload if data.onload
     payload.inject_position = data.inject_position if data.inject_position
+    payload.match = data.match if data.match
 
     options = {
       method: 'PUT'
@@ -33,7 +34,18 @@ describe 'TagsUpdateTest', ->
       ASQ({routes: routes})
         .then(utils.createContainer())
         .then(utils.createVersion({status: 'now editing'}))
-        .then(utils.createTag({inject_position: 1}))
+        .then(utils.createTag({
+          inject_position: 1
+          match: [{
+            condition: 'dow'
+            not: false
+            param: 'date'
+            param_name: false
+            values: {
+              days: [1, 2, 3]
+            }
+          }]
+        }))
         .then((done, storage) ->
           storage.request = updateTagRequest(_.merge({
             id: storage.tag._id.toString()
@@ -112,6 +124,19 @@ describe 'TagsUpdateTest', ->
           expect(result.inject_position).to.equal(2)
 
           done()
+
+    it 'should update the match', (done) ->
+      ASQ({data: {match: []}})
+        .then(updateTag)
+        .val (storage) ->
+          console.log(storage.request)
+          result = storage.response.result
+
+          expect(storage.response.statusCode).to.equal(200)
+          expect(result.match.length).to.equal(0)
+
+          done()
+
 
   it 'should refresh updated_at field on any update', (done) ->
     ASQ({routes: routes})

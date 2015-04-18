@@ -11,6 +11,7 @@ TagSchema = new mongoose.Schema({
   src: {type: String},
   onload: {type: String},
   inject_position: {type: Number, required: true},
+  match: {type: Array},
   created_at: {type: Date, default: Date.now},
   updated_at: {type: Date, default: Date.now}
 })
@@ -26,7 +27,8 @@ TagSchema.methods.toSwaggerFormat = ->
       'type',
       'src',
       'onload',
-      'inject_position'
+      'inject_position',
+      'match'
     ]
   )
 

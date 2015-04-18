@@ -58,6 +58,26 @@ class CreateTagCommand
       Joi.number().required()
     )
 
+    Joi.assert(
+      @data.match,
+      Joi.array().items(
+        Joi.object().keys({
+          condition: Joi.string().required()\
+            .allow('contains', 'daterange', 'dow', 'regex')
+          not: Joi.boolean().required()
+          param: Joi.string().required()\
+            .allow('host', 'path', 'cookie', 'query', 'date')
+          param_name: Joi.any().required()
+          values: Joi.object().keys({
+            days: Joi.array().items(Joi.number()).max(7).unique()
+            min: Joi.string()
+            max: Joi.string()
+            scalar: Joi.string()
+          }).required()
+        })
+      )
+    )
+
     Server.get((server) => @server = server)
 
   run: (done) ->

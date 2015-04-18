@@ -65,6 +65,23 @@ class TagCreate
         inject_position: Joi.number().required()\
           .description('Position where to trigger the tag\
           (accepted values: 1 (page top), 2 (page bottom))')
+
+        match: Joi.array().items(
+          Joi.object().keys({
+            condition: Joi.string().required()\
+              .allow('contains', 'daterange', 'dow', 'regex')
+            not: Joi.boolean().required()
+            param: Joi.string().required()\
+              .allow('host', 'path', 'cookie', 'query', 'date')
+            param_name: Joi.any().required()
+            values: Joi.object().keys({
+              days: Joi.array().items(Joi.number()).max(7).unique()
+              min: Joi.string()
+              max: Joi.string()
+              scalar: Joi.string()
+            }).required()
+          })
+        ).description('Trigger type object')
       }
     }
 
@@ -77,7 +94,7 @@ class TagCreate
   createTag: (done, storage) =>
     data = _.pick(
       storage.request.payload,
-      'name', 'dom_id', 'type', 'src', 'onload', 'inject_position'
+      'name', 'dom_id', 'type', 'src', 'onload', 'inject_position', 'match'
     )
     data.user_id = storage.request.auth.credentials.id
     data.container_id = storage.request.params.container_id

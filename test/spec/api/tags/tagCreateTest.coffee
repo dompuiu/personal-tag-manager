@@ -24,6 +24,15 @@ describe 'TagsCreateTest', ->
         type: 'html'
         src: '<div>some html code</div>'
         inject_position: 1
+        match: [{
+          condition: 'dow'
+          not: false
+          param: 'date'
+          param_name: false
+          values: {
+            days: [1, 2, 3]
+          }
+        }]
       }, data)
 
       credentials: {name: 'user name', id: url_data.user_id}
