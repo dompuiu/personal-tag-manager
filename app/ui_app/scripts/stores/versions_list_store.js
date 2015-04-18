@@ -42,10 +42,12 @@ var VersionsListStore = Reflux.createStore({
 
   onPublished: function (container_id) {
     VersionActions.load.triggerAsync(container_id);
+    VersionActions.getOverviewInfo.triggerAsync(container_id);
   },
 
   onEditAsNew: function (container_id) {
     VersionActions.load.triggerAsync(container_id);
+    VersionActions.getOverviewInfo.triggerAsync(container_id);
   },
 
   onFail: function (err) {
