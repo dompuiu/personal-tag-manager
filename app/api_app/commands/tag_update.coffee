@@ -50,7 +50,7 @@ class CreateTagCommand
     )
 
     Joi.assert(
-      @data.on_load,
+      @data.onload,
       Joi.string()
     )
 
@@ -155,7 +155,7 @@ class CreateTagCommand
       done(storage)
 
   tryToUpdate: (done, storage) =>
-    _.each(['name', 'dom_id', 'type', 'src', 'on_load'], (key) ->
+    _.each(['name', 'dom_id', 'type', 'src', 'onload'], (key) ->
       storage.tag[key] = storage.data[key] if storage.data[key]
     )
     storage.tag.updated_at = new Date()

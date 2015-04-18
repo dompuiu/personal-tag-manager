@@ -9,7 +9,7 @@ TagSchema = new mongoose.Schema({
   dom_id: {type: String, required: true, unique: true},
   type: {type: String, required: true},
   src: {type: String},
-  on_load: {type: String},
+  onload: {type: String},
   created_at: {type: Date, default: Date.now},
   updated_at: {type: Date, default: Date.now}
 })
@@ -24,7 +24,7 @@ TagSchema.methods.toSwaggerFormat = ->
       'dom_id',
       'type',
       'src',
-      'on_load'
+      'onload'
     ]
   )
 

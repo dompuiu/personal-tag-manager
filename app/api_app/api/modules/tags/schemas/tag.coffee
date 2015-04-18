@@ -9,7 +9,7 @@ TagSchema = Joi.object({
   dom_id: Joi.string().required().description('Tag DOM Id')
   type: Joi.string().required().description('Tag Type')
   src: Joi.string().required().description('Tag source')
-  on_load: Joi.string().description('Code to be executed after tag load')
+  onload: Joi.string().description('Code to be executed after tag load')
   created_at: Joi.string().required().isoDate().description('ISO date string')
   updated_at: Joi.string().isoDate().description('ISO date string')
 }).meta({

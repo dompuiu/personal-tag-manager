@@ -44,7 +44,7 @@ class CreateTagCommand
     )
 
     Joi.assert(
-      @data.on_load,
+      @data.onload,
       Joi.string()
     )
 

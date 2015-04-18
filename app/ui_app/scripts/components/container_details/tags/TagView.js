@@ -105,7 +105,7 @@ var TagView = React.createClass({
   },
 
   getFieldKeys: function() {
-    return ['name', 'dom_id', 'type', 'on_load', 'src', 'sync', 'url'];
+    return ['name', 'dom_id', 'type', 'onload', 'src', 'sync', 'url'];
   },
 
   disableForm: function() {
@@ -204,8 +204,8 @@ var TagView = React.createClass({
                 </div>
               )}
               <div className="form-group">
-                <label htmlFor="on_load">Run the following code after tag is loaded</label>
-                <textarea ref="on_load" id="on_load" className="form-control" rows="3" value={this.state.on_load} onChange={this.handleChange}></textarea>
+                <label htmlFor="onload">Run the following code after tag is loaded</label>
+                <textarea ref="onload" id="onload" className="form-control" rows="3" value={this.state.onload} onChange={this.handleChange}></textarea>
               </div>
               {this.props.tag_id && (
                 <div className="form-group">

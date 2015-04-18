@@ -44,7 +44,7 @@ describe 'TagsShowTest', ->
         expect(result.dom_id).to.equal(storage.tag.dom_id)
         expect(result.type).to.equal(storage.tag.type)
         expect(result.src).to.equal(storage.tag.src)
-        expect(result.on_load).to.equal(storage.tag.on_load)
+        expect(result.onload).to.equal(storage.tag.onload)
         expect(result.created_at).to.equal(storage.tag.created_at.toISOString())
         expect(result.updated_at).to.equal(storage.tag.created_at.toISOString())
 

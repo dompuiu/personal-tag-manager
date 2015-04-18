@@ -59,7 +59,7 @@ class TagCreate
         src: Joi.string()\
           .description('Tag source').example('console.log("a");')
 
-        on_load: Joi.string()\
+        onload: Joi.string()\
           .description('Code to be executed after tag load')
       }
     }
@@ -73,7 +73,7 @@ class TagCreate
   createTag: (done, storage) =>
     data = _.pick(
       storage.request.payload,
-      'name', 'dom_id', 'type', 'src', 'on_load'
+      'name', 'dom_id', 'type', 'src', 'onload'
     )
     data.user_id = storage.request.auth.credentials.id
     data.container_id = storage.request.params.container_id

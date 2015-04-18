@@ -16,7 +16,7 @@ describe 'TagsUpdateTest', ->
     payload.dom_id = data.dom_id if data.dom_id
     payload.type = data.type if data.type
     payload.src = data.src if data.src
-    payload.on_load = data.on_load if data.on_load
+    payload.onload = data.onload if data.onload
 
     options = {
       method: 'PUT'
@@ -90,14 +90,14 @@ describe 'TagsUpdateTest', ->
 
           done()
 
-    it 'should update the on_load', (done) ->
-      ASQ({data: {on_load: 'updated_onload'}})
+    it 'should update the onload', (done) ->
+      ASQ({data: {onload: 'updated_onload'}})
         .then(updateTag)
         .val (storage) ->
           result = storage.response.result
 
           expect(storage.response.statusCode).to.equal(200)
-          expect(result.on_load).to.equal('updated_onload')
+          expect(result.onload).to.equal('updated_onload')
 
           done()
 
