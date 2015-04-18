@@ -6,6 +6,7 @@ Container = require('../models/container')
 Version = require('../models/version')
 
 VersionDuplicateCommand = require('./version_duplicate')
+GenerateAssetsCommand = require('./generate_assets')
 
 ASQ = require('asynquence')
 Server = require('../api/server')
@@ -38,6 +39,7 @@ class VersionPublishCommand
       .then(@findPublishedVersion)
       .then(@archivePublishedVersion)
       .then(@publishVersion)
+      .then(@generateAssets)
       .val((storage) ->
         done(
           null,
@@ -179,5 +181,22 @@ class VersionPublishCommand
 
       storage.version = version
       done(storage)
+
+  generateAssets: (done, storage) =>
+    c = new GenerateAssetsCommand({
+      container_id: storage.data.container_id
+      version_id: storage.data.version_id
+    })
+    c.run(@onGenerateAssets(done, storage))
+
+  onGenerateAssets: (done, storage) =>
+    (err, new_version) =>
+      if err
+        @server.log(['error'], err)
+        return done.fail(Boom.badImplementation('Cannot generate assets'))
+
+      storage.new_version = new_version
+      done(storage)
+
 
 module.exports = VersionPublishCommand

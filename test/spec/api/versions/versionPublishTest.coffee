@@ -25,7 +25,7 @@ describe 'VersionPublishTest', ->
   describe 'when publishing versions', ->
     it 'should create a new editing version', (done) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({
           status: 'now editing',
           created_at: new Date('2013-01-01')
@@ -53,7 +53,7 @@ describe 'VersionPublishTest', ->
 
     it 'should update the published_at field', (done) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({
           status: 'now editing',
           created_at: new Date('2013-01-01')
@@ -80,7 +80,7 @@ describe 'VersionPublishTest', ->
 
     it 'should archive the last published version', (done) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({
           status: 'published',
           published_at: new Date('2013-01-01')
@@ -113,7 +113,7 @@ describe 'VersionPublishTest', ->
 
   it 'should allow version publish only to the container owner', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = publishRequest({
@@ -130,7 +130,7 @@ describe 'VersionPublishTest', ->
 
   it 'should allow version publish only from existing containers', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = publishRequest({
@@ -147,7 +147,7 @@ describe 'VersionPublishTest', ->
 
   it 'should allow version publishing only on existing versions', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = publishRequest({
@@ -164,7 +164,7 @@ describe 'VersionPublishTest', ->
 
   it 'should allow  publishing only on editing versions', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({
         status: 'published',
         created_at: new Date('2013-01-01')
@@ -187,7 +187,7 @@ describe 'VersionPublishTest', ->
   describe 'when trying to publish versions', ->
     showListWithInvalidId = (done, main_storage) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({status: 'now editing'}))
         .then((done, storage) ->
           storage.request = publishRequest(_.merge({
@@ -214,6 +214,61 @@ describe 'VersionPublishTest', ->
         .val (storage) ->
           expect(storage.response.statusCode).to.equal(400)
           done()
+
+    describe 'when generating assets', ->
+      publish = (done, main_storage) ->
+        ASQ({routes: routes})
+          .then(utils.createContainer({storage_namespace: 'publish_test'}))
+          .then(utils.createVersion({
+            status: 'now editing',
+            created_at: new Date('2013-01-01')
+          }))
+          .then(utils.createTag({onload: 'some code'}))
+          .then(utils.createTag({type: 'js'}))
+          .then((done, storage) ->
+            storage.request = publishRequest(_.merge({
+              user_id: storage.version.user_id
+              container_id: storage.version.container_id
+              version_id: storage.version._id.toString()
+            }, main_storage.data || {}))
+            done(storage)
+          ).then(utils.configureServerAndMakeRequest)
+          .val (storage) ->
+            done(storage)
+
+      it 'should generate asset folder', (done) ->
+        ASQ({})
+          .then(publish)
+          .val (storage) ->
+            fs = require('fs')
+            folder = "#{__dirname}/../../../../storage/\
+              #{storage.container.storage_namespace}"
+
+            stats = fs.lstat folder, (err, stats) ->
+              done() if stats.isDirectory()
+
+
+      it 'should generate library', (done) ->
+        ASQ({})
+          .then(publish)
+          .val (storage) ->
+            fs = require('fs')
+            file = "#{__dirname}/../../../../storage/\
+              #{storage.container.storage_namespace}/ptm.lib.js"
+
+            stats = fs.lstat file, (err, stats) ->
+              done() if stats.isFile()
+
+      it 'should generate config', (done) ->
+        ASQ({})
+          .then(publish)
+          .val (storage) ->
+            fs = require('fs')
+            file = "#{__dirname}/../../../../storage/\
+              #{storage.container.storage_namespace}/ptm.lib.js"
+
+            fs.readFile file, 'utf8', (err, data) ->
+              done() if data.indexOf('%s') == -1
 
   beforeEach (done) ->
     ASQ((done) -> utils.emptyColection(Container, done))
