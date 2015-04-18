@@ -1,6 +1,7 @@
 'use strict';
 var Reflux = require('reflux');
 var TagActions = require('../actions/tag_actions');
+var VersionActions = require('../actions/version_actions');
 var Tag = require('../models/Tag');
 
 var TagStore = Reflux.createStore({
@@ -22,6 +23,8 @@ var TagStore = Reflux.createStore({
   },
 
   onLoad: function (data, action) {
+    VersionActions.getOverviewInfo.triggerAsync(data.container_id);
+
     this.trigger({
       result: true,
       tag: new Tag(data, action)
