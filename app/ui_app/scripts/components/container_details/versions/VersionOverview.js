@@ -124,7 +124,7 @@ var VersionOverview = React.createClass({
           </div>
         )}
 
-        <div className="modal fade" id="snippetModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div className="modal fade" id="snippetModal" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
@@ -133,7 +133,7 @@ var VersionOverview = React.createClass({
               </div>
               <div className="modal-body">
                 Copy the code below and paste it onto every page of your website. Place it immediately after the opening &lt;body&gt; tag.<br/><br/>
-                <textarea ref="src" id="src" name="src" className="form-control" rows="3" readonly="readonly" value={this.getSnippet()}></textarea>
+                <textarea ref="src" id="src" name="src" className="form-control" rows="3" readOnly="readonly" value={this.getSnippet()}></textarea>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
