@@ -111,6 +111,41 @@ describe 'VersionPublishTest', ->
             done()
           )
 
+    it 'should copy the published version tags to the new version',
+      (done) ->
+        ASQ({routes: routes})
+          .then(utils.createContainer({storage_namespace: 'publish_test'}))
+          .then(utils.createVersion({status: 'now editing'}))
+          .then(utils.createTag())
+          .then((done, storage) ->
+            storage.request = publishRequest({
+              user_id: storage.version.user_id
+              container_id: storage.version.container_id
+              version_id: storage.version._id.toString()
+            })
+            done(storage)
+          )
+          .then(utils.configureServerAndMakeRequest)
+          .val (storage) ->
+            result = storage.response.result
+            storage.done = done
+
+            ASQ(storage)
+              .then (done, storage) ->
+                Version.findOne {_id: storage.version.id}, (err, version) ->
+                  return done.fail(err) if (err)
+
+                  storage.version = version
+                  done(storage)
+
+              .then (done, storage) ->
+                Tag.count {version_id: storage.version._id}, (err, count) ->
+                  return done.fail(err) if (err)
+
+                  expect(storage.response.statusCode).to.equal(200)
+                  expect(count).to.equal(1)
+                  storage.done()
+
   it 'should allow version publish only to the container owner', (done) ->
     ASQ({routes: routes})
       .then(utils.createContainer({storage_namespace: 'publish_test'}))
