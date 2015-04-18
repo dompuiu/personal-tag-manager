@@ -19,7 +19,8 @@ var TagView = React.createClass({
 
   getInitialState: function() {
     return {
-      type: 'html'
+      type: 'html',
+      inject_position: 1
     };
   },
 
