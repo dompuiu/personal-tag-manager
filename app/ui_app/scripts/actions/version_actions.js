@@ -20,7 +20,7 @@ VersionActions.load.listen(function(container_id) {
       if (err) {
         this.failed((err.response && JSON.parse(err.response.text)) || err);
       } else {
-        this.completed(JSON.parse(res.text).items);
+        this.completed(JSON.parse(res.text).items, container_id);
       }
     }.bind(this));
 });

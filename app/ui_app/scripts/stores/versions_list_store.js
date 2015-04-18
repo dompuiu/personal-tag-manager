@@ -5,6 +5,8 @@ var _ = require('lodash');
 var VersionActions = require('../actions/version_actions');
 var ListVersion = require('../models/ListVersion');
 
+var lastContainerId = null;
+
 var VersionsListStore = Reflux.createStore({
   init: function () {
     this.list = null;
@@ -19,7 +21,7 @@ var VersionsListStore = Reflux.createStore({
   },
 
   onGet: function(container_id) {
-    if (this.list) {
+    if (container_id == lastContainerId && this.list) {
       return this.trigger({
         result: true,
         list: this.list
@@ -29,7 +31,8 @@ var VersionsListStore = Reflux.createStore({
     VersionActions.load.triggerAsync(container_id);
   },
 
-  onLoad: function (versions) {
+  onLoad: function (versions, container_id) {
+    lastContainerId = container_id;
     this.list = versions.map(function (version) {
       return new ListVersion(version);
     });
