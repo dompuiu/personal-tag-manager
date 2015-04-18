@@ -59,6 +59,11 @@ class CreateTagCommand
       Joi.string().required()
     )
 
+    Joi.assert(
+      @data.inject_position,
+      Joi.number()
+    )
+
     Server.get((server) => @server = server)
 
   run: (done) ->
@@ -155,8 +160,10 @@ class CreateTagCommand
       done(storage)
 
   tryToUpdate: (done, storage) =>
-    _.each(['name', 'dom_id', 'type', 'src', 'onload'], (key) ->
-      storage.tag[key] = storage.data[key] if storage.data[key]
+    _.each(
+      ['name', 'dom_id', 'type', 'src', 'onload', 'inject_position'],
+      (key) ->
+        storage.tag[key] = storage.data[key] if storage.data[key]
     )
     storage.tag.updated_at = new Date()
     storage.tag.save(@onUpdate(done, storage))

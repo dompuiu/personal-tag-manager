@@ -126,6 +126,7 @@ module.exports = {
           name: faker.name.firstName()
           dom_id: faker.internet.userName()
           type: 'html'
+          inject_position: Math.floor(Math.random() * 2) + 1
           src: '<div>some html code</div>'
           container_id: storage[from_storage].container_id
           version_id: storage[from_storage]._id

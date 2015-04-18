@@ -63,6 +63,10 @@ class TagCreate
 
         onload: Joi.string()\
           .description('Code to be executed after tag load')
+
+        inject_position: Joi.number()\
+          .description('Position where to trigger the tag\
+          (accepted values: 1 (page top), 2 (page bottom))')
       }
     }
 
@@ -78,7 +82,7 @@ class TagCreate
 
     payload = _.pick(
       storage.request.payload,
-      'name', 'dom_id', 'type', 'src', 'onload'
+      'name', 'dom_id', 'type', 'src', 'onload', 'inject_position'
     )
     _.merge(data, payload)
 

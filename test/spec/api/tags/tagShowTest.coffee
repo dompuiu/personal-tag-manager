@@ -45,6 +45,7 @@ describe 'TagsShowTest', ->
         expect(result.type).to.equal(storage.tag.type)
         expect(result.src).to.equal(storage.tag.src)
         expect(result.onload).to.equal(storage.tag.onload)
+        expect(result.inject_position).to.equal(storage.tag.inject_position)
         expect(result.created_at).to.equal(storage.tag.created_at.toISOString())
         expect(result.updated_at).to.equal(storage.tag.created_at.toISOString())
 

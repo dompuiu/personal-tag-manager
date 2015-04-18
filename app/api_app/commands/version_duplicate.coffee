@@ -107,7 +107,7 @@ class VersionDuplicateCommand
   getDataForNewTag: (tag, new_version_id) ->
     pickNonfalsy = _.partial(_.pick, _, _.identity)
     d = pickNonfalsy(_.pick(tag, 'name', 'dom_id', 'type', 'src',
-      'onload', 'container_id', 'user_id'))
+      'onload', 'container_id', 'user_id', 'inject_position'))
     d.version_id = new_version_id
     d
 

@@ -89,7 +89,7 @@ class GenerateAssetsCommand
       done(storage)
 
   readJsLibraryContent: (done, storage) =>
-    js_library_path = "#{__dirname}/../../../js_library/atm.min.js"
+    js_library_path = "#{__dirname}/../../../js_library/atm.debug.js"
     fs.readFile(js_library_path, 'utf8', @onReadJsLibraryContent(done, storage))
 
   onReadJsLibraryContent: (done, storage) =>
@@ -125,6 +125,10 @@ class GenerateAssetsCommand
     pickNonfalsy = _.partial(_.pick, _, _.identity)
     config = pickNonfalsy(_.pick(tag, 'dom_id', 'type', 'src', 'onload'))
 
+    config.inject = {
+      position: tag.inject_position,
+      tag: 2
+    }
     config.id = config.dom_id
     delete config.dom_id
 

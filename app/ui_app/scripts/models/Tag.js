@@ -24,6 +24,7 @@ var Tag = function (data, action) {
     src: data.src,
     sync: false,
     onload: data.onload,
+    inject_position: data.inject_position,
 
     created_at: data.created_at,
     updated_at: data.updated_at
@@ -81,7 +82,8 @@ Tag.prototype = {
       dom_id: this.state.dom_id,
       type: this.state.type,
       src: this.state.src,
-      onload: this.state.onload
+      onload: this.state.onload,
+      inject_position: Number(this.state.inject_position)
     };
   },
 
@@ -93,7 +95,8 @@ Tag.prototype = {
       dom_id: this.state.dom_id,
       type: sync ? 'block-script' : 'script',
       src: this.state.url,
-      onload: this.state.onload
+      onload: this.state.onload,
+      inject_position: Number(this.state.inject_position)
     };
   },
 

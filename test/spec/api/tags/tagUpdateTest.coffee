@@ -17,6 +17,7 @@ describe 'TagsUpdateTest', ->
     payload.type = data.type if data.type
     payload.src = data.src if data.src
     payload.onload = data.onload if data.onload
+    payload.inject_position = data.inject_position if data.inject_position
 
     options = {
       method: 'PUT'
@@ -32,7 +33,7 @@ describe 'TagsUpdateTest', ->
       ASQ({routes: routes})
         .then(utils.createContainer())
         .then(utils.createVersion({status: 'now editing'}))
-        .then(utils.createTag())
+        .then(utils.createTag({inject_position: 1}))
         .then((done, storage) ->
           storage.request = updateTagRequest(_.merge({
             id: storage.tag._id.toString()
@@ -98,6 +99,17 @@ describe 'TagsUpdateTest', ->
 
           expect(storage.response.statusCode).to.equal(200)
           expect(result.onload).to.equal('updated_onload')
+
+          done()
+
+    it 'should update the inject position', (done) ->
+      ASQ({data: {inject_position: 2}})
+        .then(updateTag)
+        .val (storage) ->
+          result = storage.response.result
+
+          expect(storage.response.statusCode).to.equal(200)
+          expect(result.inject_position).to.equal(2)
 
           done()
 

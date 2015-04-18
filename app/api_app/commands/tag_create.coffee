@@ -53,6 +53,11 @@ class CreateTagCommand
       Joi.string().required()
     )
 
+    Joi.assert(
+      @data.inject_position,
+      Joi.number().required()
+    )
+
     Server.get((server) => @server = server)
 
   run: (done) ->

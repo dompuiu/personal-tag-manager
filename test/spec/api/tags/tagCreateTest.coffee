@@ -23,6 +23,7 @@ describe 'TagsCreateTest', ->
         dom_id: faker.internet.userName()
         type: 'html'
         src: '<div>some html code</div>'
+        inject_position: 1
       }, data)
 
       credentials: {name: 'user name', id: url_data.user_id}
@@ -48,6 +49,7 @@ describe 'TagsCreateTest', ->
         expect(result.dom_id).to.not.be.empty
         expect(result.src).to.not.be.empty
         expect(result.type).to.not.be.empty
+        expect(result.inject_position).to.not.be.empty
 
         done()
 

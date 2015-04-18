@@ -105,7 +105,7 @@ var TagView = React.createClass({
   },
 
   getFieldKeys: function() {
-    return ['name', 'dom_id', 'type', 'onload', 'src', 'sync', 'url'];
+    return ['name', 'dom_id', 'type', 'onload', 'inject_position', 'src', 'sync', 'url'];
   },
 
   disableForm: function() {
@@ -181,6 +181,13 @@ var TagView = React.createClass({
                   <option value="html">HTML</option>
                   <option value="script">Remote script</option>
                   <option value="js">Inline JavaScript</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="inject_position">Execute at</label>
+                <select className="form-control" name="inject_position" id="inject_position" ref="inject_position" value={this.state.inject_position} onChange={this.handleChange}>
+                  <option value="1">Top of the page</option>
+                  <option value="2">Bottom of the page</option>
                 </select>
               </div>
               {this.state.type !== 'script' && (
