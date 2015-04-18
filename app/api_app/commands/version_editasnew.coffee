@@ -107,9 +107,9 @@ class VersionEditAsNewCommand
           Boom.unauthorized('Not authorized to add tags on this version')
         )
 
-      if 'published' != version.status
+      if 'now editing' == version.status
         return done.fail(
-          Boom.preconditionFailed('Can publish only now editing versions')
+          Boom.preconditionFailed('Can publish only on non editing versions')
         )
 
 

@@ -14,6 +14,8 @@ var VersionsListStore = Reflux.createStore({
     this.listenTo(VersionActions.load.failed, this.onFail);
     this.listenTo(VersionActions.publish.completed, this.onPublished);
     this.listenTo(VersionActions.publish.failed, this.onFail);
+    this.listenTo(VersionActions.editasnew.completed, this.onEditAsNew);
+    this.listenTo(VersionActions.editasnew.failed, this.onFail);
   },
 
   onGet: function(container_id) {
@@ -42,18 +44,14 @@ var VersionsListStore = Reflux.createStore({
     VersionActions.load.triggerAsync(container_id);
   },
 
+  onEditAsNew: function (container_id) {
+    VersionActions.load.triggerAsync(container_id);
+  },
+
   onFail: function (err) {
     this.trigger({
       result: false,
       error: err.message || err.error
-    });
-  },
-
-  updateList: function (list) {
-    this.list = list;
-    this.trigger({
-      result: true,
-      list: this.list
     });
   },
 

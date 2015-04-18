@@ -16,7 +16,7 @@ var VersionsListItem = React.createClass({
   },
 
   onEditAsNew: function() {
-    VersionActions.publish.triggerAsync(this.props.container_id, this.props.version_id);
+    VersionActions.editasnew.triggerAsync(this.props.container_id, this.props.version_id);
   },
 
   render: function() {
