@@ -31,6 +31,8 @@ module.exports = function (grunt) {
     ui_app: 'app/ui_app',
     ui_app_port: 8000,
     ui_app_dist: 'dist/ui_app',
+    storage_folder: 'storage',
+    storage_port: 8200
   };
 
   // Define the configuration for all the tasks
@@ -61,16 +63,25 @@ module.exports = function (grunt) {
     },
 
     connect: {
-      options: {
-        port: '<%= yeoman.ui_app_port %>'
-      },
-
       ui_app_dist: {
         options: {
+          port: '<%= yeoman.ui_app_port %>',
           keepalive: true,
           middleware: function (connect) {
             return [
-              mountFolder(connect, appConfig.ui_app_dist)
+              mountFolder(connect, appConfig.ui_app_dist),
+            ];
+          }
+        }
+      },
+
+      storage: {
+        options: {
+          port: '<%= yeoman.storage_port %>',
+          keepalive: true,
+          middleware: function (connect) {
+            return [
+              mountFolder(connect, appConfig.storage_folder)
             ];
           }
         }
@@ -82,10 +93,10 @@ module.exports = function (grunt) {
         delay: 500
       },
       ui_app_dev: {
-        path: 'http://localhost:<%= connect.options.port %>/webpack-dev-server/'
+        path: 'http://localhost:<%= connect.ui_app_dist.options.port %>/webpack-dev-server/'
       },
       ui_app_dist: {
-        path: 'http://localhost:<%= connect.options.port %>/'
+        path: 'http://localhost:<%= connect.ui_app_dist.options.port %>/'
       },
       api_app: {
         path: 'http://localhost:<%= yeoman.api_app_port %>/documentation'
@@ -293,12 +304,36 @@ module.exports = function (grunt) {
           logConcurrentOutput: true
         }
       },
-      both_apps: {
+      all_apps: {
         tasks: [
+          'connect:storage',
           'connect:ui_app_dist',
           'nodemon:api_app'
-        ]
-      }
+        ],
+        options: {
+          logConcurrentOutput: true
+        }
+      },
+
+      webpack_dev_server: {
+        tasks: [
+          'connect:storage',
+          'webpack-dev-server'
+        ],
+        options: {
+          logConcurrentOutput: true
+        }
+      },
+
+      ui_app_dist: {
+        tasks: [
+          'connect:storage',
+          'connect:ui_app_dist',
+        ],
+        options: {
+          logConcurrentOutput: true
+        }
+      },
     },
 
     mochaTest: {
@@ -364,17 +399,17 @@ module.exports = function (grunt) {
     }
 
     if (target === 'ui_app') {
-      grunt.task.run([
+      return grunt.task.run([
         'open:ui_app_dev',
-        'webpack-dev-server'
+        'concurrent:webpack_dev_server'
       ]);
     }
 
     if (target === 'ui_app_dist') {
-      grunt.task.run([
+      return grunt.task.run([
         'build',
         'open:ui_app_dist',
-        'connect:ui_app_dist'
+        'concurrent:ui_app_dist'
       ]);
     }
 
@@ -382,7 +417,7 @@ module.exports = function (grunt) {
       'build',
       'open:ui_app_dist',
       'open:api_app',
-      'concurrent:both_apps'
+      'concurrent:all_apps'
     ]);
   });
 

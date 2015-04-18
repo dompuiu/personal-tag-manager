@@ -37,3 +37,4 @@ coverage*
 .idea
 /js_library/*
 /storage/*
+/personal-tag-manager.sublime-project
