@@ -38,7 +38,7 @@ class GenerateAssetsCommand
       .or((err) -> done(err, null))
 
   getStorageFolder: (storage) ->
-    "#{__dirname}/../../../storage/#{storage.container.storage_namespace}"
+    "#{__dirname}/../../../storage/libs/#{storage.container.storage_namespace}"
 
   findContainer: (done, storage) =>
     Container.findOne({_id: storage.data.container_id},
