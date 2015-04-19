@@ -24,6 +24,10 @@ var VersionOverview = React.createClass({
     return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.lib.js\"></script>\n<script>amc.call(\"init\");</script>";
   },
 
+  getStageSnippet: function() {
+    return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.stage.lib.js\"></script>\n<script>amc.call(\"init\");</script>";
+  },
+
   onPublishClick: function() {
     VersionActions.publish.triggerAsync(this.props.container_id, this.props.editing_version.version_id);
   },
@@ -65,10 +69,17 @@ var VersionOverview = React.createClass({
               <div className="list-group">
                 <div className="list-group-first list-group-item list-group-item-info">
                   {this.props.editing_version && (
-                    <div className="pull-right">
-                      <button type="button" className="btn btn-primary btn-xs" onClick={this.onPublishClick}>
-                        <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Publish
-                      </button>
+                    <div>
+                      <div className="pull-right">
+                        <button type="button" className="btn btn-primary btn-xs" data-toggle="modal" data-target="#stagingSnippetModal">
+                          <span className="glyphicon glyphicon-link" aria-hidden="true"></span>&nbsp;Get staging container snippet
+                        </button>
+                      </div>
+                      <div className="pull-right" style={{clear:'right', marginTop: '20px'}}>
+                        <button type="button" className="btn btn-warning btn-xs" onClick={this.onPublishClick}>
+                          <span className="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Publish
+                        </button>
+                      </div>
                     </div>
                   )}
                   <h4>Now editing</h4>
@@ -132,8 +143,27 @@ var VersionOverview = React.createClass({
                 <h4 className="modal-title">Install Personal Tag Manager</h4>
               </div>
               <div className="modal-body">
-                Copy the code below and paste it onto every page of your website. Place it immediately after the opening &lt;body&gt; tag.<br/><br/>
-                <textarea ref="src" id="src" name="src" className="form-control" rows="3" readOnly="readonly" value={this.getSnippet()}></textarea>
+                <p>Copy the code below and paste it onto every page of your website. Place it immediately after the opening &lt;body&gt; tag.</p>
+                <textarea ref="src" id="src" name="src" className="form-control" rows="5" readOnly="readonly" value={this.getSnippet()}></textarea>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal fade" id="stagingSnippetModal" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 className="modal-title">Install Personal Tag Manager - Staging Snippet</h4>
+              </div>
+              <div className="modal-body">
+                <p>You can use this snippet to test your container. The staging library is updated after any tag update.</p>
+                <p>Copy the code below and paste it onto every page of your website. Place it immediately after the opening &lt;body&gt; tag.</p>
+                <textarea ref="src" id="src" name="src" className="form-control" rows="5" readOnly="readonly" value={this.getStageSnippet()}></textarea>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>

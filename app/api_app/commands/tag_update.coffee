@@ -6,6 +6,8 @@ Container = require('../models/container')
 Version = require('../models/version')
 Tag = require('../models/tag')
 
+GenerateAssetsCommand = require('./generate_assets')
+
 mongoose = require('mongoose')
 ObjectId = mongoose.Types.ObjectId
 
@@ -94,6 +96,7 @@ class CreateTagCommand
       .then(@checkVersionId)
       .then(@findById)
       .then(@tryToUpdate)
+      .then(@generateAssets)
       .val((storage) -> done(null, storage.tag))
       .or((err) -> done(err, null))
 
@@ -199,5 +202,22 @@ class CreateTagCommand
 
       storage.tag = tag
       done(storage)
+
+  generateAssets: (done, storage) =>
+    c = new GenerateAssetsCommand({
+      container_id: storage.data.container_id
+      version_id: storage.data.version_id
+      stage: true
+    })
+    c.run(@onGenerateAssets(done, storage))
+
+  onGenerateAssets: (done, storage) =>
+    (err, new_version) =>
+      if err
+        @server.log(['error'], err)
+        return done.fail(Boom.badImplementation('Cannot generate assets'))
+
+      done(storage)
+
 
 module.exports = CreateTagCommand

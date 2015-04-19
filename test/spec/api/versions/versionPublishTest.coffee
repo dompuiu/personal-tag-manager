@@ -306,6 +306,10 @@ describe 'VersionPublishTest', ->
               done() if data.indexOf('%s') == -1
 
   beforeEach (done) ->
-    ASQ((done) -> utils.emptyColection(Container, done))
+    fs = require('fs')
+    file = "#{__dirname}/../../../../storage/libs/publish_test/ptm.lib.js"
+
+    ASQ((done) -> fs.unlink(file, done))
+      .then((done) -> utils.emptyColection(Container, done))
       .then((done) -> utils.emptyColection(Version, done))
       .val(-> utils.emptyColection(Tag, done))

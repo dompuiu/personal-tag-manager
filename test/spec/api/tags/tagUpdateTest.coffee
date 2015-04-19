@@ -32,7 +32,7 @@ describe 'TagsUpdateTest', ->
   describe 'when trying to update a tag', ->
     updateTag = (done, main_storage) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({status: 'now editing'}))
         .then(utils.createTag({
           inject_position: 1
@@ -129,7 +129,6 @@ describe 'TagsUpdateTest', ->
       ASQ({data: {match: []}})
         .then(updateTag)
         .val (storage) ->
-          console.log(storage.request)
           result = storage.response.result
 
           expect(storage.response.statusCode).to.equal(200)
@@ -140,7 +139,7 @@ describe 'TagsUpdateTest', ->
 
   it 'should refresh updated_at field on any update', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag({updated_at: new Date('2013-02-02')}))
       .then((done, storage) ->
@@ -166,7 +165,7 @@ describe 'TagsUpdateTest', ->
 
   it 'should allow tag update only by the container owner', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag())
       .then((done, storage) ->
@@ -185,7 +184,7 @@ describe 'TagsUpdateTest', ->
 
   it 'should allow tag update only on existing containers', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag())
       .then((done, storage) ->
@@ -204,7 +203,7 @@ describe 'TagsUpdateTest', ->
 
   it 'should allow tag update only on existing versions', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag())
       .then((done, storage) ->
@@ -223,7 +222,7 @@ describe 'TagsUpdateTest', ->
 
   it 'should allow update only on existing tags', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag())
       .then((done, storage) ->
@@ -243,7 +242,7 @@ describe 'TagsUpdateTest', ->
   it 'should allow tag creation only on versions that are editable',
     (done) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion())
         .then(utils.createTag())
         .then((done, storage) ->
@@ -263,7 +262,7 @@ describe 'TagsUpdateTest', ->
   describe 'when trying to update a tag', ->
     updateTagWithInvalidId = (done, main_storage) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({status: 'now editing'}))
         .then(utils.createTag())
         .then((done, storage) ->
@@ -302,7 +301,7 @@ describe 'TagsUpdateTest', ->
 
   it 'should not allow tag having the same DOM Id', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then(utils.createTag({dom_id: 'same'}, 'version', 'tag1'))
       .then(utils.createTag({}, 'version', 'tag2'))
@@ -324,7 +323,7 @@ describe 'TagsUpdateTest', ->
   it 'should allow tag update with an unchanged DOM ID in request',
     (done) ->
       ASQ({routes: routes})
-        .then(utils.createContainer())
+        .then(utils.createContainer({storage_namespace: 'publish_test'}))
         .then(utils.createVersion({status: 'now editing'}))
         .then(utils.createTag())
         .then((done, storage) ->
@@ -342,11 +341,40 @@ describe 'TagsUpdateTest', ->
           expect(storage.response.statusCode).to.equal(200)
           done()
 
+  it 'should generate stage library', (done) ->
+    ASQ({routes: routes})
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
+      .then(utils.createVersion({status: 'now editing'}))
+      .then(utils.createTag({
+        inject_position: 1
+      }))
+      .then((done, storage) ->
+        storage.request = updateTagRequest({
+          id: storage.tag._id.toString()
+          user_id: storage.version.user_id
+          container_id: storage.version.container_id
+          version_id: storage.version._id.toString()
+        })
+        done(storage)
+      )
+      .then(utils.configureServerAndMakeRequest)
+      .val (storage) ->
+        fs = require('fs')
+        file = "#{__dirname}/../../../../storage/libs/\
+          #{storage.container.storage_namespace}/ptm.stage.lib.js"
+
+        stats = fs.lstat file, (err, stats) ->
+          done() if stats.isFile()
+
   beforeEach (done) ->
+    fs = require('fs')
+    file = "#{__dirname}/../../../../storage/libs/publish_test/ptm.stage.lib.js"
+
     Container = require('../../../../app/api_app/models/container')
     Version = require('../../../../app/api_app/models/version')
     Tag = require('../../../../app/api_app/models/tag')
 
-    ASQ((done) -> utils.emptyColection(Container, done))
+    ASQ((done) -> fs.unlink(file, done))
+      .then((done) -> utils.emptyColection(Container, done))
       .then((done) -> utils.emptyColection(Version, done))
       .val(-> utils.emptyColection(Tag, done))

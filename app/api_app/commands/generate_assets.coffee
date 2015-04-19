@@ -23,6 +23,11 @@ class GenerateAssetsCommand
       Joi.string().required()
     )
 
+    Joi.assert(
+      @data.stage,
+      Joi.boolean()
+    )
+
     Server.get((server) => @server = server)
 
   run: (done) ->
@@ -142,9 +147,12 @@ class GenerateAssetsCommand
 
   writeJsLibraryContent: (done, storage) =>
     config = jsStringEscape(JSON.stringify(storage.config))
+    file = switch storage.data.stage
+      when true then 'ptm.stage.lib.js'
+      else 'ptm.lib.js'
 
     fs.writeFile(
-      "#{@getStorageFolder(storage)}/ptm.lib.js"
+      "#{@getStorageFolder(storage)}/#{file}"
       storage.js_library_data.replace('%s', config),
       'utf8',
       @onWriteJsLibraryContent(done, storage)
