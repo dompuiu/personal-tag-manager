@@ -68,3 +68,11 @@ html, body {
   bottom: 10px;
   position: absolute;
 }
+
+.dow label {
+  margin-right: 20px;
+}
+
+.dow .checkbox {
+  margin-top: 0;
+}

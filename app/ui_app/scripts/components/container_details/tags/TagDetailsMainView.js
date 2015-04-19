@@ -37,6 +37,14 @@ var TagView = React.createClass({
     this.formValidator = new Parsley('.container-form form');
   },
 
+  componentDidUpdate: function() {
+    if (this.props.editable) {
+      this.enableForm();
+    } else {
+      this.disableForm();
+    }
+  },
+
   onTagChange: function(data) {
     if (data.redirect) {
       return this.context.router.transitionTo('tag_details', {
@@ -73,11 +81,17 @@ var TagView = React.createClass({
     event.preventDefault();
 
     if (!this.formValidator.isValid()) {
+      this.formValidator.validate();
+      $('.collapse.in').collapse('toggle').on('hidden.bs.collapse', function () {
+        $('.has-error').parents('.collapse').first().collapse('toggle');
+      });
+
       return;
     }
 
     this.disableForm();
     this.refs.general_view.disableForm();
+    this.refs.triggers_view.disableForm();
 
     if (this.props.tag_id) {
       TagActions.updateTag.triggerAsync(
@@ -146,7 +160,7 @@ var TagView = React.createClass({
                     </h4>
                   </div>
                   <div id="tag-view-trigger-details" className="panel-collapse collapse" role="tabpanel" aria-labelledby="tag-view-trigger-details-heading">
-                    <TagDetailsTriggersView />
+                    <TagDetailsTriggersView ref="triggers_view" {...this.state} editable={this.props.editable} />
                   </div>
                 </div>
               </div>

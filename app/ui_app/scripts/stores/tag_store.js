@@ -16,6 +16,8 @@ var TagStore = Reflux.createStore({
     this.listenTo(TagActions.loadTag.failed, this.onFail);
     this.listenTo(TagActions.changeState, this.onChange);
     this.listenTo(TagActions.new, this.onNew);
+    this.listenTo(TagActions.newTriggerCondition, this.onNewTriggerCondition);
+    this.listenTo(TagActions.removeTriggerCondition, this.onRemoveTriggerCondition);
   },
 
   onCreate: function (data) {
@@ -33,8 +35,24 @@ var TagStore = Reflux.createStore({
   onNew: function() {
     currentTag = new Tag({
       type: 'html',
-      inject_position: 1
+      inject_position: 1,
+      match: []
     });
+
+    this.trigger({
+      result: true,
+      tag: currentTag.getState()
+    });
+  },
+
+  onNewTriggerCondition: function() {
+    currentTag.addTriggerCondition();
+    this.triggerChange();
+  },
+
+  onRemoveTriggerCondition: function(id) {
+    currentTag.removeTriggerCondition(id);
+    this.triggerChange();
   },
 
   onUpdate: function (data) {
@@ -42,13 +60,10 @@ var TagStore = Reflux.createStore({
   },
 
   onLoad: function (data) {
-    VersionActions.getOverviewInfo.triggerAsync(data.container_id);
     currentTag = new Tag(data);
 
-    this.trigger({
-      result: true,
-      tag: currentTag.getState()
-    });
+    VersionActions.getOverviewInfo.triggerAsync(data.container_id);
+    this.triggerChange();
   },
 
   onFail: function (err) {
@@ -58,16 +73,24 @@ var TagStore = Reflux.createStore({
     });
   },
 
-  onChange: function(key, value) {
-    currentTag.set(key, value);
-    this.trigger({
-      result: true,
-      tag: currentTag.getState()
-    });
+  onChange: function(key, value, id) {
+    if (key === 'match') {
+      currentTag.setMatch(id, value);
+    } else {
+      currentTag.set(key, value);
+    }
+    this.triggerChange();
   },
 
   getActionData: function() {
     return currentTag.getActionData();
+  },
+
+  triggerChange: function() {
+    this.trigger({
+      result: true,
+      tag: currentTag.getState()
+    });
   }
 });
 
