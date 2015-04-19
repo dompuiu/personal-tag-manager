@@ -79,6 +79,7 @@ class CreateTagCommand
             min: Joi.string()
             max: Joi.string()
             scalar: Joi.string()
+            pattern: Joi.string()
           }).required()
         })
       )
