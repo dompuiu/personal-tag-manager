@@ -15,6 +15,10 @@ This project has 3 applications:
 * Install NPM dependencies (`npm install`)
 * Install Bower dependencies (`bowe install`)
 
+##Populating the user database
+Run the following command to add users accounts in the mongo database:
+`DB_SUFFIX='_prod' DB_CONNECTION_STRING='mongodb://localhost/personal_tag_manager' node ./dist/api_app/database/seeds/user_seeder.js`
+
 ## RESTful API APP
 The API application is build in node.js. The code is written in coffescript.
 
