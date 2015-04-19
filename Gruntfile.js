@@ -246,9 +246,6 @@ module.exports = function (grunt) {
           },
           'spacing_after_comma': {
             'level': 'error'
-          },
-          'cyclomatic_complexity': {
-            'level': 'error'
           }
         }
       }
