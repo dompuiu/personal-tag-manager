@@ -1,9 +1,6 @@
 'use strict';
 var Reflux = require('reflux');
 var _ = require('lodash');
-var request = require('superagent');
-var auth = require('auth');
-var API_URL = 'http://localhost:8100';
 
 var ContainerActions = require('../actions/container_actions');
 var ListContainer = require('../models/ListContainer');

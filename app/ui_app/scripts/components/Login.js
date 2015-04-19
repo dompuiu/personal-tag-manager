@@ -69,7 +69,7 @@ class Login extends React.Component {
               )}
               <form className="form-signin" onSubmit={this.handleSubmit}>
                 <label for="inputEmail" className="sr-only">Email address</label>
-                <input ref="email" type="email" id="inputEmail" className="form-control" defaultValue="serban.stancu@yahoo.com" placeholder="Email address" required autofocus />
+                <input ref="email" type="email" id="inputEmail" className="form-control" defaultValue="admin@somedomain.com" placeholder="Email address" required autofocus />
                 <label for="inputPassword" className="sr-only">Password</label>
                 <input ref="pass" type="password" id="inputPassword" className="form-control" placeholder="Password" required />
                 <button ref="signin" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span> Signing in..." className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>

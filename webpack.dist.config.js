@@ -30,7 +30,11 @@ module.exports = {
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.AggressiveMergingPlugin()
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
   ],
 
   resolve: {
@@ -82,12 +86,6 @@ module.exports = {
     }, {
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
       loader: "url?limit=10000&minetype=image/svg+xml"
-    }],
-    plugins: [
-      new webpack.ProvidePlugin({
-          $: 'jquery',
-          jQuery: 'jquery'
-      })
-    ]
+    }]
   }
 };

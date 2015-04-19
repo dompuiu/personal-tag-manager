@@ -47,9 +47,9 @@ class UserSeeder
 
 
 users = [{
-  name: 'Serban Stancu',
-  email: 'serban.stancu@yahoo.com',
-  password: User.makePassword('qwe123')
+  name: 'Admin user',
+  email: 'admin@somedomain.com',
+  password: User.makePassword('admin')
 }, {
   name: 'First User',
   email: 'first.user@email.com',

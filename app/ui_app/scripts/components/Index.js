@@ -7,7 +7,7 @@ var Index = React.createClass({
     return (
       <div className="inner cover">
         <h1 className="cover-heading">Personal Tag Manager</h1>
-        <p className="lead">Bachlor's degree project</p>
+        <p className="lead">Bachelor's degree project</p>
       </div>
     );
   }

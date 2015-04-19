@@ -94,7 +94,8 @@ class GenerateAssetsCommand
       done(storage)
 
   readJsLibraryContent: (done, storage) =>
-    js_library_path = "#{__dirname}/../../../js_library/atm.debug.js"
+    template_file = process.env.JS_LIBRARY_TEMPLATE
+    js_library_path = "#{__dirname}/../../../#{template_file}"
     fs.readFile(js_library_path, 'utf8', @onReadJsLibraryContent(done, storage))
 
   onReadJsLibraryContent: (done, storage) =>

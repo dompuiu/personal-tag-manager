@@ -14,6 +14,7 @@ var webpackDistConfig = require('./webpack.dist.config.js'),
     webpackDevConfig = require('./webpack.config.js');
 
 module.exports = function (grunt) {
+  var pkgConfig = grunt.file.readJSON('package.json');
 
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
@@ -25,20 +26,21 @@ module.exports = function (grunt) {
   var appConfig = {
     test: 'test',
     api_app: 'app/api_app',
-    api_app_port: 8100,
+    api_app_port: pkgConfig.api_app_port,
     api_app_test: 'test/spec/api',
     api_app_dist: 'dist/api_app',
     ui_app: 'app/ui_app',
-    ui_app_port: 8000,
+    ui_app_port: pkgConfig.ui_app_port,
     ui_app_dist: 'dist/ui_app',
     storage_folder: 'storage',
-    storage_port: 8200
+    storage_port: pkgConfig.storage_port
   };
 
   // Define the configuration for all the tasks
   grunt.initConfig({
     // Project settings
     yeoman: appConfig,
+    pkg: pkgConfig,
 
     webpack: {
       options: webpackDistConfig,
@@ -90,7 +92,7 @@ module.exports = function (grunt) {
 
     open: {
       options: {
-        delay: 500
+        delay: 5000
       },
       ui_app_dev: {
         path: 'http://localhost:<%= connect.ui_app_dist.options.port %>/webpack-dev-server/'
@@ -113,10 +115,6 @@ module.exports = function (grunt) {
               console.log(event.colour);
             });
           },
-          env: {
-            DB_SUFFIX: '_prod',
-            PORT: '<%= yeoman.api_app_port %>'
-          },
           cwd: '<%= yeoman.api_app_dist %>/api',
           ignore: ['node_modules/**'],
           delay: 1000,
@@ -136,7 +134,7 @@ module.exports = function (grunt) {
           '<%= yeoman.test %>/helpers/**/*.{coffee,litcoffee,coffee.md}',
           '<%= yeoman.api_app %>/**/*.{coffee,litcoffee,coffee.md}'
         ],
-        tasks: ['coffeelint:api_app', 'coffeelint:api_app_test', 'mochaTest:api_app']
+        tasks: ['env', 'coffeelint:api_app', 'coffeelint:api_app_test', 'mochaTest:api_app']
       },
       options: {
         event: ['changed', 'added', 'deleted']
@@ -294,6 +292,7 @@ module.exports = function (grunt) {
     concurrent: {
       api_app: {
         tasks: [
+          'env',
           'watch:api_app',
           'nodemon:api_app'
         ],
@@ -303,6 +302,7 @@ module.exports = function (grunt) {
       },
       all_apps: {
         tasks: [
+          'env',
           'connect:storage',
           'connect:ui_app_dist',
           'nodemon:api_app'
@@ -332,7 +332,14 @@ module.exports = function (grunt) {
         }
       },
     },
-
+    env : {
+      default: {
+        JS_LIBRARY_TEMPLATE: '<%= pkg.js_library_template %>',
+        DB_CONNECTION_STRING: '<%= pkg.db_connection_string %>',
+        DB_SUFFIX: '_prod',
+        PORT: '<%= yeoman.api_app_port %>'
+      }
+    },
     mochaTest: {
       api_app: {
         options: {
@@ -361,6 +368,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', 'Build all coffeescript files to js', function (target) {
     grunt.task.run([
+      'env',
       'clean:api_app_dist',
       'coffeelint:api_app',
       'coffee:api_app',
@@ -373,10 +381,17 @@ module.exports = function (grunt) {
   grunt.registerTask('test', 'Run tests while developing app code', function (target) {
     if (target === 'api_app') {
       return grunt.task.run([
+        'env',
         'coffeelint:api_app',
         'coffeelint:api_app_test',
         'mochaTest:api_app',
-        'watch:api_app_test'
+      ]);
+    }
+
+    if (target === 'api_app_coverage') {
+      return grunt.task.run([
+        'env',
+        'mochaTest:api_app_coverage'
       ]);
     }
 
@@ -386,9 +401,8 @@ module.exports = function (grunt) {
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'api_app') {
       return grunt.task.run([
+        'env',
         'clean:api_app_dist',
-        'coffeelint:api_app',
-        'coffeelint:api_app_test',
         'coffee:api_app',
         'open:api_app',
         'concurrent:api_app'

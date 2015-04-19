@@ -35,6 +35,6 @@ dist
 .sass-cache
 coverage*
 .idea
-/js_library/*
+/js_library/atm*
 /storage/*
 /personal-tag-manager.sublime-project
