@@ -6,25 +6,32 @@ This project has 3 applications:
 * A RESTful API
 * A Config interface
 
-## Prerequisites
+## Install using [Docker](https://www.docker.com/)
+* Create mongo docker image `docker build -f Dockerfile-mongo -t ptm/ptm-mongo .`
+* Start mongo container `docker run --name ptm-mongo -d ptm/ptm-mongo`
+* Create server docker image `docker build -t ptm/ptm-server .`
+* Start server container `docker run --name ptm-server --link ptm-mongo:mongo -p 8000:8000 -p 8100:8100 -p 8200:8200 -d ptm/ptm-server`
+* Run `boot2docker ip` to find the IP where you can access the applications. You can access those applications using the default ports (ui: [http://BOOT2DOCKERIP:8000](http://BOOT2DOCKERIP:8000), api: [http://BOOT2DOCKERIP:8100](http://BOOT2DOCKERIP:8100), storage: [http://BOOT2DOCKERIP:8200](http://BOOT2DOCKERIP:8200))
+* Admin test user: `admin@somedomain.com:admin`
 
-* MongoDB
-* Node.js
-* Grunt (`npm install -g grunt-cli`)
-* Bower (`npm install bower -g`)
+## Manual install
+
+* You need to have __MongoDB__ installed
+* You need to have __Node.js__ installed
+* __Grunt__ (`npm install -g grunt-cli`)
+* __Bower__ (`npm install bower -g`)
 * Install NPM dependencies (`npm install`)
-* Install Bower dependencies (`bowe install`)
-
-##Populating the user database
-Run the following command to add users accounts in the mongo database:
+* Install Bower dependencies (`bower install`)
+* Run the following command to add users accounts in the mongo database:
 `DB_SUFFIX='_prod' DB_CONNECTION_STRING='mongodb://localhost/personal_tag_manager' node ./dist/api_app/database/seeds/user_seeder.js`
+* Run any Grunt commands listed in the below sections
 
 ## RESTful API APP
 The API application is build in node.js. The code is written in coffescript.
 
 ### Preview
 Run `grunt serve:api_app` to launch the application.
-You can access the APP here: [http://localhost:8100/documentation](http://localhost:8100/documentation).
+You can access the APP here (if you didn't changed the default port): [http://localhost:8100/documentation](http://localhost:8100/documentation).
 
 ### Developing
 Run `grunt watch:api_app_test` while developing. Each time the resources will change, the API tests will be run automatically.
@@ -46,7 +53,7 @@ You can access the APP here: [http://localhost:8000/](http://localhost:8000/).
 
 ### Developing
 Run `grunt serve:ui_app` to launch the application with webpack-dev-server. Each time the resources will change, the page will refresh automatically.
-You can access the APP here: [localhost:8000/webpack-dev-server/](localhost:8000/webpack-dev-server/).
+You can access the APP here (if you didn't changed the default port): [localhost:8000/webpack-dev-server/](localhost:8000/webpack-dev-server/).
 
 ## Previewing both apps
 Run `grunt serve` to launch all the applications.
