@@ -364,6 +364,12 @@ module.exports = function (grunt) {
         configFile: 'karma.conf.js'
       }
     },
+
+    shell: {
+        userSeeder: {
+            command: 'node ./dist/api_app/database/seeds/user_seeder.js'
+        }
+    }
   });
 
   grunt.registerTask('build', 'Build all coffeescript files to js', function (target) {
@@ -425,11 +431,21 @@ module.exports = function (grunt) {
     }
 
     return grunt.task.run([
-      'build',
-      'open:ui_app_dist',
-      'open:api_app',
+      'env',
+      'shell:userSeeder',
       'concurrent:all_apps'
     ]);
+  });
+
+  grunt.registerTask('seeder', 'Populate database with data', function (target) {
+    if (target === 'users') {
+      return grunt.task.run([
+        'env',
+        'coffeelint:api_app',
+        'coffee:api_app',
+        'shell:userSeeder'
+      ]);
+    }
   });
 
   grunt.registerTask('default', []);

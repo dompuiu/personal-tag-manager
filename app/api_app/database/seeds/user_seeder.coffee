@@ -6,14 +6,27 @@ class UserSeeder
   constructor: (data) ->
     @data = data
   import: ->
-    ASQ(@dropAllUsers.bind(this)).then(@insertAll.bind(this))
+    ASQ(@checkUsersAlreadyExists)
+      .then(@dropAllUsers)
+      .then(@insertAll)
+      .or((err) -> console.log(err); Database.closeConnection())
+
+  checkUsersAlreadyExists: (done) ->
+    Database.openConnection((connection) ->
+      User.count((err, count) ->
+        if process.argv[2] != '--force' && count > 0
+          done.fail('Users table has already been seeded')
+        else
+          done()
+      )
+    )
 
   dropAllUsers: (done) ->
     Database.openConnection((connection) ->
       connection.db.dropCollection('users', done)
     )
 
-  insertAll: (done) ->
+  insertAll: (done) =>
     Database.openConnection((connection) =>
       segments = @data.map(@insertUser)
 
