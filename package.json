@@ -58,6 +58,7 @@
     "grunt-wiredep": "^2.0.0",
     "jshint-loader": "~0.8.0",
     "jshint-stylish": "^1.0.0",
+    "json-loader": "^0.5.1",
     "jsxhint-loader": "~0.2.0",
     "karma": "~0.12.21",
     "karma-chrome-launcher": "~0.1.4",

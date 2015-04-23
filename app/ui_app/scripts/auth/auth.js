@@ -1,10 +1,10 @@
 'use strict';
 
-var API_URL = 'http://localhost:8100/';
+var API_URL = require('api_url');
 var request = require('superagent');
 
 function makeLoginRequest(email, pass, cb) {
-  request.post(API_URL + 'users/login/')
+  request.post(API_URL + '/users/login/')
     .set('Content-Type', 'application/json')
     .send('{"email":"' + email + '","password":"' + pass + '"}')
     .end(function(err, res){

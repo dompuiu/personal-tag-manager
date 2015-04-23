@@ -2,7 +2,7 @@
 var Reflux = require('reflux');
 var auth = require('auth');
 var request = require('superagent');
-var API_URL = 'http://localhost:8100';
+var API_URL = require('api_url');
 
 var ContainerActions = Reflux.createActions({
   "load": {aSync: true, children: ['completed', 'failed']},

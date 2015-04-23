@@ -42,7 +42,8 @@ module.exports = {
       'actions': __dirname + '/app/ui_app/scripts/actions/',
       'jquery': __dirname + '/bower_components/jquery/dist/jquery.min.js',
       'auth': __dirname + '/app/ui_app/scripts/auth/auth.js',
-      'require_auth': __dirname + '/app/ui_app/scripts/auth/require_auth.js'
+      'require_auth': __dirname + '/app/ui_app/scripts/auth/require_auth.js',
+      'api_url': __dirname + '/app/ui_app/scripts/api_url.js'
     }
   },
   module: {
@@ -76,6 +77,9 @@ module.exports = {
     }, {
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
       loader: "url?limit=10000&minetype=image/svg+xml"
+    }, {
+      test: /\.json$/,
+      loader: "json"
     }]
   },
 
