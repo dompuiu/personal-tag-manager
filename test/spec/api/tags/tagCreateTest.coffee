@@ -40,7 +40,7 @@ describe 'TagsCreateTest', ->
 
   it 'should create a tag', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = createTagRequest({
@@ -64,7 +64,7 @@ describe 'TagsCreateTest', ->
 
   it 'should allow tag creation only by the container owner', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = createTagRequest({
@@ -81,7 +81,7 @@ describe 'TagsCreateTest', ->
 
   it 'should allow tag creation only on existing containers', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = createTagRequest({
@@ -98,7 +98,7 @@ describe 'TagsCreateTest', ->
 
   it 'should allow tag creation only on existing versions', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion({status: 'now editing'}))
       .then((done, storage) ->
         storage.request = createTagRequest({
@@ -115,7 +115,7 @@ describe 'TagsCreateTest', ->
 
   it 'should allow tag creation only on versions that are editable', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion())
       .then((done, storage) ->
         storage.request = createTagRequest({
@@ -132,7 +132,7 @@ describe 'TagsCreateTest', ->
 
   it 'should not allow tag having the same DOM Id', (done) ->
     ASQ({routes: routes})
-      .then(utils.createContainer())
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
       .then(utils.createVersion())
       .then(utils.createTag({dom_id: 'same'}))
       .then((done, storage) ->
@@ -149,8 +149,32 @@ describe 'TagsCreateTest', ->
         expect(storage.response.statusCode).to.equal(401)
         done()
 
+  it 'should generate stage library', (done) ->
+    ASQ({routes: routes})
+      .then(utils.createContainer({storage_namespace: 'publish_test'}))
+      .then(utils.createVersion({status: 'now editing'}))
+      .then((done, storage) ->
+        storage.request = createTagRequest({
+          user_id: storage.version.user_id
+          container_id: storage.version.container_id
+          version_id: storage.version._id.toString()
+        })
+        done(storage)
+      )
+      .then(utils.configureServerAndMakeRequest)
+      .val (storage) ->
+        fs = require('fs')
+        file = "#{__dirname}/../../../../storage/libs/\
+          #{storage.container.storage_namespace}/ptm.stage.lib.js"
+
+        stats = fs.lstat file, (err, stats) ->
+          done() if stats.isFile()
+
 
   beforeEach (done) ->
+    fs = require('fs')
+    file = "#{__dirname}/../../../../storage/libs/publish_test/ptm.stage.lib.js"
+
     Container = require('../../../../app/api_app/models/container')
     Version = require('../../../../app/api_app/models/version')
     Tag = require('../../../../app/api_app/models/tag')

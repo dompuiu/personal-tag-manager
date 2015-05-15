@@ -6,6 +6,8 @@ Container = require('../models/container')
 Version = require('../models/version')
 Tag = require('../models/tag')
 
+GenerateAssetsCommand = require('./generate_assets')
+
 ASQ = require('asynquence')
 Server = require('../api/server')
 
@@ -38,6 +40,7 @@ class DeleteTagCommand
       .then(@checkObjectIdFormat)
       .then(@checkVersionId)
       .then(@tryToDelete)
+      .then(@generateAssets)
       .val(->
         done(
           null,
@@ -106,5 +109,22 @@ class DeleteTagCommand
         return done.fail(Boom.notFound('Tag not found'))
 
       done(storage)
+
+  generateAssets: (done, storage) =>
+    c = new GenerateAssetsCommand({
+      container_id: storage.data.container_id
+      version_id: storage.data.version_id
+      stage: true
+    })
+    c.run(@onGenerateAssets(done, storage))
+
+  onGenerateAssets: (done, storage) =>
+    (err, new_version) =>
+      if err
+        @server.log(['error'], err)
+        return done.fail(Boom.badImplementation('Cannot generate assets'))
+
+      done(storage)
+
 
 module.exports = DeleteTagCommand
