@@ -338,6 +338,12 @@ module.exports = function (grunt) {
         DB_CONNECTION_STRING: '<%= pkg.db_connection_string %>',
         DB_SUFFIX: '_prod',
         PORT: '<%= yeoman.api_app_port %>'
+      },
+      test: {
+        JS_LIBRARY_TEMPLATE: '<%= pkg.js_library_template %>',
+        DB_CONNECTION_STRING: '<%= pkg.db_connection_string %>',
+        DB_SUFFIX: '_test',
+        PORT: '<%= yeoman.api_app_port %>'
       }
     },
     mochaTest: {
@@ -387,7 +393,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test', 'Run tests while developing app code', function (target) {
     if (target === 'api_app') {
       return grunt.task.run([
-        'env',
+        'env:test',
         'coffeelint:api_app',
         'coffeelint:api_app_test',
         'mochaTest:api_app',
@@ -396,7 +402,7 @@ module.exports = function (grunt) {
 
     if (target === 'api_app_coverage') {
       return grunt.task.run([
-        'env',
+        'env:test',
         'mochaTest:api_app_coverage'
       ]);
     }
@@ -407,7 +413,7 @@ module.exports = function (grunt) {
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'api_app') {
       return grunt.task.run([
-        'env',
+        'env:default',
         'clean:api_app_dist',
         'coffee:api_app',
         'open:api_app',
@@ -431,7 +437,7 @@ module.exports = function (grunt) {
     }
 
     return grunt.task.run([
-      'env',
+      'env:default',
       'shell:userSeeder',
       'concurrent:all_apps'
     ]);
