@@ -16,7 +16,7 @@ describe 'TagsUpdateTest', ->
     payload.dom_id = data.dom_id if data.dom_id
     payload.type = data.type if data.type
     payload.src = data.src if data.src
-    payload.onload = data.onload if data.onload
+    payload.onload = data.onload if typeof data.onload != 'undefined'
     payload.inject_position = data.inject_position if data.inject_position
     payload.match = data.match if data.match
 
@@ -111,6 +111,17 @@ describe 'TagsUpdateTest', ->
 
           expect(storage.response.statusCode).to.equal(200)
           expect(result.onload).to.equal('updated_onload')
+
+          done()
+
+    it 'should allow update to an empty onload', (done) ->
+      ASQ({data: {onload: ''}})
+        .then(updateTag)
+        .val (storage) ->
+          result = storage.response.result
+
+          expect(storage.response.statusCode).to.equal(200)
+          expect(result.onload).to.equal('')
 
           done()
 

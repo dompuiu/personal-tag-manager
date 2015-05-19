@@ -53,7 +53,7 @@ class CreateTagCommand
 
     Joi.assert(
       @data.onload,
-      Joi.string()
+      Joi.string().allow('')
     )
 
     Joi.assert(
@@ -187,8 +187,10 @@ class CreateTagCommand
     _.each(
       ['name', 'dom_id', 'type', 'src', 'onload', 'inject_position', 'match'],
       (key) ->
-        storage.tag[key] = storage.data[key] if storage.data[key]
+        if typeof storage.data[key] != 'undefined'
+          storage.tag[key] = storage.data[key]
     )
+
     storage.tag.updated_at = new Date()
     storage.tag.save(@onUpdate(done, storage))
 

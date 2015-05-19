@@ -9,7 +9,8 @@ TagSchema = Joi.object({
   dom_id: Joi.string().required().description('Tag DOM Id')
   type: Joi.string().required().description('Tag Type')
   src: Joi.string().required().description('Tag source')
-  onload: Joi.string().description('Code to be executed after tag load')
+  onload: Joi.string().allow('')\
+    .description('Code to be executed after tag load')
   inject_position: Joi.number().description('Tag trigger position')
   match: Joi.array().items(
     Joi.object().keys({

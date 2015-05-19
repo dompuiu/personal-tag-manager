@@ -61,7 +61,7 @@ class TagCreate
         src: Joi.string()\
           .description('Tag source').example('console.log("a");')
 
-        onload: Joi.string()\
+        onload: Joi.string().allow('')\
           .description('Code to be executed after tag load')
 
         inject_position: Joi.number()\
@@ -97,10 +97,11 @@ class TagCreate
   createTag: (done, storage) =>
     data = _.pick(storage.request.params, 'version_id', 'container_id', 'id')
     data.user_id = storage.request.auth.credentials.id
+    data.onload = storage.request.payload.onload
 
     payload = _.pick(
       storage.request.payload,
-      'name', 'dom_id', 'type', 'src', 'onload', 'inject_position', 'match'
+      'name', 'dom_id', 'type', 'src', 'inject_position', 'match'
     )
     _.merge(data, payload)
 

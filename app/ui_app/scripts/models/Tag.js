@@ -91,11 +91,7 @@ Tag.prototype = {
 
   getActionData: function() {
     var t = this.state.type;
-    var pickNonfalsy = _.partial(_.pick, _, _.identity);
-
-    return pickNonfalsy(
-      this['get' + t[0].toUpperCase() + t.slice(1) + 'Data']()
-    );
+    return this['get' + t[0].toUpperCase() + t.slice(1) + 'Data']();
   },
 
   getHtmlData: function() {
