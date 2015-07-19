@@ -21,11 +21,11 @@ var VersionOverview = React.createClass({
   },
 
   getSnippet: function() {
-    return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.lib.js\"></script>\n<script>amc.call(\"init\");</script>";
+    return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.lib.js\"></script>\n<script>ptm.call(\"init\");</script>";
   },
 
   getStageSnippet: function() {
-    return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.stage.lib.js\"></script>\n<script>amc.call(\"init\");</script>";
+    return "<script src=\"//localhost:8200/libs/" + this.props.storage_namespace + "/ptm.stage.lib.js\"></script>\n<script>ptm.call(\"init\");</script>";
   },
 
   onPublishClick: function() {
